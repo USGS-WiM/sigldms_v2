@@ -1,0 +1,80 @@
+.navbar {
+    background-color: #525352;
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0 auto;
+    display: block;
+    width: 100%;
+    height: auto;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+}
+.navbar-brand {
+  padding:15px 20px;
+}
+.navbar-app .btn {
+    color:gray;
+}
+.app-name {
+    display: inline-block;
+    font-weight: lighter;
+    vertical-align: middle;
+    line-height: auto;
+    height: 60px;
+    line-height: 60px;
+    margin: 0 0 0 15px;
+    color: #F2F0E3;
+    font-size: 16pt;
+}
+.navbar .navbar-brand {
+    display: inline-block;
+    background-color: #000;
+    box-sizing: border-box;
+    padding: 10px;
+    vertical-align: middle;
+    height: 60px;
+}
+.navbar .navbar-brand img {
+    height: 100%;
+    width: auto;
+}
+.navbar h2 {
+    display: inline-block;
+    font-weight: lighter;
+    vertical-align: middle;
+    line-height: auto;
+    height: 60px;
+    line-height: 60px;
+    margin: 0 0 0 15px;
+    color: #F2F0E3;
+    font-size: 16pt;
+}
+#nav-links {
+    display: block;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+    list-style-type: none;
+    padding: 0;
+    margin: 0 auto;
+    background-color: #323432;
+    box-sizing: border-box;
+    height: 32px;
+    line-height: 32px;
+}
+#nav-links li {
+    display: inline-block;
+}
+#nav-links li a {
+    color: #fff;
+    box-sizing: border-box;
+    padding: 0 22px;
+    height: 32px;
+    border-right: 1px solid #bd3b1e;
+    display: block;
+    line-height: 32px;
+    background-color: #DE5030;
+    transition: .09s;
+}
+#nav-links li a.active {
+    color: #fff;
+    background-color: #55B5AE;
+    text-decoration: none;
+}

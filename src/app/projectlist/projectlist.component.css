@@ -1,0 +1,22 @@
+.section-heading {
+    font-size: 10pt;
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px 15px;
+    background-color: #DE5030;
+    font-weight: bolder;
+    color: #fff;
+}
+.section-text {
+    font-size: 10pt;
+    box-sizing: border-box;
+    padding: 10px 15px;
+}
+.sigl-table {
+    display: table;
+    box-sizing: border-box;
+    margin: 15px 15px 25px 15px;
+    width: 100%;
+    width: calc(100% - 30px);
+}

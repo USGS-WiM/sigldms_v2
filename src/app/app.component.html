@@ -1,0 +1,14 @@
+<div class="navbar">    
+    <a class="navbar-brand" href="http://www.usgs.gov"><img src="assets/img/usgs-logo.png"></a>
+    <h2><b>{{title}}</b><em>:</em>{{subTitle}}</h2>
+    <ul id="nav-links">
+        <li><a routerLink="/projects" routerLinkActive="active">Home</a></li>
+        <li><a routerLink="/settings" routerLinkActive="active">Settings</a></li>
+        <li><a routerLink="/account" routerLinkActive="active">Your account</a></li>
+        <li><a routerLink="/faq" routerLinkActive="active">FAQs/Help</a></li>
+    </ul>
+</div>
+<br clear="all"/>
+<div id="body-wrapper" class="sigl-section">
+    <router-outlet></router-outlet>
+</div>
