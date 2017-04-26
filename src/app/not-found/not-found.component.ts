@@ -1,3 +1,13 @@
+// ------------------------------------------------------------------------------
+// ----- not-found.component ----------------------------------------------------
+// ------------------------------------------------------------------------------
+
+// copyright:   2016 WiM - USGS
+//
+// authors:  Tonia Roddick USGS Wisconsin Internet Mapping             
+//
+// purpose: navigation to a url that does not exist will show this page
+
 import { Component, OnInit } from '@angular/core';
 
 @Component({

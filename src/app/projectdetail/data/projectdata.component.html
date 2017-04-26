@@ -1,0 +1,35 @@
+<div class="sigl-edit-form">
+    <legend style="margin-bottom:25px;margin-top:0;">Data Sources</legend>
+</div>
+
+    <div class="form-group" *ngIf="projectData">
+        <div class="current-data-list" *ngFor="let d of projectData; let i = index">
+            <div class="data-display">
+                <div>
+                    <label>Data management system or data description:</label>
+                    <span *ngIf="!d.isEditing">{{ d.description }}</span>
+                    <span *ngIf="d.isEditing" class="editable-wrap"><textarea rows="3" name="description" [(ngModel)]="d.description"></textarea></span>
+                </div>
+                <div>
+                    <label>Data hosting entity:</label>
+                    <span *ngIf="!d.isEditing">{{ d.host_name }}</span>
+                    <span *ngIf="d.isEditing" class="editable-wrap"><input type="text" name="host_name" [(ngModel)]="d.host_name"></span>
+                </div>
+                <div>
+                    <label>Online data location:</label>
+                    <span *ngIf="!d.isEditing">{{ d.portal_url }}</span>
+                    <span *ngIf="d.isEditing" class="editable-wrap"><input type="text" name="portal_url" [(ngModel)]="d.portal_url"></span>
+                </div>
+            </div> <!-- end data-display -->
+            <div class="data-controls">
+                <button *ngIf="!d.isEditing" class="sigl-btn btn-small" (click)="EditRowClicked(i)">Edit</button>
+                <button *ngIf="!d.isEditing" class="sigl-btn btn-orange btn-small">Delete</button>
+                <button *ngIf="d.isEditing" class="sigl-btn btn-small">Save</button>
+                <button *ngIf="d.isEditing" class="sigl-btn btn-orange btn-small" (click)="CancelEditRowClicked(i)">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+
+
+<newdata [editing]="isEditing" (addDataHostEvent)="AddDataHost($event)"></newdata>

@@ -1,0 +1,27 @@
+.current-data-list {
+    box-sizing: border-box;
+    padding: 10px;
+    background-color: #fff;
+    border-top: 1px solid #ebebeb;
+    border-right: 1px solid #ebebeb;
+    border-left: 1px solid #ebebeb;
+}
+.current-data-list .data-display {
+    display: inline-block;
+    box-sizing: border-box;
+    padding: 5px;
+    width: 70%;
+    vertical-align: middle;
+}
+.current-data-list .data-controls {
+    text-align: right;
+    display: inline-block;
+    vertical-align: middle;
+    box-sizing: border-box;
+    padding: 5px;
+    width: 30%;
+}
+.current-data-list .editable-wrap {
+    display: block;
+    width: 100%;
+}

@@ -1,3 +1,13 @@
+// ------------------------------------------------------------------------------
+// ----- projectdetail-routing.module -------------------------------------------
+// ------------------------------------------------------------------------------
+
+// copyright:   2016 WiM - USGS
+//
+// authors:  Tonia Roddick USGS Wisconsin Internet Mapping             
+//
+// purpose: routes for the project details module (parent/children/subchildren)
+
 import { NgModule }             from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { ProjectdetailComponent } from "app/projectdetail/projectdetail.component";
@@ -9,37 +19,46 @@ import { ProjectsiteComponent } from "app/projectdetail/sites/projectsite.compon
 import { ProjectsitelistComponent } from "app/projectdetail/sites/projectsitelist.component";
 import { ProjectsitespreadsheetComponent } from "app/projectdetail/sites/projectsitesheet.component";
 import { ProjectinfoComponent } from "app/projectdetail/projectinfo/projectinfo.component";
+import { AuthGuard } from "app/auth-guard.service";
+import { CanDeactivateGuard } from "app/candeactivate-guard.service";
+import { FullProjectResolve } from "app/projectdetail/fullProject.resolve";
+import { ProjectSitesResolve } from "app/projectdetail/projectSites.resolve";
 
 const projectdetailRoutes: Routes = [
   {
-    path: 'projectdetail/:id', 
-    component: ProjectdetailComponent, 
-    children: [       
+    path: 'projectdetail/:id',// '',
+    component: ProjectdetailComponent,
+    canActivateChild: [ AuthGuard ],
+    resolve: {
+      fullProject: FullProjectResolve,
+      projectSites: ProjectSitesResolve
+    },
+    children: [
       { path: 'info',
         component: ProjectinfoComponent
       },
-      {//makes this the default start page
-        path: '', 
-        redirectTo: 'info', 
-        pathMatch: 'full'
-      },
       {
         path:'cooperators',
-        component: ProjectcooperatorComponent
+        component: ProjectcooperatorComponent, 
+        canDeactivate: [CanDeactivateGuard]
       },
       { path: 'data',
-        component: ProjectdataComponent        
+        component: ProjectdataComponent, 
+        canDeactivate: [CanDeactivateGuard]
       },
       {
         path:'contacts',
-        component: ProjectcontactComponent
+        component: ProjectcontactComponent, 
+        canDeactivate: [CanDeactivateGuard]
       },
       {
         path:'publications',
-        component: ProjectpublicationComponent
+        component: ProjectpublicationComponent, 
+        canDeactivate: [CanDeactivateGuard]
       },
       { path: 'sites',
         component: ProjectsiteComponent,
+        canActivateChild: [ AuthGuard ],
         children: [
           {
              path: 'sitelist',
@@ -47,13 +66,19 @@ const projectdetailRoutes: Routes = [
           },
           {
              path: 'siteSpreadsheet',
-             component: ProjectsitespreadsheetComponent
+             component: ProjectsitespreadsheetComponent, 
+            canDeactivate: [CanDeactivateGuard]
           }
         ]
       },
-      
+      {//makes this the default start page
+        path: '', 
+        redirectTo: 'info', 
+        pathMatch: 'full',
+        canActivateChild: [ AuthGuard ]
+      }      
     ]
-  }  
+  }
 ];
 @NgModule({
   imports: [

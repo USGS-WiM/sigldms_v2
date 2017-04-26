@@ -1,19 +1,20 @@
-<div class="section-heading">Project Owner Name : Your Projects (prj Cnt here)</div>
-<br/>
-<p class="section-text"><span>Click on the project name to view and edit project and site information.</span></p>
-<table class="sigl-table">
-  <thead>
-    <th>Project Name</th><th>Manager Last Name</th><th>Manager First Name</th><th>Organization</th><th>Site Count</th><th>Last Edited</th>
-  </thead>
-  <tbody>
-    <tr *ngFor="let p of projectList">
-      <td><a [routerLink]="['/projectdetail', p.project_id, 'info']">{{p.name || "---"}}</a></td>
-<!--      <td (click)="onSelect(p)">{{p.name || "--"}}</td> -->
-      <td>{{p.lname || "--"}}</td>
-      <td>{{p.fname || "--"}}</td>
-      <td>{{p.organization_name || "--"}}</td>
-      <td>{{p.site_count || "--"}}</td>
-      <td>{{p.last_edited_stamp || "--"}}</td>
-    </tr>
-  </tbody>
-</table>
+<div id="body-wrapper" class="sigl-section">
+  <div class="section-heading">Project Owner Name : Your Projects (prj Cnt here)</div>
+  <br/>
+  <p class="section-text"><span>Click on the project name to view and edit project and site information.</span></p>
+  <table class="sigl-table">
+    <thead>
+      <th>Project Name</th><th>Manager Last Name</th><th>Manager First Name</th><th>Organization</th><th>Site Count</th><th>Last Edited</th>
+    </thead>
+    <tbody>
+      <tr *ngFor="let p of projectList">
+        <td><a [routerLink]="['/projectdetail', p.project_id, 'info']">{{p.name || "---"}}</a></td>
+        <td>{{p.lname || "--"}}</td>
+        <td>{{p.fname || "--"}}</td>
+        <td>{{p.organization_name || "--"}}</td>
+        <td>{{p.site_count || "--"}}</td>
+        <td>{{p.last_edited_stamp | date: 'MM/dd/yyyy'  || "--"}}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

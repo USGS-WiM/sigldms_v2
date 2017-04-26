@@ -1,4 +1,4 @@
-export interface Project {
+export interface IProject {
     project_id: number;
     name: string;
     start_date?: Date;

@@ -31,3 +31,110 @@ body, html {
     border-radius: 4px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
 }
+.sigl-btn.btn-right{
+    float:right;    
+}
+.sigl-btn {
+    box-sizing: border-box;
+    padding: 7px 14px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #fff;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+    background-color: #55B5AE;
+    border: 2px solid #419690;
+    border-radius: 4px;
+    transition: .09s;
+}
+.project-info-btn {
+    margin: -6px 0 0 0;
+    font-size: 8pt;
+    display: block;
+}
+.sigl-edit-form legend {
+    text-transform: uppercase;
+    color: #000;
+    display: block;
+    width: 100%;
+    margin: 25px 0 45px 0;
+    padding: 0 0 10px 0;
+    border-bottom: 1px solid #aaacad;
+}
+.sigl-edit-form .sigl-edit-form-group {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 6px 0;
+}
+.sigl-edit-form .sigl-edit-form-group label {
+    display: inline-block;
+    width: 200px;
+    vertical-align: middle;
+    font-size: 8pt;
+}
+.sigl-edit-form .sigl-edit-form-group span {
+    vertical-align: middle;
+    width: auto;
+    font-size: 10pt;
+    display: inline-block;
+}
+.sigl-edit-form .sigl-edit-form-group ul {
+    padding: 0;
+    margin: 0;
+    display: inline-block;
+    width: auto;
+}
+.sigl-edit-form .sigl-edit-form-group ul li {
+    font-size: 10pt;
+}
+.sigl-btn.btn-small {
+    font-size: 8pt;
+    padding: 4px 8px;
+    border: 1px solid #419690;
+    display: inline-block;
+    margin: 3px 0 5px 0;
+}
+.sigl-btn.btn-small.btn-orange {
+    border: 1px solid #bd3b1e;
+}
+.sigl-btn.btn-orange {
+    background-color: #DE5030;
+    border: 2px solid #bd3b1e;
+}
+.sigl-edit-form .subhead {
+    font-size: 10pt;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-sizing: border-box;
+    padding: 5px 0;
+    border-bottom: 1px solid #aaacad;
+    margin: 0 0 15px 0;
+}
+.modal-content {
+    background-color: #fff;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+    box-sizing: border-box;
+    border-radius: 0;
+    border-radius: 3px;
+    padding: 0;
+}
+.modal-content .modal-header {
+    padding: 15px 0 15px 0;
+    border-bottom: 1px solid #c4c5c6;
+    background-color: #55B5AE;
+}
+.modal-content .modal-header .modal-title {
+    display: block;
+    color: #fff;
+    text-align: center;
+    font-size: 12pt;
+    font-weight: lighter;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+.modal-content .modal-body {
+    padding: 15px;
+}
+.modal-content .modal-footer {
+    padding: 15px;
+}

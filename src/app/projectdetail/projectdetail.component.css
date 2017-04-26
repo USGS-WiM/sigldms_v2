@@ -1,0 +1,44 @@
+.edit-section-heading {
+    font-size: 10pt;
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 20px 15px;
+    background-color: #DE5030;
+    font-weight: bolder;
+    color: #fff;
+}
+#sigl-edit-left {
+    width: 220px;
+    box-sizing: border-box;
+    padding: 14px 10px 10px 15px;
+    display: inline-block;
+    position: relative;
+    height: 100%;
+    float: left;
+    margin-top: 0;
+}
+#sigl-edit-left a.active {
+    background-color: #323432;
+    color: #fff;
+}
+#sigl-edit-left a {
+    display: block;
+    box-sizing: border-box;
+    padding: 6px 8px;
+    margin: 8px 0;
+    border-radius: 4px;
+    text-decoration: none;
+    color: #000;
+    background-color: #dedfdf;
+    transition: .09s;
+}
+#sigl-edit-right {
+    background-color: #f8f8f8;
+    width: auto;
+    width: calc(100% - 250px);
+    display: inline-block;
+    box-sizing: border-box;
+    margin: 0 10px 15px 10px;
+    padding: 20px;
+}
