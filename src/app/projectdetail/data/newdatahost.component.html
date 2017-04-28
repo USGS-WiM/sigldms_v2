@@ -2,37 +2,34 @@
 <form [formGroup]="newDataForm" class="sigl-edit-form">
     <div class="subhead">Add New Data Source</div>
      <div class="sigl-edit-form-group">
-        <label>Data management system or data description:</label>
-        <!-- Rather than set an ngModel, we use the formControl directive to sync our input to the complexForm object. Notice that we are also setting the attribute we wish the corresponding input to sync with. We no longer need the name attribute, but can optionally add it. -->
-        <input class="form-control" type="text" placeholder="" [formControl]="newDataForm.controls['description']">
+        <label>Data management system or data description:
+            <span class="glyphicon glyphicon-question-sign sigl-tooltip" 
+                      tooltip="Describe your project data and where it resides (USGS NWIS, the Water Quality Portal, Access database, Excel spreadsheet, etc.). If your project uses multiple systems at different locations, enter each as a separate Data entry."
+                      placement="right">
+            </span>
+        </label>
+        <textarea class="form-control" rows="3" placeholder="" [formControl]="newDataForm.controls['description']"></textarea>
       </div>
       <div class="sigl-edit-form-group">
-        <label>Data Hosting Entity:</label>
+        <label>Data Hosting Entity:
+            <span class="glyphicon glyphicon-question-sign sigl-tooltip" 
+                      tooltip="Enter the entity, person, or organization that hosts or holds your data."
+                      placement="right">
+            </span>
+        </label>
         <input class="form-control" type="text" placeholder="" [formControl]="newDataForm.controls['host_name']">
       </div>
       <div class="sigl-edit-form-group">
-        <label>Online Data Location:</label>
-        <input class="form-control" type="text" placeholder="" [formControl]="newDataForm.controls['portal_url']">
+        <label>Online Data Location:
+            <span class="glyphicon glyphicon-question-sign sigl-tooltip" 
+                      tooltip="If data is available online, provide the entire URL of the data’s location (be sure to include the ' http://'). Only enter one address."
+                      placement="right">
+            </span>
+        </label>
+        <input class="form-control" type="text" placeholder="" httpprefix ngControl="portal_url" [formControl]="newDataForm.controls['portal_url']">
       </div>
       <!--submit button -->
         <div class="sigl-edit-form-group" style="text-align: right;">
             <button type="button" class="sigl-btn" (click)="AddData(newDataForm.valid, newDataForm.value)">Add</button>
         </div>
 </form>
-
-<!-- MODAL FOR EDITING PROJECT [config]="{backdrop: 'static', keyboard: false, ignoreBackdropClick:'true'}" -->
- <div bsModal #atLeast1ReqModal="bs-modal" [config]="{size: 'sm'}" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-sm">
-          <div class="modal-content">
-              <div class="modal-header">
-                  <h4 class="modal-title">ERROR</h4>                  
-              </div>
-              <div class="modal-body">
-                You must populate at least one field.
-              </div>
-              <div class="modal-footer">
-                  <button class="sigl-btn" (click)="closeModal()">OK</button>
-              </div>
-          </div>
-      </div>
- </div>

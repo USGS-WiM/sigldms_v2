@@ -138,3 +138,13 @@ body, html {
 .modal-content .modal-footer {
     padding: 15px;
 }
+.sigl-edit-form .sigl-edit-form-group label .sigl-tooltip {
+    position: relative;
+    top: -2px;
+}
+.sigl-edit-form .sigl-edit-form-group span {
+    vertical-align: middle;
+    width: auto;
+    font-size: 10pt;
+    display: inline-block;
+}

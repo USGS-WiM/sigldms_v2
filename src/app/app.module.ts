@@ -13,7 +13,8 @@ import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
 import { RouterModule, Routes } from '@angular/router';
-import { ModalModule } from 'ngx-bootstrap/modal';
+// import { ModalModule } from 'ngx-bootstrap/modal';
+import { TooltipModule } from 'ngx-bootstrap/tooltip';
 
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing/app-routing';
@@ -30,7 +31,7 @@ import { SharedModule } from "app/shared/shared.module";
 @NgModule({
   declarations: [ AppComponent, LoginComponent, PageNotFoundComponent ],// Your components should go here 
   imports: [
-    BrowserModule, FormsModule, HttpModule, SharedModule, ModalModule.forRoot(), ProjectlistModule, LoginRoutingModule, AppRoutingModule
+    BrowserModule, FormsModule, HttpModule, SharedModule, TooltipModule.forRoot(), ProjectlistModule, LoginRoutingModule, AppRoutingModule
   ],// Your module imports should go here
   providers: [AuthGuard, CanDeactivateGuard],// LookupsService],// Your global providers should go here
   bootstrap: [AppComponent]

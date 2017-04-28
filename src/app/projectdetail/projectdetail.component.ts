@@ -61,5 +61,7 @@ export class ProjectdetailComponent implements OnInit{
         // go update all the stuff in the services for access throughout app
         this._projectDetService.updateProjectParts(this.fullProject);
     });
+  // if (localStorage.getItem('creds') !== null)
+
   }
 }

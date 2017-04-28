@@ -41,11 +41,11 @@ export class AppComponent {
     });
     
   }  
-  ngAfterViewInit(){
+  /*ngAfterViewInit(){
     if (this.loggedIn) 
       this._lookupService.getLookups();
   }
-
+*/
   logout() {
     this._loginService.logout();
   }

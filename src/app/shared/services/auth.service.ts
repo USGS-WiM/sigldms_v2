@@ -88,4 +88,16 @@ export class AuthService {
         return 'PUBLIC';
     }
   }
+
+
+  // show/hide modal
+ //show the filter modal in the mainview
+  private _showHideAtLeast1Modal: Subject<boolean> = new Subject<boolean>();
+  public setAtLeast1Modal(val:any){
+      this._showHideAtLeast1Modal.next(val);
+  }
+  //show the filter modal in the mainview
+  public get showAtLeast1Modal():any{
+      return this._showHideAtLeast1Modal.asObservable();
+  }
 } // end AuthService

@@ -1,7 +1,6 @@
 import { Component, OnInit, Input, ViewChild, Output, EventEmitter } from '@angular/core';
 import { IDatahost } from "app/shared/interfaces/projects/datahost.interface";
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ModalDirective } from "ngx-bootstrap/modal";
 
 @Component({
   selector: 'newdata',
@@ -11,14 +10,14 @@ import { ModalDirective } from "ngx-bootstrap/modal";
 export class NewDataComponent implements OnInit {
     @Input() editing: boolean; //disable/enable create form section depending on if editing existing one above
     @Output() addDataHostEvent = new EventEmitter<IDatahost>(); // when they hit save, emit to projectdata.component
-    @ViewChild('atLeast1ReqModal') public atLeast1ReqModal: ModalDirective;  //modal for validator
+    @Output() errorMessagePleaseEvent = new EventEmitter<boolean>(); // need the error modal please
     public newDataForm: FormGroup; //myform
     public newData: IDatahost;
-   
+ 
     constructor(private _fb: FormBuilder) {
         this.newDataForm = _fb.group({
             'description': null,
-            'portal_url': 'http://',
+            'portal_url': null, //'http://',
             'host_name': null
         }, {validator: this.AtLeastOneFieldValidator})
     }
@@ -34,14 +33,10 @@ export class NewDataComponent implements OnInit {
             this.newData = d;
             this.addDataHostEvent.emit(this.newData);
         } else {
-            this.atLeast1ReqModal.show();
+            this.errorMessagePleaseEvent.emit(true);       
         }
         
-    }  
-    //close the modal
-    public closeModal():void{
-        this.atLeast1ReqModal.hide();
-    }
+    }   
 
     // custom  validator
     private AtLeastOneFieldValidator(group: FormGroup): {[key: string]: any} {
