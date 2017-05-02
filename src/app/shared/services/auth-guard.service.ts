@@ -35,14 +35,29 @@ export class AuthGuard implements CanActivate, CanLoad {
     }
 
     checkLogin(url: string):boolean {
-        if (localStorage.getItem("creds") && localStorage.getItem('setupTime') !== null) {   
+        if (localStorage.getItem("creds") && localStorage.getItem('setupTime') !== null && !this.checkSetupTime()) {   
             return true;
         }
         // store the attempted url for redirecting
         this._authService.redirectUrl = url;
+        this._authService.removeUserInfo();
         localStorage.clear();
         // navigate to the login page with extras
         this._router.navigate(['/login']);
         return false;
+    }
+    // need to find out if localstorage item 'setupTime' is more than 12 hours ago
+    private checkSetupTime(): boolean {
+        let tooOld: boolean = false;
+
+        let twentyFourHours: number = 12*60*60*1000;
+        let now: number = new Date().getTime();
+        let setupTime: number = Number(localStorage.getItem('setupTime'));
+        if((now - setupTime) > twentyFourHours) { // is it greater than 12 hours
+            tooOld = true;
+            this._authService.removeUserInfo();
+        }
+
+        return tooOld;
     }
 }

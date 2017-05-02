@@ -5,6 +5,8 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 @Component({
   selector: 'newdata',
   templateUrl: './newdatahost.component.html'
+  
+
 })
 
 export class NewDataComponent implements OnInit {
@@ -13,13 +15,19 @@ export class NewDataComponent implements OnInit {
     @Output() errorMessagePleaseEvent = new EventEmitter<boolean>(); // need the error modal please
     public newDataForm: FormGroup; //myform
     public newData: IDatahost;
- 
+    public dataTip: any;
+
     constructor(private _fb: FormBuilder) {
         this.newDataForm = _fb.group({
             'description': null,
             'portal_url': null, //'http://',
             'host_name': null
-        }, {validator: this.AtLeastOneFieldValidator})
+        }, {validator: this.AtLeastOneFieldValidator});
+        this.dataTip = {
+            description: "Describe your project data and where it resides (USGS NWIS, the Water Quality Portal, Access database, Excel spreadsheet, etc.). If your project uses multiple systems at different locations, enter each as a separate Data entry.",
+            host: "Enter the entity, person, or organization that hosts or holds your data.",
+            location: "If data is available online, provide the entire URL of the data’s location (be sure to include the ' http://'). Only enter one address."                
+        }
     }
 
     ngOnInit() {     

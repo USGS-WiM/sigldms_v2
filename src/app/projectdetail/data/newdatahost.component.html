@@ -3,28 +3,19 @@
     <div class="subhead">Add New Data Source</div>
      <div class="sigl-edit-form-group">
         <label>Data management system or data description:
-            <span class="glyphicon glyphicon-question-sign sigl-tooltip" 
-                      tooltip="Describe your project data and where it resides (USGS NWIS, the Water Quality Portal, Access database, Excel spreadsheet, etc.). If your project uses multiple systems at different locations, enter each as a separate Data entry."
-                      placement="right">
-            </span>
+            <span class="fa fa-question-circle sigl-tooltip" [ngbTooltip]="dataTip.description" placement="right"></span>
         </label>
         <textarea class="form-control" rows="3" placeholder="" [formControl]="newDataForm.controls['description']"></textarea>
       </div>
       <div class="sigl-edit-form-group">
         <label>Data Hosting Entity:
-            <span class="glyphicon glyphicon-question-sign sigl-tooltip" 
-                      tooltip="Enter the entity, person, or organization that hosts or holds your data."
-                      placement="right">
-            </span>
+            <span class="fa fa-question-circle sigl-tooltip" [ngbTooltip]="dataTip.host" placement="right"></span>
         </label>
         <input class="form-control" type="text" placeholder="" [formControl]="newDataForm.controls['host_name']">
       </div>
       <div class="sigl-edit-form-group">
         <label>Online Data Location:
-            <span class="glyphicon glyphicon-question-sign sigl-tooltip" 
-                      tooltip="If data is available online, provide the entire URL of the data’s location (be sure to include the ' http://'). Only enter one address."
-                      placement="right">
-            </span>
+            <span class="fa fa-question-circle sigl-tooltip" [ngbTooltip]="dataTip.location" placement="right"></span>
         </label>
         <input class="form-control" type="text" placeholder="" httpprefix ngControl="portal_url" [formControl]="newDataForm.controls['portal_url']">
       </div>

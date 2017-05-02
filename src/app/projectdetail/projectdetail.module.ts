@@ -25,18 +25,19 @@ import { ProjectDetailRoutingModule } from "app/projectdetail/projectdetail-rout
 import { ProjectpublicationComponent } from "app/projectdetail/publications/projectpub.component";
 import { FullProjectResolve } from "app/projectdetail/fullProject.resolve";
 import { ProjectSitesResolve } from "app/projectdetail/projectSites.resolve";
- import { ModalModule } from "ngx-bootstrap/modal";
-import { TooltipModule } from 'ngx-bootstrap/tooltip';
+//  import { ModalModule } from "ngx-bootstrap/modal"; ModalModule.forRoot()
+// import { TooltipModule } from 'ngx-bootstrap/tooltip'; TooltipModule.forRoot(),
 import { PipesModule } from "app/shared/pipes/pipes.module";
 import { LookupsService } from "app/shared/services/lookups.service";
 import { SharedModule } from "app/shared/shared.module";
 import { NewDataComponent } from "app/projectdetail/data/newdatahost.component";
+import { NgbActiveModal } from "@ng-bootstrap/ng-bootstrap";
 
 @NgModule({
-  imports: [ CommonModule, FormsModule, ProjectDetailRoutingModule, ModalModule.forRoot(),TooltipModule.forRoot(), PipesModule, SharedModule, ReactiveFormsModule ],
+  imports: [ CommonModule, FormsModule, ProjectDetailRoutingModule, PipesModule, SharedModule, ReactiveFormsModule ],
   declarations: [ProjectdetailComponent, ProjectinfoComponent, ProjectcontactComponent, ProjectcooperatorComponent, ProjectdataComponent, NewDataComponent, ProjectpublicationComponent,
-                 ProjectsiteComponent, ProjectsitelistComponent, ProjectsitespreadsheetComponent ],
+                 ProjectsiteComponent, ProjectsitelistComponent, ProjectsitespreadsheetComponent  ],
   exports: [ProjectdetailComponent, NewDataComponent],
-  providers: [ProjectdetailService, FullProjectResolve, ProjectSitesResolve]
+  providers: [ProjectdetailService, FullProjectResolve, ProjectSitesResolve, NgbActiveModal ]
 })
 export class ProjectdetailModule { }

@@ -22,11 +22,11 @@ import { IDatahost } from "app/shared/interfaces/projects/datahost.interface";
         <div class="edit-section-heading">{{fullProject.Name}}</div>
         <div id="sigl-edit-left">
           <a [routerLink]="['info']" routerLinkActive="active">Project Information</a>
-          <a [routerLink]="['cooperators']"  routerLinkActive="active">Organizations<span class="badge pull-right">{{fullProject.Organizations.length}}</span></a>
-          <a [routerLink]="['data']" routerLinkActive="active">Data Sources<span class="badge pull-right">{{datahosts.length}}</span></a>
-          <a [routerLink]="['contacts']" routerLinkActive="active">Contacts<span class="badge pull-right">{{fullProject.Contacts.length}}</span></a>
-          <a [routerLink]="['publications']" routerLinkActive="active">Publications<span class="badge pull-right">{{fullProject.Publications.length}}</span></a>
-          <a [routerLink]="['sites/sitelist']" routerLinkActive="active" id="siteTab">Sites<span class="badge pull-right">{{fullSites.length}}</span></a>
+          <a [routerLink]="['cooperators']"  routerLinkActive="active">Organizations<span class="badge badge-pill badge-default pull-right">{{fullProject.Organizations.length}}</span></a>
+          <a [routerLink]="['data']" routerLinkActive="active">Data Sources<span class="badge badge-pill badge-default pull-right">{{datahosts.length}}</span></a>
+          <a [routerLink]="['contacts']" routerLinkActive="active">Contacts<span class="badge badge-pill badge-default pull-right">{{fullProject.Contacts.length}}</span></a>
+          <a [routerLink]="['publications']" routerLinkActive="active">Publications<span class="badge badge-pill badge-default pull-right">{{fullProject.Publications.length}}</span></a>
+          <a [routerLink]="['sites/sitelist']" routerLinkActive="active" id="siteTab">Sites<span class="badge badge-pill badge-default pull-right">{{fullSites.length}}</span></a>
           <span>Created: {{(fullProject.created_stamp | date: 'MM/dd/yyyy' || '---') | date: 'MM/dd/yyyy'}}</span> <br />
           <span>Last Edited: {{(fullProject.last_edited_stamp | date: 'MM/dd/yyyy' || '---') | date: 'MM/dd/yyyy'}}</span>
         </div>

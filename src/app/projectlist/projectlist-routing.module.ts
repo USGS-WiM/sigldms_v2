@@ -12,7 +12,7 @@ import { NgModule }             from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { ProjectlistComponent } from './projectlist.component';
 import { ProjectdetailComponent } from "app/projectdetail/projectdetail.component";
-import { AuthGuard } from "app/auth-guard.service";
+import { AuthGuard } from "app/shared/services/auth-guard.service";
 import { ProjectListResolve } from "app/projectlist/projectList.resolve";
 
 const projectsRoutes: Routes = [

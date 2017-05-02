@@ -9,7 +9,8 @@
 // purpose: main app shell component
 
 import { Component } from '@angular/core';
-import { ModalDirective } from "ngx-bootstrap/modal";
+// import { ModalDirective } from "ngx-bootstrap/modal";
+
 import { LookupsService } from "app/shared/services/lookups.service";
 import { AuthService } from "app/shared/services/auth.service";
 import { LoginService } from "app/login/login.service";

@@ -6,8 +6,8 @@
         <fieldset>
             <legend>
                 Project Information
-                <button type="button" *ngIf="project.project_id != undefined" class="sigl-btn btn-right project-info-btn" (click)="openProjectCreate()">Edit Project</button>
-                <button type="button" *ngIf="project.project_id == undefined" class="sigl-btn btn-right project-info-btn" (click)="openProjectCreate()">Create Project</button>
+                <button type="button" *ngIf="project.project_id != undefined" class="sigl-btn btn-right project-info-btn" (click)="openProjectCreate(editProject)">Edit Project</button>
+                <button type="button" *ngIf="project.project_id == undefined" class="sigl-btn btn-right project-info-btn" (click)="openProjectCreate(editProject)">Create Project</button>
             </legend> 
 
             <!-- Project Name -->
@@ -100,21 +100,17 @@
     </form>
 </div>
 <!-- MODAL FOR EDITING PROJECT -->
- <div bsModal #projInfoModal="bs-modal" [config]="{backdrop: 'static', keyboard: false, ignoreBackdropClick:'true'}" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-lg">
-          <div class="modal-content">
-              <div class="modal-header">
-                  <h4 class="modal-title pull-left">Project</h4>                  
-              </div>
-              <div class="modal-body">
-                  <div id="sitesContent">
-                      <div class="row">
-                          <div>HI!</div>
-                      </div>
-                  </div>
-              </div> <!-- end modal-body -->
-          </div> <!-- end modal-content -->
-      </div> <!-- end modal-dialog -->
-  </div><!-- end bsModal-->
+<ng-template #editProject let-c="close" let-d="dismiss">
+    <div class="modal-header">
+        <h4 class="modal-title pull-left">Project</h4>                  
+    </div>
+    <div class="modal-body">
+        <div id="sitesContent">
+            <div class="row">
+                <div>HI!</div>
+            </div>
+        </div>
+    </div> <!-- end modal-body -->
+</ng-template>
 
   <button (click)="gotoProjects()">Back</button>

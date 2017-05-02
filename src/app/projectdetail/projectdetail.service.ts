@@ -26,8 +26,10 @@ import { IMonitorCoord } from "app/shared/interfaces/lookups/monitorcoord.interf
 import { IKeyword } from "app/shared/interfaces/lookups/keyword.interface";
 
 @Injectable()
-export class ProjectdetailService {    
+export class ProjectdetailService {
+
     constructor(private _http: Http){}
+    
     // SUBJECTS //////////////////////////////////////
     private _fullProject:Subject<IFullproject> = new Subject<IFullproject>();
     private _projInfo: Subject<IProject> = new Subject<IProject>();
@@ -114,6 +116,17 @@ export class ProjectdetailService {
     public postDatahost(newDataHost:IDatahost){
         let options = new RequestOptions({headers: CONFIG.JSON_AUTH_HEADERS });
         this._http.post(CONFIG.DATAHOST_URL, newDataHost, options)
+        .map(res => <Array<IDatahost>>res.json())
+        .subscribe(d => {
+            //update the projDatahosts subject
+            this._projDatahosts.next(d)});            
+    }
+
+    // HTTP PUT REQUESTS //////////////////////////////////////
+    // put a datahost
+    public putDatahost(id: number, aDataHost:IDatahost){
+        let options = new RequestOptions({headers: CONFIG.JSON_AUTH_HEADERS });
+        this._http.put(CONFIG.DATAHOST_URL + '/' + id, aDataHost, options)
         .map(res => <Array<IDatahost>>res.json())
         .subscribe(d => {
             //update the projDatahosts subject

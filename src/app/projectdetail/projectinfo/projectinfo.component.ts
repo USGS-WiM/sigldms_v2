@@ -15,7 +15,8 @@ import { IindexProject } from "app/shared/interfaces/projects/indexProject.inter
 import { ProjectdetailService } from "app/projectdetail/projectdetail.service";
 import { IProject } from "app/shared/interfaces/projects/project.interface";
 import { IFullproject } from "app/shared/interfaces/projects/fullProject.interface";
-import { ModalDirective } from "ngx-bootstrap/modal";
+import { NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
+
 import { IProjDuration } from "app/shared/interfaces/lookups/projduration.interface";
 import { LookupsService } from "app/shared/services/lookups.service";
 import { IProjStatus } from "app/shared/interfaces/lookups/projstatus.interface";
@@ -28,7 +29,7 @@ import { IMonitorCoord } from "app/shared/interfaces/lookups/monitorcoord.interf
 
 })
 export class ProjectinfoComponent {// implements OnInit {
-  @ViewChild('projInfoModal') public projInfoModal: ModalDirective; 
+  @ViewChild('projInfoModal') public projInfoModal;
   public project: IProject;  
   public projName: string;
   public showProjectInfoModal: boolean;
@@ -38,8 +39,12 @@ export class ProjectinfoComponent {// implements OnInit {
   public ProjectKeywords: Array<IKeyword>;
   public ProjectMonitorCoords: Array<IMonitorCoord>
   public urls: Array<string>;
+  public testCloseResult: any;
 
-  constructor(private _route: ActivatedRoute, private _router: Router, private _projectDetService: ProjectdetailService, private _lookupServices: LookupsService) { }
+  constructor(private _route: ActivatedRoute, private _router: Router, 
+    private _projectDetService: ProjectdetailService, private _lookupServices: LookupsService,
+    private _modalService: NgbModal) { }
+    
   ngOnInit() {
     this._route.parent.data.subscribe((data: { fullProject: IFullproject }) => {
       this.urls = [];
@@ -107,7 +112,21 @@ export class ProjectinfoComponent {// implements OnInit {
     //this._projectDetService.showProjInfoModal = true;
   }
 
-  public openProjectCreate(){
-    this.projInfoModal.show();
+  public openProjectCreate(editProject){
+    this._modalService.open(editProject).result.then((result) =>{
+      this.testCloseResult = `Closed with: ${result}`;
+    }, (reason) => {
+      this.testCloseResult = `Dismissed ${this.getDismissReason(reason)}`
+    });
+//    this.projInfoModal.show(); 
+ }
+ private getDismissReason(reason: any): string {
+    if (reason === ModalDismissReasons.ESC) {
+      return 'by pressing ESC';
+    } else if (reason === ModalDismissReasons.BACKDROP_CLICK) {
+      return 'by clicking on a backdrop';
+    } else {
+      return  `with: ${reason}`;
+    }
   }
 }

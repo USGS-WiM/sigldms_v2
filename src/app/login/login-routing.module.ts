@@ -12,7 +12,7 @@ import { NgModule }             from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
 import { LoginComponent } from './login.component';
-import { AuthGuard } from 'app/auth-guard.service';
+import { AuthGuard } from 'app/shared/services/auth-guard.service';
 import { LoginService } from 'app/login/login.service';
 
 const loginRoutes: Routes = [

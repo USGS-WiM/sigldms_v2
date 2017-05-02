@@ -11,7 +11,7 @@
 import { NgModule }              from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { PageNotFoundComponent } from "app/not-found/not-found.component";
-import { CanDeactivateGuard } from "app/candeactivate-guard.service";
+// import { CanDeactivateGuard } from "app/candeactivate-guard.service";
 
 const appRoutes: Routes = [
    { path: '', redirectTo: '/projects', pathMatch: 'full'}, //makes this the default start page
@@ -25,7 +25,7 @@ const appRoutes: Routes = [
   exports: [
     RouterModule
   ],
-  providers:[CanDeactivateGuard] // ?? 'so the Router can inject it during the naviation process' (works without this) 
+  providers:[ ]// CanDeactivateGuard] // ?? 'so the Router can inject it during the naviation process' (works without this) 
 })
 export class AppRoutingModule {}
 

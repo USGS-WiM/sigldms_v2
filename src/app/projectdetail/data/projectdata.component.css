@@ -24,4 +24,27 @@
 .current-data-list .editable-wrap {
     display: block;
     width: 100%;
+    white-space: nowrap;
+    margin: 0;
+    padding: 8px 0;
+}
+.current-data-list input, .current-data-list textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 8px;
+    font-size: 10pt;
+    background-color: #f8f8f8;
+    border: 1px solid #dedfdf;
+    box-shadow: none;
+    display: block;
+    max-width: 400px;
+    margin: 5px auto;
+    transition: .09s;
+}
+.editable-input {
+    background-color: #f1f1f1;
+    border: 1px solid rgba(0, 0, 0, 0.22) !important;
+    margin: 0px 0 0px 0 !important;
+    display: block !important;
+    clear: both !important;
 }

@@ -19,8 +19,8 @@ import { ProjectsiteComponent } from "app/projectdetail/sites/projectsite.compon
 import { ProjectsitelistComponent } from "app/projectdetail/sites/projectsitelist.component";
 import { ProjectsitespreadsheetComponent } from "app/projectdetail/sites/projectsitesheet.component";
 import { ProjectinfoComponent } from "app/projectdetail/projectinfo/projectinfo.component";
-import { AuthGuard } from "app/auth-guard.service";
-import { CanDeactivateGuard } from "app/candeactivate-guard.service";
+import { AuthGuard } from "app/shared/services/auth-guard.service";
+import { CanDeactivateGuard } from "app/shared/services/candeactivate-guard.service";
 import { FullProjectResolve } from "app/projectdetail/fullProject.resolve";
 import { ProjectSitesResolve } from "app/projectdetail/projectSites.resolve";
 
