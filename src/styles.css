@@ -154,3 +154,53 @@ body, html {
 .data-display label {
     font-weight: bold;
 }
+.current-data-list {
+    box-sizing: border-box;
+    padding: 10px;
+    background-color: #fff;
+    border-top: 1px solid #ebebeb;
+    border-right: 1px solid #ebebeb;
+    border-left: 1px solid #ebebeb;
+}
+.current-data-list .data-display {
+    display: inline-block;
+    box-sizing: border-box;
+    padding: 5px;
+    width: 70%;
+    vertical-align: middle;
+}
+.current-data-list .data-controls {
+    text-align: right;
+    display: inline-block;
+    vertical-align: middle;
+    box-sizing: border-box;
+    padding: 5px;
+    width: 30%;
+}
+.current-data-list .editable-wrap {
+    display: block;
+    width: 100%;
+    white-space: nowrap;
+    margin: 0;
+    padding: 8px 0;
+}
+.current-data-list input, .current-data-list textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 8px;
+    font-size: 10pt;
+    background-color: #f8f8f8;
+    border: 1px solid #dedfdf;
+    box-shadow: none;
+    display: block;
+    max-width: 400px;
+    margin: 5px auto;
+    transition: .09s;
+}
+.editable-input {
+    background-color: #f1f1f1;
+    border: 1px solid rgba(0, 0, 0, 0.22) !important;
+    margin: 0px 0 0px 0 !important;
+    display: block !important;
+    clear: both !important;
+}

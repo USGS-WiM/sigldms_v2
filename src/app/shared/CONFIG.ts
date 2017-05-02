@@ -33,6 +33,7 @@ export class CONFIG {
     
     // project parts (post/put)
     public static get DATAHOST_URL(): string { return this.baseURL + "DataHosts"; };
+    public static get PUBLICATION_URL(): string {return this.baseURL + "Publications"; };
     // headers
     public static get MIN_JSON_HEADERS() { return new Headers({ "Accept": "application/json" }); };
     public static get JSON_HEADERS() { return new Headers({ "Accept": "application/json", "Content-Type": "application/json" }); };

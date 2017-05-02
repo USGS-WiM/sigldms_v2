@@ -1,0 +1,38 @@
+<div class="sigl-edit-form">
+    <legend style="margin-bottom:25px;margin-top:0;">Publications</legend>
+</div>
+<form #PubEditForm="ngForm">
+    <div class="form-group" *ngIf="projectPubs">
+        <div class="current-data-list" *ngFor="let p of projectPubs; let i = index">
+            <div class="data-display">
+                <div>
+                    <label>Title:</label>
+                    <span *ngIf="!p.isEditing">{{ p.title }}</span> 
+                    <span *ngIf="p.isEditing" class="editable-wrap"><input type="text" class="form-control editable-input" name="title" [(ngModel)]="p.title"></span>
+                </div>
+                <div>
+                    <label>Description:</label>
+                    <span *ngIf="!p.isEditing">{{ p.description }}</span>
+                    <span *ngIf="p.isEditing" class="editable-wrap"><textarea class="form-control editable-input" rows="3" [(ngModel)]="p.description" name="description"></textarea></span>
+                    
+                </div>
+                <div>
+                    <label>Website or location:</label>
+                    <span *ngIf="!p.isEditing">{{ p.url }}</span>
+                    <span *ngIf="p.isEditing" class="editable-wrap"><input type="text" class="form-control editable-input" name="url" httpprefix ngControl="url" [(ngModel)]="p.url"></span>
+                </div>
+            </div> <!-- end data-display -->
+            <div class="data-controls">
+                <button *ngIf="!p.isEditing" class="sigl-btn btn-small" (click)="EditRowClicked(i)">Edit</button>
+                <button *ngIf="!p.isEditing" class="sigl-btn btn-orange btn-small" (click)="deletePublication(p.publication_id)">Delete</button>             
+                <button *ngIf="p.isEditing" class="sigl-btn btn-small" (click)="savePublication(p, i)">Save</button>
+                <button *ngIf="p.isEditing" class="sigl-btn btn-orange btn-small" (click)="CancelEditRowClicked(i)">Cancel</button>   
+            </div>
+        </div>
+    </div>
+</form>
+
+<newpub [editing]="isEditing" (errorMessagePleaseEvent)="ShowRequiredModal($event)" (addPublicationEvent)="AddPublication($event)"></newpub>
+
+<atLeast1Modal></atLeast1Modal>
+<areYouSureModal [message]="messageToShow" (modalResponseEvent)="AreYouSureDialogResponse($event)"></areYouSureModal>

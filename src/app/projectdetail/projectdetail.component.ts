@@ -14,6 +14,7 @@ import { ActivatedRoute } from "@angular/router";
 import { ProjectdetailService } from "app/projectdetail/projectdetail.service";
 import { IFullsite } from "app/shared/interfaces/projects/fullSite.interface";
 import { IDatahost } from "app/shared/interfaces/projects/datahost.interface";
+import { IPublication } from "app/shared/interfaces/projects/publication.interface";
 // import { ModalDirective } from "ngx-bootstrap/modal";
 
 @Component({
@@ -25,7 +26,7 @@ import { IDatahost } from "app/shared/interfaces/projects/datahost.interface";
           <a [routerLink]="['cooperators']"  routerLinkActive="active">Organizations<span class="badge badge-pill badge-default pull-right">{{fullProject.Organizations.length}}</span></a>
           <a [routerLink]="['data']" routerLinkActive="active">Data Sources<span class="badge badge-pill badge-default pull-right">{{datahosts.length}}</span></a>
           <a [routerLink]="['contacts']" routerLinkActive="active">Contacts<span class="badge badge-pill badge-default pull-right">{{fullProject.Contacts.length}}</span></a>
-          <a [routerLink]="['publications']" routerLinkActive="active">Publications<span class="badge badge-pill badge-default pull-right">{{fullProject.Publications.length}}</span></a>
+          <a [routerLink]="['publications']" routerLinkActive="active">Publications<span class="badge badge-pill badge-default pull-right">{{publications.length}}</span></a>
           <a [routerLink]="['sites/sitelist']" routerLinkActive="active" id="siteTab">Sites<span class="badge badge-pill badge-default pull-right">{{fullSites.length}}</span></a>
           <span>Created: {{(fullProject.created_stamp | date: 'MM/dd/yyyy' || '---') | date: 'MM/dd/yyyy'}}</span> <br />
           <span>Last Edited: {{(fullProject.last_edited_stamp | date: 'MM/dd/yyyy' || '---') | date: 'MM/dd/yyyy'}}</span>
@@ -45,11 +46,17 @@ export class ProjectdetailComponent implements OnInit{
   public fullProject: IFullproject;
   public fullSites: Array<IFullsite>;
   public datahosts: Array<IDatahost>;
+  public publications: Array<IPublication>;
   constructor(private _route: ActivatedRoute, private _projectDetService: ProjectdetailService){}
   
   ngOnInit(){
+    // needed to keep count updated
     this._projectDetService.projData().subscribe((d: Array<IDatahost>) => {
       this.datahosts = d;
+    });
+    // needed to keep count updated
+    this._projectDetService.projPublications().subscribe((p: Array<IPublication>) => {
+      this.publications = p;
     });
     this._route.data.subscribe((data: { fullProject: IFullproject }) => {
         this.fullProject = data.fullProject;

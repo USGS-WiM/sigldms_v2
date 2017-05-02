@@ -8,50 +8,164 @@
 //
 // purpose: information on this project's publications (add, edit, delete)
 
-import { Component, OnInit } from '@angular/core';
-import { IPublication } from "app/shared/interfaces/projects/publication.interface";
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { ProjectdetailService } from "app/projectdetail/projectdetail.service";
-import { ActivatedRoute } from "@angular/router";
+import { IPublication } from "app/shared/interfaces/projects/publication.interface";
+import { ActivatedRoute, Router } from "@angular/router";
 import { IFullproject } from "app/shared/interfaces/projects/fullProject.interface";
+import { DialogService } from "app/shared/services/dialog.service";
 
 @Component({
-  template:`
-    <h2>Project Publications</h2>
-    <div *ngFor="let pub of projectPublications">
-      <div>
-          <label class="title">Title:</label>
-          <span>{{ p.title || '' }}</span>
-      </div>
-      <div>
-          <label class="title">Description:</label>
-          <span>{{ p.description || '' }}</span>
-      </div>
-      <div>
-          <label class="title">Website or location:</label>
-          <span>{{ p.url || '' }}</span>
-      </div>
-    </div>`
+  templateUrl: "projectpub.component.html"//,
+  // styleUrls: ['./projectpub.component.css'], 
 })
 export class ProjectpublicationComponent implements OnInit {
+  @ViewChild('PubEditForm') PubEditForm;
+
   public componentName: string;
-  public projectPublications: Array<IPublication>;
-  constructor(private _projectDetService: ProjectdetailService, private _route: ActivatedRoute) { }
+  public projectId: number;
+  public projectPubs: Array<IPublication>;
+  public neededUpdating: boolean; // if the url isn't formatted, flag so know to PUT it after fixing
+  public isEditing: boolean;
+  private tempPub: IPublication;
+  public errorFlag: boolean;
+  public rowBeingEdited: number;
+  public nextURL: string;
+  public messageToShow: string;
+  private deleteID: number;
+  public errorMessage: string;
+
+  constructor(private _projectDetService: ProjectdetailService, private _dialogService: DialogService, private _route: ActivatedRoute, public _router: Router) { 
+    this.errorFlag = false; // this keeps the showReqModal() subscription from firing twice and showing 2 modals
+  }
 
   ngOnInit() { 
+    this.componentName = "ProjData";
+    this.neededUpdating = false; this.rowBeingEdited = -1; //start it off neg  
     this._route.parent.data.subscribe((data: { fullProject: IFullproject }) => {
-      this.projectPublications = data.fullProject.Publications;       
+      this.projectPubs = data.fullProject.Publications;    
+      this.projectId = data.fullProject.ProjectId;
+      // if any ProjDatum, make sure the url (if one) is formatted properly
+      for (var pdu = 0; pdu < this.projectPubs.length; pdu++) {
+          var ind = pdu;
+          this.projectPubs[ind].isEditing = false;
+          if (this.projectPubs[ind].url !== undefined && !this.projectPubs[ind].url.startsWith('http')) {
+              //there is a url and it's not formatted
+              this.neededUpdating = true;
+              this.projectPubs[ind].url = 'http://' + this.projectPubs[ind].url;
+            /*  $http.defaults.headers.common.Authorization = 'Basic ' + $cookies.get('siGLCreds');
+              $http.defaults.headers.common.Accept = 'application/json';
+              DATA_HOST.update({ id: $scope.ProjData[ind].data_host_id }, $scope.ProjData[ind]).$promise; */
+          }
+      }
+      this._dialogService.MessageToShow.subscribe((m: string) => {
+        this.messageToShow = m;
+      }); 
     });
-    this.componentName = "ProjPubs"; 
-  
+    this._projectDetService.projPublications().subscribe((p: Array<IPublication>) => {
+      this.projectPubs = p;
+    });
+    this._dialogService.nextUrl.subscribe((s:any) => {
+      this.nextURL = s;
+    });
+  } // end ngOnInit()
+
+  // want to edit
+  public EditRowClicked(i:number) {
+    this.rowBeingEdited = i;
+    this.tempPub = Object.assign({}, this.projectPubs[i]); // make a copy in case they cancel
+    this.projectPubs[i].isEditing = true;    
+    this.isEditing = true; // set to true so create new is disabled
   }
 
-  public canDeactivate(): Promise<boolean> | boolean {
-    // Allow synchronous navigation (`true`) if no crisis or the crisis is unchanged
-    // if (!this.crisis || this.crisis.name === this.editName) {
-      return true;
-    // }
-      // Otherwise ask the user with the dialog service and return its
-      // promise which resolves to true or false when the user decides
-    // return this.dialogService.confirm('Discard changes?');
+  // nevermind editing
+  public CancelEditRowClicked(i:number) {
+    this.projectPubs[i] = Object.assign({}, this.tempPub);
+    this.projectPubs[i].isEditing = false;
+    this.rowBeingEdited = -1;
+    this.isEditing = false; // set to true so create new is disabled
+    if (this.PubEditForm.form.dirty) this.PubEditForm.reset();
   }
+
+  // edits made, save clicked
+  public savePublication(p: IPublication, i:number) {
+    if ((p.description == undefined || p.description == "") && 
+        (p.url == "" || p.url == "http://" || p.url == undefined) &&
+        (p.title == undefined || p.title == "")) {
+      this.ShowRequiredModal(true);
+    } else {      
+      delete p.isEditing;
+      this._projectDetService.putPublication(p.publication_id, p, i).subscribe((p: IPublication) => {
+        p.isEditing = false;
+        this.projectPubs[i] = p;
+        this._projectDetService.setProjectPublications(this.projectPubs);
+        this.rowBeingEdited = -1;
+        this.isEditing = false; // set to true so create new is disabled
+        if (this.PubEditForm.form.dirty) this.PubEditForm.reset();
+      });
+    }
+  }
+  public deletePublication(id: number){
+    this._dialogService.setMessage("Are you sure you want to delete this?");
+    this._dialogService.setAreYouSureModal(true); //shows the modal. listener is 
+    this.deleteID = id;
+  }
+
+  public ShowRequiredModal(s:any){    
+    this._dialogService.setAtLeast1Modal(false); // need to reset it first
+  //  this.errorFlag = true;    
+    this._dialogService.setAtLeast1Modal(true);
+  }
+  // create new data host
+  public AddPublication(p: IPublication){
+    // p.project_id = this.projectId;
+    this._projectDetService.postPublication(this.projectId, p).subscribe(
+      res => {
+        console.log("project Publication updated")
+      },
+      error => this.errorMessage = error
+    );
+  }
+  // response from dialog (either want to leave here without saving edits or want to delete datahost)
+  public AreYouSureDialogResponse(val:boolean){
+    this._dialogService.setAreYouSureModal(false);   
+    //if they clicked Yes
+    if (val) {
+      //if they are coming form the change tabs are you sure modal
+      if (this.messageToShow == "Are you sure you want to change tabs? Any unsaved information will be lost.") {
+        this.CancelEditRowClicked(this.rowBeingEdited); // clear out what they've done
+        this._router.navigate([this.nextURL]); // go to where they want to go
+      }
+      else {
+        //delete the datahost
+        //get the index to be deleted by the id
+        let ind: number;
+        this.projectPubs.some((pp, index, _ary) => {
+          if (pp.publication_id === this.deleteID) ind = index;
+          return pp.publication_id === this.deleteID;
+        });
+        //delete it
+        this._projectDetService.deletePublication(this.projectId, this.deleteID).subscribe(
+          result => {
+            this.projectPubs.splice(ind, 1); //delete from array
+            this._projectDetService.setProjectPublications(this.projectPubs); // udpdate service
+          },
+          error => this.errorMessage = error
+        );
+      }
+    }
+  }
+  
+  // did they make a change and not save?
+  public canDeactivate(nextUrl): Promise<boolean> | boolean {    
+    this._dialogService.setAreYouSureModal(false); // make sure this is false first so it fires
+    
+    if (this.PubEditForm.form.dirty) {
+      this._dialogService.setMessage("Are you sure you want to change tabs? Any unsaved information will be lost.");
+      this._dialogService.setAreYouSureModal(true);
+    } else {
+      return true;
+    }
+  }  
 }
+

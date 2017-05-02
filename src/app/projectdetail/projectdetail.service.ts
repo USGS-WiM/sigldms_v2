@@ -74,52 +74,70 @@ export class ProjectdetailService {
         
         let options = new RequestOptions({ headers: CONFIG.MIN_JSON_HEADERS, search: projectParams });
         return this._http.get(CONFIG.PROJECT_URL + '/GetFullProject.json', options)
-            .map(Presult => <IFullproject>Presult.json());
+            .map(Presult => <IFullproject>Presult.json())
+            .catch(this.handleError);
     }    
     // get the project sites 
     public getProjectSites(id: string): Observable<Array<IFullsite>>{
         let options = new RequestOptions({ headers: CONFIG.MIN_JSON_HEADERS });
             return this._http.get(CONFIG.PROJECT_URL + '/' + id + '/ProjectFullSites.json', options)
-                .map(Sresult => <Array<IFullsite>>Sresult.json());
+                .map(Sresult => <Array<IFullsite>>Sresult.json())
+                .catch(this.handleError);
     }
     // http GET request of project sites
     private getFullSites(id:string, fullProject: IFullproject):Observable<Array<IFullsite>> {
         // /projects/690/ProjectFullSites.json
         let siteOptions = new RequestOptions({headers: CONFIG.MIN_JSON_HEADERS});
         return this._http.get(CONFIG.PROJECT_URL + '/' + id + '/ProjectFullSites', siteOptions)
-            .map(siteResponse => <Array<IFullsite>>siteResponse.json());
+            .map(siteResponse => <Array<IFullsite>>siteResponse.json())
+            .catch(this.handleError);
     }
     // http get request of project objectives
     public getProjectObjectives(projId:number){
         let options = new RequestOptions({headers: CONFIG.MIN_JSON_HEADERS});
         this._http.get(CONFIG.PROJECT_URL + "/" + projId + "/objectives.json", options)
             .map(res => <IObjective[]>res.json())
-            .subscribe(pos => { this._projObjectives.next(pos);});            
+            .subscribe(pos => { this._projObjectives.next(pos);},
+                error => this.handleError);
     }
     // http get request of project monitoring coordinations
     public getProjectMonitorCoords(projId:number){
         let options = new RequestOptions({headers: CONFIG.MIN_JSON_HEADERS});
         this._http.get(CONFIG.PROJECT_URL + "/" + projId + "/MonitorCoordinations.json", options)
             .map(res => <IMonitorCoord[]>res.json())
-            .subscribe(m => { this._projMonCoords.next(m); });
+            .subscribe(m => { this._projMonCoords.next(m); },
+                error => this.handleError);
     }
     // http get request of project keywords
     public getProjectKeywords(projId:number){
         let options = new RequestOptions({headers: CONFIG.MIN_JSON_HEADERS});
         this._http.get(CONFIG.PROJECT_URL + "/" + projId + "/Keywords.json", options)
             .map(res => <IKeyword[]>res.json())
-            .subscribe(k => { this._projKeywords.next(k); });
+            .subscribe(k => { 
+                this._projKeywords.next(k); 
+            },
+                error => this.handleError);
     }
 
     // HTTP POST REQUESTS //////////////////////////////////////
     // post a new datahost
     public postDatahost(newDataHost:IDatahost){
         let options = new RequestOptions({headers: CONFIG.JSON_AUTH_HEADERS });
-        this._http.post(CONFIG.DATAHOST_URL, newDataHost, options)
-        .map(res => <Array<IDatahost>>res.json())
-        .subscribe(d => {
-            //update the projDatahosts subject
-            this._projDatahosts.next(d)});            
+        return this._http.post(CONFIG.DATAHOST_URL, newDataHost, options)
+            .map(res => {
+                this._projDatahosts.next(<Array<IDatahost>>res.json());                 
+            })
+            .catch(this.handleError);    
+    }
+
+    // post a new publication
+    public postPublication(projID: number, newPublication: IPublication){
+        let options = new RequestOptions({headers: CONFIG.JSON_AUTH_HEADERS });     
+        return this._http.post(CONFIG.PROJECT_URL + "/" + projID + "/addPublication", newPublication, options)
+            .map(res => {
+                this._projPublications.next(<Array<IPublication>>res.json());                 
+            })
+            .catch(this.handleError);    
     }
 
     // HTTP PUT REQUESTS //////////////////////////////////////
@@ -128,9 +146,35 @@ export class ProjectdetailService {
         let options = new RequestOptions({headers: CONFIG.JSON_AUTH_HEADERS });
         return this._http.put(CONFIG.DATAHOST_URL + '/' + id, aDataHost, options)
         .map(res => <IDatahost>res.json())
+        .catch(this.handleError);
         //.subscribe(d => { this._projDatahosts[i].next(d)});            
     }
 
+    //put publications
+    public putPublication(id: number, aPublication:IPublication, i:number){
+        let options = new RequestOptions({headers: CONFIG.JSON_AUTH_HEADERS });
+        return this._http.put(CONFIG.PUBLICATION_URL + '/' + id, aPublication, options)
+        .map(res => <IPublication>res.json())
+        .catch(this.handleError);
+    }
+
+    // HTTP DELETE REQUESTS //////////////////////////////////////
+    // delete a datahost
+    public deleteDatahost(id: number){
+        let options = new RequestOptions({headers: CONFIG.JSON_AUTH_HEADERS });
+        return this._http.delete(CONFIG.DATAHOST_URL + '/' + id, options)
+        .catch(this.handleError);;
+    }
+
+    //delete publication
+    public deletePublication(projID: number, pubID: number){
+        let pubParams: URLSearchParams = new URLSearchParams();
+        pubParams.set('PublicationId', pubID.toString());
+        
+        let options = new RequestOptions({ headers: CONFIG.JSON_AUTH_HEADERS, search: pubParams });
+        return this._http.delete(CONFIG.PROJECT_URL + '/' + projID + "/RemovePublication", options)
+        .catch(this.handleError);;
+    }
     // UTILITY FUNCTIONS ////////////////////////////////////////////
     // update all the stuff
     public updateProjectParts(p: IFullproject ): void {
@@ -165,16 +209,21 @@ export class ProjectdetailService {
             last_edited_stamp: p.last_edited_stamp
         }
         return thisProject;
-    }
-       
+    }       
     
+    private handleError(error: any) {
+        let errMsg = (error.message) ? error.message :
+            error.status ? `${error.status} - ${error.statusText}` : 'Server error';
+        console.error(errMsg);
+        return Observable.throw(errMsg);
+    }
     // project Information Edit Project Modal ////////////////////////
-    private _showHideProjInfoModal: Subject<boolean> = new Subject<boolean>();
+ /*   private _showHideProjInfoModal: Subject<boolean> = new Subject<boolean>();
     public set showProjInfoModal(s:any){
         this._showHideProjInfoModal.next(s); // settter
     }
     //show the project info modal
     public get showProjInfoModal():any{
         return this._showHideProjInfoModal.asObservable();
-    }
+    }*/
 }

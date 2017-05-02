@@ -1,0 +1,26 @@
+
+<form [formGroup]="newPubForm" class="sigl-edit-form">
+    <div class="subhead">Add New Publication</div>
+     <div class="sigl-edit-form-group">
+        <label>Publication title:
+            <span class="fa fa-question-circle sigl-tooltip" [ngbTooltip]="pubTip.title" placement="right"></span>
+        </label>
+        <input class="form-control" type="text" placeholder="" [formControl]="newPubForm.controls['title']">
+      </div>
+      <div class="sigl-edit-form-group">
+        <label>Publication description:
+            <span class="fa fa-question-circle sigl-tooltip" [ngbTooltip]="pubTip.description" placement="right"></span>
+        </label>
+        <textarea class="form-control" rows="3" placeholder="" [formControl]="newPubForm.controls['description']"></textarea>
+      </div>
+      <div class="sigl-edit-form-group">
+        <label>Pub website or location:
+            <span class="fa fa-question-circle sigl-tooltip" [ngbTooltip]="pubTip.url" placement="right"></span>
+        </label>
+        <input class="form-control" type="text" placeholder="" httpprefix ngControl="url" [formControl]="newPubForm.controls['url']">
+      </div>
+      <!--submit button -->
+        <div class="sigl-edit-form-group" style="text-align: right;">
+            <button type="button" class="sigl-btn" (click)="AddPublication(newPubForm.valid, newPubForm.value)">Add</button>
+        </div>
+</form>

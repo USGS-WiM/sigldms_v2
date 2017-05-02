@@ -5,8 +5,6 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 @Component({
   selector: 'newdata',
   templateUrl: './newdatahost.component.html'
-  
-
 })
 
 export class NewDataComponent implements OnInit {
@@ -38,8 +36,12 @@ export class NewDataComponent implements OnInit {
     public AddData(valid: boolean, d: IDatahost){
         if (valid){
             if (d.portal_url === "http://") d.portal_url = null;
-            this.newData = d;
-            this.addDataHostEvent.emit(this.newData);
+            this.newDataForm = this._fb.group({
+                'description': null,
+                'portal_url': null, 
+                'host_name': null
+            }, {validator: this.AtLeastOneFieldValidator});
+            this.addDataHostEvent.emit(d);
         } else {
             this.errorMessagePleaseEvent.emit(true);       
         }

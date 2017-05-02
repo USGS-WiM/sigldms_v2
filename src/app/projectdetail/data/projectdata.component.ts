@@ -33,6 +33,9 @@ export class ProjectdataComponent implements OnInit {
   public errorFlag: boolean;
   public rowBeingEdited: number;
   public nextURL: string;
+  public messageToShow: string;
+  private deleteID: number;
+  public errorMessage: string;
 
   constructor(private _projectDetService: ProjectdetailService, private _dialogService: DialogService, private _route: ActivatedRoute, public _router: Router) { 
     this.errorFlag = false; // this keeps the showReqModal() subscription from firing twice and showing 2 modals
@@ -57,6 +60,9 @@ export class ProjectdataComponent implements OnInit {
               DATA_HOST.update({ id: $scope.ProjData[ind].data_host_id }, $scope.ProjData[ind]).$promise; */
           }
       }
+      this._dialogService.MessageToShow.subscribe((m: string) => {
+        this.messageToShow = m;
+      }); 
     });
     this._projectDetService.projData().subscribe((d: Array<IDatahost>) => {
       this.projectData = d;
@@ -102,31 +108,63 @@ export class ProjectdataComponent implements OnInit {
       });
     }
   }
+  public deleteDataHost(id: number){
+    this._dialogService.setMessage("Are you sure you want to delete this?");
+    this._dialogService.setAreYouSureModal(true); //shows the modal. listener is 
+    this.deleteID = id;
+  }
+
   public ShowRequiredModal(s:any){    
     this._dialogService.setAtLeast1Modal(false); // need to reset it first
-  //  this.errorFlag = true;
+  //  this.errorFlag = true;    
     this._dialogService.setAtLeast1Modal(true);
   }
   // create new data host
   public AddDataHost(d: IDatahost){
     d.project_id = this.projectId;
-    this._projectDetService.postDatahost(d);
-    alert("data host added");
+    this._projectDetService.postDatahost(d).subscribe(
+      res => {
+        console.log("project datahosts updated")
+      },
+      error => this.errorMessage = error
+    );
   }
-  public StayOrGo(val:boolean){
-    this._dialogService.setAreYouSureModal(false);    
+  // response from dialog (either want to leave here without saving edits or want to delete datahost)
+  public AreYouSureDialogResponse(val:boolean){
+    this._dialogService.setAreYouSureModal(false);   
+    //if they clicked Yes
     if (val) {
-      // it's ok to leave here without saving
-      this.CancelEditRowClicked(this.rowBeingEdited); // clear out what they've done
-      this._router.navigate([this.nextURL]);
+      //if they are coming form the change tabs are you sure modal
+      if (this.messageToShow == "Are you sure you want to change tabs? Any unsaved information will be lost.") {
+        this.CancelEditRowClicked(this.rowBeingEdited); // clear out what they've done
+        this._router.navigate([this.nextURL]); // go to where they want to go
+      }
+      else {
+        //delete the datahost
+        //get the index to be deleted by the id
+        let ind: number;
+        this.projectData.some((pdh, index, _ary) => {
+          if (pdh.data_host_id === this.deleteID) ind = index;
+          return pdh.data_host_id === this.deleteID;
+        });
+        //delete it
+        this._projectDetService.deleteDatahost(this.deleteID).subscribe(
+          result => {
+            this.projectData.splice(ind, 1); //delete from array
+            this._projectDetService.setProjectData(this.projectData); // udpdate service
+          },
+          error => this.errorMessage = error
+        );
+      }
     }
-
   }
+  
   // did they make a change and not save?
   public canDeactivate(nextUrl): Promise<boolean> | boolean {    
     this._dialogService.setAreYouSureModal(false); // make sure this is false first so it fires
     
     if (this.DataEditForm.form.dirty) {
+      this._dialogService.setMessage("Are you sure you want to change tabs? Any unsaved information will be lost.");
       this._dialogService.setAreYouSureModal(true);
     } else {
       return true;

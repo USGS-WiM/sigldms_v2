@@ -50,5 +50,11 @@ export class DialogService {
     public get nextUrl():any {
         return this._nextUrl.asObservable();
     }
-
+    private _modalMessage: Subject<string> = new Subject<string>();
+    public setMessage(val:string){
+        this._modalMessage.next(val);
+    }
+    public get MessageToShow():any {
+        return this._modalMessage.asObservable();
+    }
 }
