@@ -24,7 +24,7 @@
             <div class="data-controls">
                 <button *ngIf="!d.isEditing" class="sigl-btn btn-small" (click)="EditRowClicked(i)">Edit</button>
                 <button *ngIf="!d.isEditing" class="sigl-btn btn-orange btn-small">Delete</button>             
-                <button *ngIf="d.isEditing" class="sigl-btn btn-small" (click)="saveDatahost(d)">Save</button>
+                <button *ngIf="d.isEditing" class="sigl-btn btn-small" (click)="saveDatahost(d, i)">Save</button>
                 <button *ngIf="d.isEditing" class="sigl-btn btn-orange btn-small" (click)="CancelEditRowClicked(i)">Cancel</button>   
             </div>
         </div>

@@ -124,13 +124,11 @@ export class ProjectdetailService {
 
     // HTTP PUT REQUESTS //////////////////////////////////////
     // put a datahost
-    public putDatahost(id: number, aDataHost:IDatahost){
+    public putDatahost(id: number, aDataHost:IDatahost, i:number){
         let options = new RequestOptions({headers: CONFIG.JSON_AUTH_HEADERS });
-        this._http.put(CONFIG.DATAHOST_URL + '/' + id, aDataHost, options)
-        .map(res => <Array<IDatahost>>res.json())
-        .subscribe(d => {
-            //update the projDatahosts subject
-            this._projDatahosts.next(d)});            
+        return this._http.put(CONFIG.DATAHOST_URL + '/' + id, aDataHost, options)
+        .map(res => <IDatahost>res.json())
+        //.subscribe(d => { this._projDatahosts[i].next(d)});            
     }
 
     // UTILITY FUNCTIONS ////////////////////////////////////////////

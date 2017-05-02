@@ -90,8 +90,16 @@ export class ProjectdataComponent implements OnInit {
         (d.host_name == undefined || d.host_name == "")) {
       this.ShowRequiredModal(true);
     } else {      
-      this._projectDetService.putDatahost(d.data_host_id, d);
-      this.CancelEditRowClicked(i);
+      delete d.isEditing;
+      this._projectDetService.putDatahost(d.data_host_id, d, i).subscribe((r: IDatahost) => {
+        //  alert("data host updated");
+        r.isEditing = false;
+        this.projectData[i] = r;
+        this._projectDetService.setProjectData(this.projectData);
+        this.rowBeingEdited = -1;
+        this.isEditing = false; // set to true so create new is disabled
+        if (this.DataEditForm.form.dirty) this.DataEditForm.reset();
+      });
     }
   }
   public ShowRequiredModal(s:any){    
@@ -103,6 +111,7 @@ export class ProjectdataComponent implements OnInit {
   public AddDataHost(d: IDatahost){
     d.project_id = this.projectId;
     this._projectDetService.postDatahost(d);
+    alert("data host added");
   }
   public StayOrGo(val:boolean){
     this._dialogService.setAreYouSureModal(false);    
