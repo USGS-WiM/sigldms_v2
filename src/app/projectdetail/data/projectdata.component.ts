@@ -50,16 +50,23 @@ export class ProjectdataComponent implements OnInit {
       // if any ProjDatum, make sure the url (if one) is formatted properly
       for (var pdu = 0; pdu < this.projectData.length; pdu++) {
           var ind = pdu;
-          this.projectData[ind].isEditing = false;
+          
           if (this.projectData[ind].portal_url !== undefined && !this.projectData[ind].portal_url.startsWith('http')) {
               //there is a url and it's not formatted
               this.neededUpdating = true;
               this.projectData[ind].portal_url = 'http://' + this.projectData[ind].portal_url;
-            /*  $http.defaults.headers.common.Authorization = 'Basic ' + $cookies.get('siGLCreds');
-              $http.defaults.headers.common.Accept = 'application/json';
-              DATA_HOST.update({ id: $scope.ProjData[ind].data_host_id }, $scope.ProjData[ind]).$promise; */
-          }
-      }
+
+              this._projectDetService.putDatahost(this.projectData[ind].data_host_id, this.projectData[ind]).subscribe((r: IDatahost) => {
+                r.isEditing = false;
+                this.projectData[ind] = r;                        
+              });// end put
+          } // end if no url
+          this.projectData[ind].isEditing = false;
+      } // end foreach
+
+      //if they needed updating, update the service
+      if (this.neededUpdating) this._projectDetService.setProjectData(this.projectData);
+
       this._dialogService.MessageToShow.subscribe((m: string) => {
         this.messageToShow = m;
       }); 
@@ -97,11 +104,12 @@ export class ProjectdataComponent implements OnInit {
       this.ShowRequiredModal(true);
     } else {      
       delete d.isEditing;
-      this._projectDetService.putDatahost(d.data_host_id, d, i).subscribe((r: IDatahost) => {
+      this._projectDetService.putDatahost(d.data_host_id, d).subscribe((r: IDatahost) => {
         //  alert("data host updated");
         r.isEditing = false;
         this.projectData[i] = r;
         this._projectDetService.setProjectData(this.projectData);
+        this._projectDetService.setLastEditDate(new Date());
         this.rowBeingEdited = -1;
         this.isEditing = false; // set to true so create new is disabled
         if (this.DataEditForm.form.dirty) this.DataEditForm.reset();
@@ -110,13 +118,12 @@ export class ProjectdataComponent implements OnInit {
   }
   public deleteDataHost(id: number){
     this._dialogService.setMessage("Are you sure you want to delete this?");
-    this._dialogService.setAreYouSureModal(true); //shows the modal. listener is 
+    this._dialogService.setAreYouSureModal(true); //shows the modal. listener is AreYouSureDialogResponse()
     this.deleteID = id;
   }
 
   public ShowRequiredModal(s:any){    
-    this._dialogService.setAtLeast1Modal(false); // need to reset it first
-  //  this.errorFlag = true;    
+    this._dialogService.setAtLeast1Modal(false); // need to reset it first   
     this._dialogService.setAtLeast1Modal(true);
   }
   // create new data host
@@ -124,6 +131,7 @@ export class ProjectdataComponent implements OnInit {
     d.project_id = this.projectId;
     this._projectDetService.postDatahost(d).subscribe(
       res => {
+        this._projectDetService.setLastEditDate(new Date());
         console.log("project datahosts updated")
       },
       error => this.errorMessage = error
@@ -152,6 +160,7 @@ export class ProjectdataComponent implements OnInit {
           result => {
             this.projectData.splice(ind, 1); //delete from array
             this._projectDetService.setProjectData(this.projectData); // udpdate service
+            this._projectDetService.setLastEditDate(new Date());
           },
           error => this.errorMessage = error
         );

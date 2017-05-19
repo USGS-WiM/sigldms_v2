@@ -25,7 +25,7 @@ import { DialogService } from "app/shared/services/dialog.service";
         </div>
         <div class="modal-footer">
             <button class="sigl-btn" (click)="c('Yes')">Yes</button>
-            <button class="sigl-btn" (click)="c('Cancel')">Cancel</button>
+            <button class="sigl-btn btn-orange" (click)="c('Cancel')">Cancel</button>
             <!-- <button type="button" class="btn btn-secondary" (click)="c('Close click')">Close</button> -->
         </div>
     </ng-template>

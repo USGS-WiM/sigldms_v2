@@ -27,63 +27,66 @@ import { IParameter } from "app/shared/interfaces/lookups/parameter.interface";
 import { IProjStatus } from "app/shared/interfaces/lookups/projstatus.interface";
 import { IResource } from "app/shared/interfaces/lookups/resource.interface";
 import { ISection } from "app/shared/interfaces/lookups/section.interface";
+import { BehaviorSubject } from "rxjs/BehaviorSubject";
 
 @Injectable()
-export class LookupsService {
-    private _divisions: Subject<Array<IDivision>> = new Subject<Array<IDivision>>();
+export class LookupsService {    
+    private _divisions:  BehaviorSubject<Array<IDivision>> = <BehaviorSubject<IDivision[]>>new BehaviorSubject([]);
     public getDivisions(): Observable<Array<IDivision>> { // getter
         return this._divisions.asObservable();
     }
-    private _frequencies: Subject<Array<IFrequency>> = new Subject<Array<IFrequency>>();
+    private _frequencies:  BehaviorSubject<Array<IFrequency>> = <BehaviorSubject<IFrequency[]>>new BehaviorSubject([]);
     public getFrequencies(): Observable<Array<IFrequency>> { // getter
         return this._frequencies.asObservable();
     }
-    private _lakes: Subject<Array<ILake>> = new Subject<Array<ILake>>();
+    private _lakes:  BehaviorSubject<Array<ILake>> = <BehaviorSubject<ILake[]>>new BehaviorSubject([]);
     public getLakes(): Observable<Array<ILake>> { // getter
         return this._lakes.asObservable();
     }
-    private _media: Subject<Array<IMedia>> = new Subject<Array<IMedia>>();    
+    private _media:  BehaviorSubject<Array<IMedia>> = <BehaviorSubject<IMedia[]>>new BehaviorSubject([]);
     public getMedia(): Observable<Array<IMedia>> { // getter
         return this._media.asObservable();
     }
-    private _monCoord: Subject<Array<IMonitorCoord>> = new Subject<Array<IMonitorCoord>>();
+    private _monCoord:  BehaviorSubject<Array<IMonitorCoord>> = <BehaviorSubject<IMonitorCoord[]>>new BehaviorSubject([]);
     public getMonCoords(): Observable<Array<IMonitorCoord>> { // getter
         return this._monCoord.asObservable();
     }
-    private _objectives: Subject<Array<IObjective>> = new Subject<Array<IObjective>>();
+    private _objectives:  BehaviorSubject<Array<IObjective>> = <BehaviorSubject<IObjective[]>>new BehaviorSubject([]);
     public getObjectives(): Observable<Array<IObjective>> { // getter
         return this._objectives.asObservable();
     }
-    private _orgs: Subject<Array<IOrganization>> = new Subject<Array<IOrganization>>();
+    private _orgs:  BehaviorSubject<Array<IOrganization>> = <BehaviorSubject<IOrganization[]>>new BehaviorSubject([]);
     public getOrgs(): Observable<Array<IOrganization>> { // getter
         return this._orgs.asObservable();
     }
-    private _params: Subject<Array<IParameter>> = new Subject<Array<IParameter>>();
+    private _params:  BehaviorSubject<Array<IParameter>> = <BehaviorSubject<IParameter[]>>new BehaviorSubject([]);
     public getParameters(): Observable<Array<IParameter>> { // getter
         return this._params.asObservable();
     }
-    private _projDurations: Array<IProjDuration>;
-    public getProjDurations(): Array<IProjDuration> { // getter
-        return this._projDurations;
+    private _projDurations: BehaviorSubject<Array<IProjDuration>> = <BehaviorSubject<IProjDuration[]>>new BehaviorSubject([]);
+    public getProjDurations(): Observable<Array<IProjDuration>> { // getter
+        return this._projDurations.asObservable();
     }
-    private _projStats: Array<IProjStatus>;
-    public getProjStatus(): Array<IProjStatus> { // getter
-        return this._projStats;
+    private _projStats: BehaviorSubject<Array<IProjStatus>> = <BehaviorSubject<IProjStatus[]>>new BehaviorSubject([]);
+    public getProjStatus(): Observable<Array<IProjStatus>> { // getter
+        return this._projStats.asObservable();
     }
-    private _resources: Subject<Array<IResource>> = new Subject<Array<IResource>>();
+    private _resources: BehaviorSubject<Array<IResource>> = <BehaviorSubject<IResource[]>>new BehaviorSubject([]);
     public getResources(): Observable<Array<IResource>> { // getter
         return this._resources.asObservable();
     }
-    private _sections: Subject<Array<ISection>> = new Subject<Array<ISection>>();
+    private _sections: BehaviorSubject<Array<ISection>> = <BehaviorSubject<ISection[]>>new BehaviorSubject([]);
     public getSections(): Observable<Array<ISection>> { // getter
         return this._sections.asObservable();
     }
-    private _states: Subject<Array<IState>> = new Subject<Array<IState>>();
+    private _states: BehaviorSubject<Array<IState>> = <BehaviorSubject<IState[]>>new BehaviorSubject([]);
     public getStates(): Observable<Array<IState>> { // getter
         return this._states.asObservable();
     }
 
-    constructor(private _http: Http){}
+    constructor(private _http: Http){
+      //  this._projDurations = <BehaviorSubject<IProjDuration[]>>new BehaviorSubject([]);
+    }
 
     public getLookups(){
      
@@ -145,13 +148,13 @@ export class LookupsService {
         this._http.get(CONFIG.PROJ_DURATIONS_URL, options)
             .map(res => <IProjDuration[]>res.json())
             .subscribe(s => {
-                this._projDurations = s;
+                this._projDurations.next(s);
             });
         //project status
         this._http.get(CONFIG.PROJ_STATUS_URL, options)
             .map(p => <Array<IProjStatus>>p.json())
             .subscribe(ps => {
-                this._projStats = ps;
+                this._projStats.next(ps);
             });        
         //resources
         this._http.get(CONFIG.RESOURCES_URL, options)

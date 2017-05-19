@@ -8,12 +8,12 @@ import { IContactresource } from "app/shared/interfaces/projects/contactresource
 import { IFullsite } from "app/shared/interfaces/projects/fullSite.interface";
 
 export interface IFullproject {
-    ProjectId: number;
+    ProjectId?: number;
     ScienceBaseId?: string;
-    Name: string;
+    Name?: string;
     StartDate?: Date;
     EndDate?: Date;
-    DataManagerId: number;
+    DataManagerId?: number;
     status_id?: number;
     Status?: string;
     duration_id?: number;

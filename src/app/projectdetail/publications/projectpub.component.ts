@@ -45,19 +45,25 @@ export class ProjectpublicationComponent implements OnInit {
     this._route.parent.data.subscribe((data: { fullProject: IFullproject }) => {
       this.projectPubs = data.fullProject.Publications;    
       this.projectId = data.fullProject.ProjectId;
-      // if any ProjDatum, make sure the url (if one) is formatted properly
       for (var pdu = 0; pdu < this.projectPubs.length; pdu++) {
           var ind = pdu;
-          this.projectPubs[ind].isEditing = false;
+          
           if (this.projectPubs[ind].url !== undefined && !this.projectPubs[ind].url.startsWith('http')) {
               //there is a url and it's not formatted
               this.neededUpdating = true;
               this.projectPubs[ind].url = 'http://' + this.projectPubs[ind].url;
-            /*  $http.defaults.headers.common.Authorization = 'Basic ' + $cookies.get('siGLCreds');
-              $http.defaults.headers.common.Accept = 'application/json';
-              DATA_HOST.update({ id: $scope.ProjData[ind].data_host_id }, $scope.ProjData[ind]).$promise; */
-          }
-      }
+
+              this._projectDetService.putPublication(this.projectPubs[ind].publication_id, this.projectPubs[ind]).subscribe((p: IPublication) => {
+                p.isEditing = false;
+                this.projectPubs[ind] = p;                        
+              });// end put
+          } // end if no url
+          this.projectPubs[ind].isEditing = false;
+      } // end foreach
+
+      //if they needed updating, update the service
+      if (this.neededUpdating) this._projectDetService.setProjectPublications(this.projectPubs);
+
       this._dialogService.MessageToShow.subscribe((m: string) => {
         this.messageToShow = m;
       }); 
@@ -95,10 +101,12 @@ export class ProjectpublicationComponent implements OnInit {
       this.ShowRequiredModal(true);
     } else {      
       delete p.isEditing;
-      this._projectDetService.putPublication(p.publication_id, p, i).subscribe((p: IPublication) => {
+      this._projectDetService.putPublication(p.publication_id, p).subscribe((p: IPublication) => {
         p.isEditing = false;
         this.projectPubs[i] = p;
         this._projectDetService.setProjectPublications(this.projectPubs);
+        //update project's last_edit_date
+        this._projectDetService.setLastEditDate(new Date());
         this.rowBeingEdited = -1;
         this.isEditing = false; // set to true so create new is disabled
         if (this.PubEditForm.form.dirty) this.PubEditForm.reset();
@@ -107,7 +115,7 @@ export class ProjectpublicationComponent implements OnInit {
   }
   public deletePublication(id: number){
     this._dialogService.setMessage("Are you sure you want to delete this?");
-    this._dialogService.setAreYouSureModal(true); //shows the modal. listener is 
+    this._dialogService.setAreYouSureModal(true); //shows the modal. listener is AreYouSureDialogResponse()
     this.deleteID = id;
   }
 
@@ -121,6 +129,7 @@ export class ProjectpublicationComponent implements OnInit {
     // p.project_id = this.projectId;
     this._projectDetService.postPublication(this.projectId, p).subscribe(
       res => {
+        this._projectDetService.setLastEditDate(new Date());
         console.log("project Publication updated")
       },
       error => this.errorMessage = error
@@ -149,6 +158,7 @@ export class ProjectpublicationComponent implements OnInit {
           result => {
             this.projectPubs.splice(ind, 1); //delete from array
             this._projectDetService.setProjectPublications(this.projectPubs); // udpdate service
+            this._projectDetService.setLastEditDate(new Date());
           },
           error => this.errorMessage = error
         );

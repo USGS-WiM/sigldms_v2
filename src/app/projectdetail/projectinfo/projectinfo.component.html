@@ -6,8 +6,8 @@
         <fieldset>
             <legend>
                 Project Information
-                <button type="button" *ngIf="project.project_id != undefined" class="sigl-btn btn-right project-info-btn" (click)="openProjectCreate(editProject)">Edit Project</button>
-                <button type="button" *ngIf="project.project_id == undefined" class="sigl-btn btn-right project-info-btn" (click)="openProjectCreate(editProject)">Create Project</button>
+                <button type="button" *ngIf="project.project_id != undefined" class="sigl-btn btn-right project-info-btn" (click)="openProjectModal(editProject)">Edit Project</button>
+                <button type="button" *ngIf="project.project_id == undefined" class="sigl-btn btn-right project-info-btn" (click)="openProjectModal(editProject)">Create Project</button>
             </legend> 
 
             <!-- Project Name -->
@@ -66,7 +66,7 @@
             <!-- Project Description -->
             <div class="sigl-edit-form-group">
                 <label>Description:</label>
-                <textarea [myautosize]="project.description" [readonly]="true" class="form-control" id="description" rows="3" [(ngModel)]="project.description" name="description"></textarea>
+                <textarea autosize [readonly]="true" class="form-control" id="description" rows="3" [(ngModel)]="project.description" name="description"></textarea>
             </div>
             
             <hr />
@@ -84,33 +84,23 @@
             <!-- Project Websites -->
             <div class="sigl-edit-form-group">
                 <label>Project Websites:</label>
-                <ul *ngIf="urls?.length > 0">
+                <ul *ngIf="ProjectParts.ProjUrls?.length > 0">
                     <li style="list-style:none" *ngFor="let key of urls">{{key}}</li>
                 </ul>
-                <span *ngIf="urls?.length == 0">---</span>
+                <span *ngIf="ProjectParts.ProjUrls?.length == 0">---</span>
             </div>
 
             <!-- Project Additional Info -->
             <div class="sigl-edit-form-group">
                 <label>Additional Information:</label>
-                <textarea [myautosize]="project.additional_info" [readonly]="true" class="form-control" id="additional_info" rows="3" [(ngModel)]="project.additional_info" name="additional_info"></textarea>
+                <textarea autosize [readonly]="true" class="form-control" id="additional_info" rows="3" [(ngModel)]="project.additional_info" name="additional_info"></textarea>
             </div>
 
         </fieldset>
     </form>
 </div>
-<!-- MODAL FOR EDITING PROJECT -->
-<ng-template #editProject let-c="close" let-d="dismiss">
-    <div class="modal-header">
-        <h4 class="modal-title pull-left">Project</h4>                  
-    </div>
-    <div class="modal-body">
-        <div id="sitesContent">
-            <div class="row">
-                <div>HI!</div>
-            </div>
-        </div>
-    </div> <!-- end modal-body -->
-</ng-template>
+<button (click)="gotoProjects()">Back</button>
 
-  <button (click)="gotoProjects()">Back</button>
+<editproject [aProject]="project" [projectParts]="ProjectParts"></editproject>
+
+  

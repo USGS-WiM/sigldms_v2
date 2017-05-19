@@ -1,20 +1,53 @@
 <div id="body-wrapper" class="sigl-section">
-  <div class="section-heading">Project Owner Name : Your Projects (prj Cnt here)</div>
+  <div class="section-heading">Project Owner Name : Your Projects ({{projectList.length}})</div>
   <br/>
-  <p class="section-text"><span>Click on the project name to view and edit project and site information.</span></p>
+  <p class="section-text">
+    <span>Click on the project name to view and edit project and site information.</span>
+     <a [routerLink]="['/projectdetail', 0, 'info']" class="section-bottom-button pull-right">
+            <i class="fa fa-plus"></i>  Create new Project</a>
+  </p>
+ <!-- need to finish new sortable table I added -->
+<table class="sigl-table" [mfData]="projectList" #mf="mfDataTable">
+    <thead>
+      <tr>
+          <th><mfDefaultSorter by="name">Project Name</mfDefaultSorter></th>
+          <th *ngIf="userRole == 'ADMIN'"><mfDefaultSorter by="lname">Manager Last Name</mfDefaultSorter></th>
+          <th *ngIf="userRole == 'ADMIN'"><mfDefaultSorter by="fname">Manager First Name</mfDefaultSorter></th>
+          <th *ngIf="userRole == 'ADMIN'"><mfDefaultSorter by="organization_name">Organization</mfDefaultSorter></th>
+          <th><mfDefaultSorter by="site_count">Site Count</mfDefaultSorter></th>
+          <th><mfDefaultSorter by="last_edited_stamp">Last Edited</mfDefaultSorter></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let p of mf.data">
+          <td><a [routerLink]="['/projectdetail', p.project_id, 'info']">{{p.name}}</a></td>
+          <td *ngIf="userRole == 'ADMIN'">{{p.lname || "--"}}</td>
+          <td *ngIf="userRole == 'ADMIN'">{{p.fname || "--"}}</td>
+          <td *ngIf="userRole == 'ADMIN'">{{p.organization_name || "--"}}</td>
+          <td>{{p.site_count || "--"}}</td>
+          <td>{{p.last_edited_stamp | date: 'MM/dd/yyyy' || "--"}}</td>
+      </tr>
+    </tbody>
+</table>
+<!--
   <table class="sigl-table">
     <thead>
-      <th>Project Name</th><th>Manager Last Name</th><th>Manager First Name</th><th>Organization</th><th>Site Count</th><th>Last Edited</th>
+      <th class="name">Project Name&nbsp;<a (click)="sort_by('name')"><i class="fa fa-sort"></i></a></th>
+      <th class="lname" *ngIf="userRole == 'ADMIN'">Manager Last Name&nbsp;<a (click)="sort_by('lname')"><i class="fa fa-sort"></i></a></th>
+      <th class="fname" *ngIf="userRole == 'ADMIN'">Manager First Name&nbsp;<a (click)="sort_by('fname')"><i class="fa fa-sort"></i></a></th>
+      <th class="organization_name" *ngIf="userRole == 'ADMIN'">Organization&nbsp;<a (click)="sort_by('organization_name')"><i class="fa fa-sort"></i></a></th>
+      <th class="site_count">Site Count&nbsp;<a (click)="sort_by('site_count')"><i class="fa fa-sort"></i></a></th>
+      <th class="last_edited_stamp">Last Edited&nbsp;<a (click)="sort_by('last_edited_stamp')"><i class="fa fa-sort"></i></a></th>
     </thead>
     <tbody>
       <tr *ngFor="let p of projectList">
         <td><a [routerLink]="['/projectdetail', p.project_id, 'info']">{{p.name || "---"}}</a></td>
-        <td>{{p.lname || "--"}}</td>
-        <td>{{p.fname || "--"}}</td>
-        <td>{{p.organization_name || "--"}}</td>
+        <td *ngIf="userRole == 'ADMIN'">{{p.lname || "--"}}</td>
+        <td *ngIf="userRole == 'ADMIN'">{{p.fname || "--"}}</td>
+        <td *ngIf="userRole == 'ADMIN'">{{p.organization_name || "--"}}</td>
         <td>{{p.site_count || "--"}}</td>
         <td>{{p.last_edited_stamp | date: 'MM/dd/yyyy'  || "--"}}</td>
       </tr>
     </tbody>
-  </table>
+  </table> -->
 </div>

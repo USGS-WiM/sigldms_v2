@@ -23,6 +23,6 @@ export class FullProjectResolve implements Resolve<IFullproject> {
   //is getting the full project properly. either keep digging or remove resolver...
   resolve(route: ActivatedRouteSnapshot): Observable<IFullproject> {
      let id = route.params['id'];
-     return this._projectdetailService.getProject(id);
+     if (id > 0) return this._projectdetailService.getProject(id);     
   }
 }

@@ -13,6 +13,7 @@ import { Resolve, ActivatedRouteSnapshot } from '@angular/router';
 import { ProjectdetailService } from "app/projectdetail/projectdetail.service";
 import { Observable } from "rxjs/Observable";
 import { IFullsite } from "app/shared/interfaces/projects/fullSite.interface";
+import { LookupsService } from "app/shared/services/lookups.service";
 
 @Injectable()
 export class ProjectSitesResolve implements Resolve<Array<IFullsite>> {
@@ -23,6 +24,6 @@ export class ProjectSitesResolve implements Resolve<Array<IFullsite>> {
   //is getting the full project properly. either keep digging or remove resolver...
   resolve(route: ActivatedRouteSnapshot): Observable<Array<IFullsite>> {
      let id = route.params['id'];
-     return this._projectdetailService.getProjectSites(id);
+     if (id > 0) return this._projectdetailService.getProjectSites(id);
   }
 }

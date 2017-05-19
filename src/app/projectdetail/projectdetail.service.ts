@@ -24,6 +24,7 @@ import { IProject } from "app/shared/interfaces/projects/project.interface";
 import { IObjective } from "app/shared/interfaces/lookups/objective.interface";
 import { IMonitorCoord } from "app/shared/interfaces/lookups/monitorcoord.interface";
 import { IKeyword } from "app/shared/interfaces/lookups/keyword.interface";
+import { BehaviorSubject } from "rxjs/BehaviorSubject";
 
 @Injectable()
 export class ProjectdetailService {
@@ -41,6 +42,7 @@ export class ProjectdetailService {
     private _projObjectives: Subject<Array<IObjective>> = new Subject<Array<IObjective>>();
     private _projMonCoords: Subject<Array<IMonitorCoord>> = new Subject<Array<IMonitorCoord>>();    
     private _projKeywords: Subject<Array<IKeyword>> = new Subject<Array<IKeyword>>();
+    private _lastEditedDate: Subject<Date> = new Subject<Date>();
 
     // GETTERS /////////////////////////////////////////////
     public fullProj(): Observable<IFullproject> { return this._fullProject.asObservable(); }
@@ -53,6 +55,7 @@ export class ProjectdetailService {
     public get projectObjectives():Observable<Array<IObjective>> { return this._projObjectives.asObservable(); }
     public get projMonCoords():Observable<Array<IMonitorCoord>> { return this._projMonCoords.asObservable(); }
     public get projKeywords(): Observable<Array<IKeyword>> { return this._projKeywords.asObservable(); }
+    public get lastEditDate(): Observable<Date> { return this._lastEditedDate.asObservable(); }
 
     // SETTERS /////////////////////////////////////////////////
     public setFullProject(fproj: IFullproject) { this._fullProject.next(fproj); }
@@ -65,7 +68,8 @@ export class ProjectdetailService {
     public setProjObjectives(newProjObs: Array<IObjective>) { this._projObjectives.next(newProjObs); }
     public setProjMonCoords(newProjMonCo: Array<IMonitorCoord>) { this._projMonCoords.next(newProjMonCo); }
     public setProjKeywords(newProjKeys: Array<IKeyword>) { this._projKeywords.next(newProjKeys); }
-
+    public setLastEditDate(newEditDate: Date) { this._lastEditedDate.next(newEditDate); }
+    
     // HTTP GET REQUESTS //////////////////////////////////////
     // get this project they clicked on from the projectlist page
     public getProject(id: string): Observable<IFullproject>{
@@ -142,7 +146,7 @@ export class ProjectdetailService {
 
     // HTTP PUT REQUESTS //////////////////////////////////////
     // put a datahost
-    public putDatahost(id: number, aDataHost:IDatahost, i:number){
+    public putDatahost(id: number, aDataHost:IDatahost){
         let options = new RequestOptions({headers: CONFIG.JSON_AUTH_HEADERS });
         return this._http.put(CONFIG.DATAHOST_URL + '/' + id, aDataHost, options)
         .map(res => <IDatahost>res.json())
@@ -151,7 +155,7 @@ export class ProjectdetailService {
     }
 
     //put publications
-    public putPublication(id: number, aPublication:IPublication, i:number){
+    public putPublication(id: number, aPublication:IPublication){
         let options = new RequestOptions({headers: CONFIG.JSON_AUTH_HEADERS });
         return this._http.put(CONFIG.PUBLICATION_URL + '/' + id, aPublication, options)
         .map(res => <IPublication>res.json())
@@ -217,13 +221,13 @@ export class ProjectdetailService {
         console.error(errMsg);
         return Observable.throw(errMsg);
     }
-    // project Information Edit Project Modal ////////////////////////
- /*   private _showHideProjInfoModal: Subject<boolean> = new Subject<boolean>();
-    public set showProjInfoModal(s:any){
-        this._showHideProjInfoModal.next(s); // settter
+
+    // modal for editing project
+    private _projInfoModal:BehaviorSubject<boolean> = <BehaviorSubject<boolean>>new BehaviorSubject(false);
+    public setProjectInfoModal(val:any){
+        this._projInfoModal.next(val);
     }
-    //show the project info modal
-    public get showProjInfoModal():any{
-        return this._showHideProjInfoModal.asObservable();
-    }*/
+    public get showProjectInfoModal():any {
+        return this._projInfoModal.asObservable();
+    }
 }

@@ -22,20 +22,23 @@ import { LookupsService } from "app/shared/services/lookups.service";
 export class ProjectlistComponent implements OnInit {
   public projectList: Array<IindexProject>;
   private selectedId:number;
-  constructor(private _router: Router, private _route: ActivatedRoute, public _lookupService: LookupsService ) { }
+  
+  constructor(private _router: Router, private _route: ActivatedRoute, private _lookupService: LookupsService ) { }
 
   ngOnInit() {
     // give me the indexProjects that were resolved in the navigate to this route
     this.projectList = this._route.snapshot.data['projectList'];   
+   
     //go populate the rest of the dropdowns
-    if (localStorage.getItem('creds') !== null)
-      this._lookupService.getLookups();
+ //   if (localStorage.getItem('creds') !== null)
+ //     this._lookupService.getLookups();
   
   } // end onInit()
-
+  get userRole(): string {
+    return localStorage.getItem('loggedInRole');
+  }
   // clicked project name
   public onSelect(proj: IindexProject) {
     this._router.navigate(['/projectdetail', proj.project_id]);
-  }
-
+  }  
 }

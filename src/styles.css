@@ -31,6 +31,14 @@ body, html {
     border-radius: 4px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
 }
+a:visited {
+    color: #f34b11;
+}
+a {
+    color: #f34b11;
+    text-decoration: none;
+    transition: 0.09s;
+}
 .sigl-btn.btn-right{
     float:right;    
 }
@@ -203,4 +211,133 @@ body, html {
     margin: 0px 0 0px 0 !important;
     display: block !important;
     clear: both !important;
+}
+.sigl-modal-form .sigl-modal-form-group {
+    display: block;
+    box-sizing: border-box;
+    padding: 6px 0;
+    width: 100%;
+    margin: 0 auto;
+    max-width: 600px;
+}
+.sigl-modal-form .sigl-modal-form-group label.req:after {
+    content: '*';
+    color: #de5030;
+}
+.sigl-modal-form .sigl-modal-form-group label .sigl-tooltip {
+    position: relative;
+    top: -2px;
+    border: none;
+    background-color: transparent;
+    color: rgba(85,181,174,0.75);
+    margin: 0;
+    padding: 0;
+    transition: .09s;
+}
+.sigl-modal-form .sigl-modal-form-group input, .sigl-modal-form .sigl-modal-form-group select:not(.custom-select), .sigl-modal-form .sigl-modal-form-group textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 8px;
+    font-size: 12pt;
+    background-color: #f8f8f8;
+    border: 1px solid #dedfdf;
+    box-shadow: none;
+    display: block;
+    transition: .09s;
+}
+.sigl-modal-form .sigl-modal-form-group label {
+    display: block;
+    width: 100%;
+    vertical-align: middle;
+    font-size: 10pt;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+.sigl-modal-form .sigl-modal-form-group span {
+    vertical-align: middle;
+    width: auto;
+    font-size: 10pt;
+    display: inline-block;
+}
+.dropdown-item a
+{
+    color: #292b2c;
+}
+.sigl-modal-form .list-remove-item {
+    color: #de5030;
+    border: none;
+    font-size: 8pt;
+    background-color: transparent;
+    text-align: center;
+    box-sizing: border-box;
+    padding: 5px;
+    transition: .09s;
+}
+.sigl-modal-form .sigl-modal-form-group .input-with-add-button {
+    display: inline-block;
+    vertical-align: middle;
+    width: 78%;
+}
+.sigl-modal-form .sigl-modal-form-group .input-add-button {
+    display: inline-block;
+    vertical-align: middle;
+    width: 20%;
+    border: 1px solid #dedfdf;
+    color: #000;
+    height: 42px;
+    line-height: 40px;
+    border-left: none;
+    color: #fff;
+    background-color: #323432;
+    transition: .09s;
+}
+.sigl-section .section-bottom-button {
+    background-color: #55B5AE;
+    box-sizing: border-box;
+    padding: 10px 18px;
+    margin: 0 15px 15px 15px;
+    display: inline-block;
+    border-radius: 4px;
+    border: 1px solid #38807b;
+    color: #fff;
+    transition: .09s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+}
+.sigl-table {
+    display: table;
+    box-sizing: border-box;
+    margin: 15px 15px 25px 15px;
+    width: 100%;
+    width: calc(100% - 30px);
+}
+.sigl-table thead {
+    box-sizing: border-box;
+    border-bottom: 1px solid #DE5030;
+}
+.sigl-table thead th a:after {
+    font-family: 'FontAwesome';
+    content: "\f0dc";
+}
+.sigl-table tbody tr td {
+    box-sizing: border-box;
+    padding: 10px;
+    font-size: 10pt;
+}
+.sigl-table tbody tr {
+    border-bottom: 1px solid rgba(119,121,122,0.08);
+    background-color: #fff;
+}
+.sigl-table tbody tr:nth-child(even) {
+    background-color: rgba(85,181,174,0.03);
+}
+.glyphicon-triangle-top:before { 
+    font-family: 'FontAwesome';
+    content: "\f0d8" !important;
+}
+.glyphicon-triangle-bottom:before {
+    font-family: 'FontAwesome';
+    content: "\f0d7" !important;
+}
+.has-error {
+    color: #a94442;
 }

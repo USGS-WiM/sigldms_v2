@@ -1,6 +1,6 @@
 export interface IProject {
-    project_id: number;
-    name: string;
+    project_id?: number;
+    name?: string;
     start_date?: Date;
     end_date?: Date;
     url?: string;

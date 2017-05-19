@@ -29,6 +29,7 @@ export class AppComponent {
   constructor(public _authService: AuthService, public _loginService: LoginService, public _lookupService: LookupsService) {}
   
   ngOnInit() {
+    this._lookupService.getLookups();
     this.title = "SiGL";
     this.subTitle = "Data Management System (DMS)";
     this.loggedIn = localStorage.getItem('creds') !== null ? true : false;
