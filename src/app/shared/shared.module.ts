@@ -16,7 +16,7 @@ import { AuthService } from "app/shared/services/auth.service";
 import { AtLeast1RequiredModal } from "app/shared/components/atLeast1Req.modal";
 import { MultiselectDropdownModule } from 'angular-2-dropdown-multiselect';
 
-import { NgbModule} from '@ng-bootstrap/ng-bootstrap';
+import { NgbModule, NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { httpPrefix } from "app/shared/directives/httpprefix.directive";
 import { AuthGuard } from "app/shared/services/auth-guard.service";
 import { CanDeactivateGuard } from "app/shared/services/candeactivate-guard.service";
@@ -28,8 +28,8 @@ import { validateDates } from "app/shared/directives/validDates.validator";
 @NgModule({
   imports: [ PipesModule, NgbModule.forRoot(), MultiselectDropdownModule, DataTableModule], 
   declarations: [ Autosize, httpPrefix, AtLeast1RequiredModal, AreYouSureModal, validateDates ],
-  exports: [Autosize, httpPrefix,  AtLeast1RequiredModal, AreYouSureModal, validateDates, MultiselectDropdownModule, DataTableModule],
-  providers: [ AuthGuard, CanDeactivateGuard, LookupsService, AuthService, DialogService]
+  exports: [Autosize, httpPrefix,  AtLeast1RequiredModal, AreYouSureModal, validateDates, MultiselectDropdownModule, DataTableModule, NgbModule],
+  providers: [ AuthGuard, CanDeactivateGuard, LookupsService, AuthService, DialogService, NgbActiveModal]
 })
 
 export class SharedModule {

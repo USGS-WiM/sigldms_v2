@@ -341,3 +341,21 @@ a {
 .has-error {
     color: #a94442;
 }
+.sigl-modal-form .sigl-modal-form-group .btn-cal {
+    box-sizing: border-box;
+    display: inline-block;
+    vertical-align: middle;
+    width: 20%;
+    border: 1px solid #dedfdf;
+    color: #000;
+    height: 56px;
+    line-height: 40px;
+    border-left: none;
+    color: #fff;
+    background-color: #323432;
+    transition: .09s;
+}
+
+.bootstrap-switch-container{
+    background: #fff !important;
+}

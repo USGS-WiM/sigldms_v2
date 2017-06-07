@@ -54,7 +54,13 @@ export class ProjectinfoComponent {
       this.ProjectParts = {ProjObjs: [], ProjMon: [], ProjKeys: [], ProjUrls: []};
       this.ProjectParts.ProjObjs = data.fullProject !== undefined ? data.fullProject.Objectives : [];
       this.ProjectParts.ProjMon = data.fullProject !== undefined ? data.fullProject.MonitoringCoords: [];
-      this.ProjectParts.ProjKeys = data.fullProject !== undefined ? data.fullProject.Keywords: []
+      if (data.fullProject !== undefined) {
+        data.fullProject.Keywords.forEach((k) => {
+          delete k.project_keywords; //don't want this in here
+          this.ProjectParts.ProjKeys.push(k);
+        });
+
+      } else this.ProjectParts.ProjKeys = [];
       if (this.project.url) {
         //split string into an array
         if ((this.project.url).indexOf('|') > -1) {

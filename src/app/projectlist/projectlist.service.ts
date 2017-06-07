@@ -12,8 +12,8 @@ import { Injectable } from '@angular/core';
 
 import { Http, Response, Headers, RequestOptions, URLSearchParams } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
-import { CONFIG } from "app/shared/CONFIG";
 import { IindexProject } from "app/shared/interfaces/projects/indexProject.interface";
+import { CONFIG } from "app/shared/services/CONFIG";
 
 @Injectable()
 export class ProjectlistService {

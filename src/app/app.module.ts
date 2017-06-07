@@ -14,18 +14,12 @@ import { FormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
 import { RouterModule, Routes } from '@angular/router';
 
-// import { TooltipModule } from 'ngx-bootstrap/tooltip';  TooltipModule.forRoot(),
-
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing/app-routing';
-
 import { ProjectlistModule } from './projectlist/projectlist.module';
 import { PageNotFoundComponent } from './not-found/not-found.component';
-// import { AuthGuard } from "app/auth-guard.service";
 import { LoginRoutingModule } from "app/login/login-routing.module";
 import { LoginComponent } from "app/login/login.component";
-// import { CanDeactivateGuard } from "app/candeactivate-guard.service";
-// import { PipesModule } from "app/shared/pipes/pipes.module";
 import { SharedModule } from "app/shared/shared.module";
 
 @NgModule({
@@ -33,7 +27,7 @@ import { SharedModule } from "app/shared/shared.module";
   imports: [
     BrowserModule, FormsModule, HttpModule, SharedModule, ProjectlistModule, LoginRoutingModule, AppRoutingModule
   ],// Your module imports should go here
-  providers: [],// AuthGuard, CanDeactivateGuard],// LookupsService],// Your global providers should go here
+  providers: [], // Your global providers should go here
   bootstrap: [AppComponent]
 })
 export class AppModule { }

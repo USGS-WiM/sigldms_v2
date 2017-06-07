@@ -23,7 +23,7 @@ import { DialogService } from "app/shared/services/dialog.service";
             You must populate at least one field.
           </div>
           <div class="modal-footer">
-            <button class="sigl-btn" (click)="d('closed')">OK</button>
+            <button type="button" class="sigl-btn" (click)="d('closed')">OK</button>
           </div>
         </ng-template>
       `
@@ -46,6 +46,10 @@ export class AtLeast1RequiredModal {
 
     public showReqModal(): void {      
       this._modalService.open(this.modalElement).result.then((result) =>{
+        // this is the solution for the first modal losing scrollability
+            if (document.querySelector('body > .modal')) {
+                document.body.classList.add('modal-open');
+            }
             this.CloseResult = `Closed with: ${result}`;
         }, (reason) => {
             this.CloseResult = `Dismissed ${this.getDismissReason(reason)}`

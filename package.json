@@ -12,6 +12,7 @@
   },
   "private": true,
   "dependencies": {
+    "@angular/animations": "^4.1.3",
     "@angular/common": "^4.0.0",
     "@angular/compiler": "^4.0.0",
     "@angular/core": "^4.0.0",
@@ -23,6 +24,7 @@
     "@ng-bootstrap/ng-bootstrap": "^1.0.0-alpha.25",
     "angular-2-dropdown-multiselect": "^1.2.0",
     "angular2-autosize": "git+https://github.com/chrum/angular2-autosize.git",
+    "angular2-bootstrap-switch": "^0.1.10",
     "angular2-datatable": "^0.6.0",
     "bootstrap": "^4.0.0-alpha.6",
     "core-js": "^2.4.1",

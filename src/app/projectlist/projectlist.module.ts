@@ -18,10 +18,9 @@ import { ProjectlistService } from "app/projectlist/projectlist.service";
 import { ProjectListResolve } from "app/projectlist/projectList.resolve";
 import { ProjectdetailModule } from "app/projectdetail/projectdetail.module";
 import { SharedModule } from "app/shared/shared.module";
-// import { DataTableModule } from "angular2-datatable";
 
 @NgModule({
-  imports: [ CommonModule, FormsModule, SharedModule, ProjectdetailModule, ProjectListRoutingModule],// DataTableModule ],
+  imports: [ CommonModule, FormsModule, SharedModule, ProjectdetailModule, ProjectListRoutingModule],
   declarations: [ProjectlistComponent],
   exports: [ProjectlistComponent],
   providers: [ProjectlistService, ProjectListResolve]

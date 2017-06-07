@@ -6,61 +6,62 @@
         <fieldset>
             <div class="modal-body">
                 <!-- Project Name* -->
-                <div class="sigl-modal-form-group required" [ngClass]="{'has-error':!projInfoForm.controls['name'].valid && projInfoForm.controls['name'].dirty}">
-                    <label class="req" for="name">Project Name:</label>
-                    <input class="form-control" type="text" placeholder="Project Name" formControlName="name">
-                </div>
-                <hr />
-                <!-- Project Duration* -->
-                <div class="sigl-modal-form-group required" [ngClass]="{'has-error':!projInfoForm.controls['proj_duration_id'].valid && projInfoForm.controls['proj_duration_id'].dirty}">
-                    <label class="req" for="proj_duration_id">
-                        Project Duration:
-                        <span class="sigl-tooltip fa fa-question-circle" [ngbTooltip]="projTips.projDuration" placement="right"></span>                                               
-                    </label>
-                    <select class="form-control" id="proj_duration_id" formControlName="proj_duration_id" [(ngModel)]="aProject.proj_duration_id">
-                        <option value=""></option>
-                        <option *ngFor="let d of projDurationList" [ngValue]="d.proj_duration_id">{{d.duration_value}}</option>
-                    </select>  
-                </div>
-                <!-- Project Status* -->
-                <div class="sigl-modal-form-group required" [ngClass]="{'has-error':!projInfoForm.controls['proj_status_id'].valid && projInfoForm.controls['proj_status_id'].dirty}">
-                    <label class="req" for="proj_status_id">
-                        Project Status:
-                        <span class="fa fa-question-circle sigl-tooltip" [ngbTooltip]="projTips.projStatus" placement="right"></span>                        
-                    </label>
-                    <select class="form-control" id="proj_status_id" formControlName="proj_status_id" [(ngModel)]="aProject.proj_status_id">
-                        <option value=""></option>
-                        <option *ngFor="let s of projStatusList" [ngValue]="s.proj_status_id">{{s.status_value}}</option>
-                    </select>  
-                </div>
-                <!-- Project Start Date validateEqual="end_date"-->
-                <div class="sigl-modal-form-group" [ngClass]="{'has-error':!projInfoForm.controls['start_date'].valid && projInfoForm.controls['start_date'].dirty}">
-                    <label for="start_date">
-                        Project Start Date:
-                        <span class="fa fa-question-circle sigl-tooltip" [ngbTooltip]="projTips.startDate" placement="right"></span>
-                    </label>
-                    <div class="input-group">                        
-                        <input class="form-control" placeholder="yyyy-mm-dd" validateDates="end_date" formControlName="start_date" ngbDatepicker #sd="ngbDatepicker">
-                        <div class="input-group-addon" (click)="sd.toggle()">
-                            <i class="fa fa-calendar-o" style="width: 1.2rem; height: 1rem; cursor: pointer;"></i>                                
+                <div formGroupName="projectGrp">
+                    <div class="sigl-modal-form-group required" [ngClass]="{'has-error':!projInfoForm.get('projectGrp').get('name').valid && projInfoForm.get('projectGrp').get('name').dirty}">
+                        <label class="req" for="name">Project Name:</label>
+                        <input class="form-control" type="text" placeholder="Project Name" formControlName="name">
+                    </div>
+                    <hr />
+                    <!-- Project Duration* -->
+                    <div class="sigl-modal-form-group required" [ngClass]="{'has-error':!projInfoForm.get('projectGrp').get('proj_duration_id').valid && projInfoForm.get('projectGrp').get('proj_duration_id').dirty}">
+                        <label class="req" for="proj_duration_id">
+                            Project Duration:
+                            <span class="sigl-tooltip fa fa-question-circle" [ngbTooltip]="projTips.projDuration" placement="right"></span>                                               
+                        </label>
+                        <select class="form-control" id="proj_duration_id" formControlName="proj_duration_id" [(ngModel)]="aProject.proj_duration_id">
+                            <option value=""></option>
+                            <option *ngFor="let d of projDurationList" [ngValue]="d.proj_duration_id">{{d.duration_value}}</option>
+                        </select>  
+                    </div>
+                    <!-- Project Status* -->
+                    <div class="sigl-modal-form-group required" [ngClass]="{'has-error':!projInfoForm.get('projectGrp').get('proj_status_id').valid && projInfoForm.get('projectGrp').get('proj_status_id').dirty}">
+                        <label class="req" for="proj_status_id">
+                            Project Status:
+                            <span class="fa fa-question-circle sigl-tooltip" [ngbTooltip]="projTips.projStatus" placement="right"></span>                        
+                        </label>
+                        <select class="form-control" id="proj_status_id" formControlName="proj_status_id" [(ngModel)]="aProject.proj_status_id">
+                            <option value=""></option>
+                            <option *ngFor="let s of projStatusList" [ngValue]="s.proj_status_id">{{s.status_value}}</option>
+                        </select>  
+                    </div>
+                    <!-- Project Start Date validateEqual="end_date"-->
+                    <div class="sigl-modal-form-group" [ngClass]="{'has-error':!projInfoForm.get('projectGrp').get('start_date').valid && projInfoForm.get('projectGrp').get('start_date').dirty}">
+                        <label for="start_date">
+                            Project Start Date:
+                            <span class="fa fa-question-circle sigl-tooltip" [ngbTooltip]="projTips.startDate" placement="right"></span>
+                        </label>
+                        <div class="input-group">                        
+                            <input class="form-control" placeholder="yyyy-mm-dd" validateDates="end_date" formControlName="start_date" ngbDatepicker #sd="ngbDatepicker">
+                            <div class="input-group-addon btn-cal" (click)="sd.toggle()"><i class="fa fa-calendar-o" style="width: 1.2rem; height: 1rem; cursor: pointer;"></i></div>
+                        </div>
+                        <div class="alert alert-danger" *ngIf="!projInfoForm.get('projectGrp').get('start_date').valid && projInfoForm.get('projectGrp').get('start_date').dirty">Start date must come before Completion date.</div>
+                    </div>
+                    <!-- Project Completion Date -->
+                    <div class="sigl-modal-form-group" [ngClass]="{'has-error':!projInfoForm.get('projectGrp').get('end_date').valid && projInfoForm.get('projectGrp').get('end_date').dirty && !projInfoForm.get('projectGrp').get('end_date').disabled}">
+                        <label for="end_date">
+                            Project Completion Date:
+                            <span class="fa fa-question-circle sigl-tooltip" [ngbTooltip]="projTips.endDate" placement="right"></span>
+                        </label>
+                        <div class="input-group">                        
+                            <input class="form-control" placeholder="yyyy-mm-dd" validateDates="start_date" formControlName="end_date" ngbDatepicker #ed="ngbDatepicker">
+                            <div *ngIf="undetermined" class="input-group-addon btn-cal"><i class="fa fa-calendar-o" style="width: 1.2rem; height: 1rem; cursor:not-allowed;"></i></div>
+                            <div *ngIf="!undetermined" class="input-group-addon btn-cal" (click)="ed.toggle()"><i class="fa fa-calendar-o" style="width: 1.2rem; height: 1rem; cursor: pointer;"></i></div>
+                        </div>
+                        <div class="alert alert-danger" *ngIf="!projInfoForm.get('projectGrp').get('end_date').valid && projInfoForm.get('projectGrp').get('end_date').dirty && !projInfoForm.get('projectGrp').get('end_date').disabled">
+                            Completion date must come after Start date.
                         </div>
                     </div>
-                    <div class="alert alert-danger" *ngIf="!projInfoForm.controls['start_date'].valid && projInfoForm.controls['start_date'].dirty">Start date must come before Completion date.</div>
-                </div>
-                <!-- Project Completion Date -->
-                <div class="sigl-modal-form-group" [ngClass]="{'has-error':!projInfoForm.controls['end_date'].valid && projInfoForm.controls['end_date'].dirty}">
-                    <label for="end_date">
-                        Project Completion Date:
-                        <span class="fa fa-question-circle sigl-tooltip" [ngbTooltip]="projTips.endDate" placement="right"></span>
-                    </label>
-                    <div class="input-group">                        
-                        <input class="form-control" placeholder="yyyy-mm-dd" validateDates="start_date" formControlName="end_date" ngbDatepicker #ed="ngbDatepicker">
-                        <div class="input-group-addon" (click)="ed.toggle()">
-                            <i class="fa fa-calendar-o" style="width: 1.2rem; height: 1rem; cursor: pointer;"></i>                                
-                        </div>
-                    </div>
-                    <div class="alert alert-danger" *ngIf="!projInfoForm.controls['end_date'].valid && projInfoForm.controls['end_date'].dirty">Completion date must come after Start date.</div>
-                </div>
+                </div> <!-- end formGroupName= "projectGrp" -->
                 <hr />
                 <!-- Project Objectives -->
                 <div class="sigl-modal-form-group">
@@ -78,38 +79,37 @@
                     </label>
                     <ss-multiselect-dropdown [options]="monitorCoordsMulti" [settings]="multiSettings" formControlName="monitorCoords"></ss-multiselect-dropdown>
                 </div>
-                <!-- Project Description -->
-                <div class="sigl-modal-form-group">
-                    <label for="description">
-                        Description:
-                        <span class="fa fa-question-circle sigl-tooltip" [ngbTooltip]="projTips.description" placement="right"></span>                        
-                    </label>
-                    <textarea autosize id="description" type="text" rows="3" placeholder="Project Description" formControlName="description" elastic></textarea>
-                </div>
+                <div formGroupName="projectGrp">
+                    <!-- Project Description -->
+                    <div class="sigl-modal-form-group">
+                        <label for="description">
+                            Description:
+                            <span class="fa fa-question-circle sigl-tooltip" [ngbTooltip]="projTips.description" placement="right"></span>                        
+                        </label>
+                        <textarea autosize id="description" type="text" rows="3" placeholder="Project Description" formControlName="description" elastic></textarea>
+                    </div>
+                </div><!-- end formGroupName= "projectGrp" -->
                 <hr />
                 <!-- Project Keywords  [ ] == input to projKeys-list  ( ) == output from projKeys-list -->
-                <projpart-list [projectPart]="projectParts.ProjKeys" [projectThing]="'Keyword'" (keywordToRemove)="updatePrjPartToRemove($event)"></projpart-list>                
+                <projpart-list [projectPart]="projectParts.ProjKeys" [projectThing]="'Keyword'" (allTheThings)="updatePrjPart($event)" (thingToRemove)="removeKeyorURL($event)"></projpart-list>                
                 <hr />
                 <!-- Project Websites -->
-                <projpart-list [projectPart]="projectParts.ProjUrls" [projectThing]="'Website'" (keywordToRemove)="updatePrjPartToRemove($event)"></projpart-list>                
+                <projpart-list [projectPart]="projectParts.ProjUrls" [projectThing]="'Website'" (allTheThings)="updatePrjPart($event)" (thingToRemove)="removeKeyorURL($event)"></projpart-list>
                 <!-- Project Additional Info -->
-                <div class="sigl-modal-form-group">
-                    <label for="additional_info">
-                        Additional Information:
-                        <span class="fa fa-question-circle sigl-tooltip" [ngbTooltip]="projTips.description" placement="right"></span>                        
-                    </label>
-                    <textarea autosize id="additional_info" type="text" rows="3" placeholder="Additional Information" formControlName="additional_info"></textarea>
+                <div formGroupName="projectGrp">
+                    <div class="sigl-modal-form-group">
+                        <label for="additional_info">
+                            Additional Information:
+                            <span class="fa fa-question-circle sigl-tooltip" [ngbTooltip]="projTips.description" placement="right"></span>                        
+                        </label>
+                        <textarea autosize id="additional_info" type="text" rows="3" placeholder="Additional Information" formControlName="additional_info"></textarea>
+                    </div>
                 </div>
                 <!--submit and cancel buttons -->
                 <div class="sigl-modal-form-group" style="text-align:center; padding-top: 15px;">
-                    <button *ngIf="aProject.project_id == undefined" class="sigl-btn" (click)="c(projInfoForm)">
-                        Create
-                    </button>
-                    <button type="button" class="sigl-btn btn-orange" (click)="d('clickedCancel')">
-                        Cancel
-                    </button><button type="button" *ngIf="aProject.project_id != undefined" class="sigl-btn" (click)="c(projInfoForm.valid)">
-                        Save
-                    </button>
+                    <button type="button" *ngIf="aProject.project_id == undefined" class="sigl-btn" (click)="c(projInfoForm)">Create</button>
+                    <button type="button" class="sigl-btn btn-orange" (click)="d('clickedCancel')">Cancel</button>
+                    <button type="button" *ngIf="aProject.project_id != undefined" class="sigl-btn" (click)="c(projInfoForm.valid)">Save</button>
                 </div>
             </div> <!-- end modal-body -->
         </fieldset>
@@ -126,7 +126,7 @@
     </div>
     <div class="modal-footer">
         <div class="sigl-modal-form-group" style="text-align:center; padding-top: 15px;">
-            <button (click)="d('ok')">OK</button>
+            <button type="button" (click)="d('ok')">OK</button>
         </div>
     </div>
 </ng-template>

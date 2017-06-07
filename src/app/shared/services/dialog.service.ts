@@ -16,7 +16,7 @@ import { Subject }      from 'rxjs/Subject';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
 
-import { CONFIG } from "app/shared/CONFIG";
+import { CONFIG } from "app/shared/services/CONFIG";
 import { IDatamanager } from "app/shared/interfaces/settings/datamanager.interface";
 import { Router } from "@angular/router";
 

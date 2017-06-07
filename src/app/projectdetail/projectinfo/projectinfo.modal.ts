@@ -19,8 +19,8 @@ import { IProjDuration } from "app/shared/interfaces/lookups/projduration.interf
 import { IProjStatus } from "app/shared/interfaces/lookups/projstatus.interface";
 import { IObjective } from "app/shared/interfaces/lookups/objective.interface";
 import { IMonitorCoord } from "app/shared/interfaces/lookups/monitorcoord.interface";
-import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
-import {IMultiSelectOption, IMultiSelectSettings  } from "angular-2-dropdown-multiselect";
+import { FormBuilder, FormGroup, Validators, FormControl, FormArray } from '@angular/forms';
+import { IMultiSelectOption, IMultiSelectSettings  } from "angular-2-dropdown-multiselect";
 import { IKeyword } from "app/shared/interfaces/lookups/keyword.interface";
 
 @Component({
@@ -31,7 +31,6 @@ import { IKeyword } from "app/shared/interfaces/lookups/keyword.interface";
 export class EditProjectModal {    
     @ViewChild('editProjectInfo') public editProjectInfoModal; // : ModalDirective;  //modal for validator    
     private modalElement: any;
-    private invalidDatesElement: any;
     @Input() aProject: IProject; // will be the project being edited or 0 for create new
     @Input() projectParts:any;
     @Output() modalResponseEvent = new EventEmitter<boolean>(); // when they hit save, emit to projectdata.component
@@ -49,26 +48,47 @@ export class EditProjectModal {
     public monitorCoordsMulti: Array<IMultiSelectOption> = [];
     public monitorCoordsSelected: Array<number>; // holds ids of selected
     public multiSettings: IMultiSelectSettings;
-    public aKeywordToRemove: IKeyword;
-    public keywordsToRemove: Array<IKeyword>;
-    public aURLtoRemove: string;
 
-    constructor(private _projDetailService: ProjectdetailService, private _dialogService: DialogService, private _modalService: NgbModal,  private _lookupService: LookupsService, private _fb: FormBuilder) {
+    public aKeywordToRemove: IKeyword; //removing keyword emitter hits function that populates this so that when AreYouSure comes back true, will have value to store for deletion
+    public keywordsToRemove: Array<IKeyword>; // storage of keywords removed to delete at POST/PUT time
+    public newestKeywords: Array<IKeyword>; //passed up from projectPartlist everytime one is added or removed
+
+    public aURLToRemove: string; //removing url emitter hits function that populates this so that when AreYouSure comes back true, will have value to store for deletion
+    public urlsToRemove: Array<string>; // storage of urls removed to delete at POST/PUT time
+    public newestURLs: Array<string>;    
+
+    public undetermined: boolean; // enable/disable end date based on proj_status_id
+
+    constructor(private _projDetailService: ProjectdetailService, private _dialogService: DialogService, 
+                private _modalService: NgbModal,  private _lookupService: LookupsService, private _fb: FormBuilder) {
+                    
         this.projInfoForm = _fb.group({
-            'name': new FormControl('', Validators.required),
-            'proj_duration_id': new FormControl('', Validators.required),
-            'proj_status_id': new FormControl('', Validators.required),
-            'start_date': new FormControl(''),
-            'end_date': new FormControl(''),
+            projectGrp: _fb.group({
+                'project_id': new FormControl(null),
+                'name': new FormControl(null, Validators.required),
+                'proj_duration_id': new FormControl(null, Validators.required),
+                'proj_status_id': new FormControl(null, Validators.required),
+                'start_date': new FormControl(null),
+                'end_date': new FormControl({value: null, disabled: false}),
+                'description': new FormControl(null),
+                'additional_info': new FormControl(null),
+                'url': new FormControl(null), //use this.newestURLs to join with "|" separator 
+                'data_manager_id': new FormControl(null),
+                'science_base_id': new FormControl(null),
+                'ready_flag': new FormControl(null),
+                'created_stamp': new FormControl(null),
+                'last_edited_stamp': new FormControl(null)
+            }),
             'objectives': new FormControl([]),
-            'monitorCoords': new FormControl([]),
-            'description': new FormControl(''),
-            'additional_info': new FormControl('')
+            'monitorCoords': new FormControl([])
+            
         });
     }
     
     ngOnInit() { 
-        this.keywordsToRemove = [];
+        this.undetermined = false;
+        this.newestKeywords = []; this.newestURLs = [];
+        this.keywordsToRemove = []; this.urlsToRemove = [];
         // Settings configuration
         this.multiSettings = {
             enableSearch: true,
@@ -119,65 +139,87 @@ export class EditProjectModal {
      
      // show the modal, populate the form and subscribe to form changes
     public showProjectModal(): void {
+        //if editing, make a copy in case they cancel, send back original
         if (this.aProject.project_id) 
             this.tempProj = Object.assign({}, this.aProject); // make a copy in case they cancel
         
-        // populate form if aProject
+        // populate form        
+        let projectControlGrp = <FormArray>this.projInfoForm.controls['projectGrp'];
+        
+        // PROJECT_ID
+        if (this.aProject.project_id) {
+            projectControlGrp.controls['project_id'].setValue(this.aProject.project_id);
+            projectControlGrp.controls['science_base_id'].setValue(this.aProject.science_base_id);
+            projectControlGrp.controls['ready_flag'].setValue(this.aProject.ready_flag || 0);
+            projectControlGrp.controls['data_manager_id'].setValue(this.aProject.data_manager_id);
+             projectControlGrp.controls['created_stamp'].setValue(this.aProject.created_stamp);
+        }
         // NAME 
-        this.projInfoForm.controls['name'].setValue(this.aProject.name);
+        projectControlGrp.controls['name'].setValue(this.aProject.name);
         // PROJ_DURATION_ID
-        this.projInfoForm.controls['proj_duration_id'].setValue(this.projDurationList.filter(c => c.proj_duration_id === this.aProject.proj_duration_id));
-        this.projInfoForm.controls['proj_duration_id'].valueChanges.subscribe(pd => 
-            this.aProject.proj_duration_id = pd 
-        );
+        projectControlGrp.controls['proj_duration_id'].setValue(this.projDurationList.filter(c => c.proj_duration_id === this.aProject.proj_duration_id)[0]);
+        
         // PROJ_STATUS_ID
-        this.projInfoForm.controls['proj_status_id'].setValue(this.projStatusList.filter(c => c.proj_status_id === this.aProject.proj_status_id));
-        this.projInfoForm.controls['proj_status_id'].valueChanges.subscribe(ps => 
-            this.aProject.proj_status_id = ps
-        );
+        projectControlGrp.controls['proj_status_id'].setValue(this.projStatusList.filter(c => c.proj_status_id === this.aProject.proj_status_id)[0]);
+        projectControlGrp.controls['proj_status_id'].valueChanges.subscribe(ps => {
+          //  this.aProject.proj_status_id = ps;
+            if (ps == 1) {
+                if (projectControlGrp.controls['end_date'].value !== undefined && projectControlGrp.controls['end_date'].value !== null && projectControlGrp.controls['end_date'].value !== "") {
+                        projectControlGrp.controls['end_date'].setValue(undefined);
+                    }
+                    projectControlGrp.get('end_date').disable();
+                    this.undetermined = true;
+             } else {
+                 projectControlGrp.get('end_date').enable();
+                 this.undetermined = false;
+             }
+        });
         // START_DATE
-        this.projInfoForm.controls['start_date'].setValue(this.aProject.start_date);
-        /*this.projInfoForm.controls['start_date'].valueChanges.subscribe((sd:any) => {
-            this.projInfoForm.controls['end_date'].updateValueAndValidity();
-        });*/
-     
+        projectControlGrp.controls['start_date'].setValue(this.aProject.start_date || null);     
         // END_DATE
-        this.projInfoForm.controls['end_date'].setValue(this.aProject.end_date);
-        /* this.projInfoForm.controls['end_date'].valueChanges.subscribe((sd:any) => {
-            this.projInfoForm.controls['start_date'].updateValueAndValidity();
-        });*/
-        //PROJECT OBJECTIVES
+        projectControlGrp.controls['end_date'].setValue(this.aProject.end_date || null);
+        // PROJECT OBJECTIVES
         let proObjsIDs: Array<number> = [];
         this.projectParts.ProjObjs.forEach(po => {proObjsIDs.push(po.objective_type_id);}); // push in each id for preselecting
         this.projInfoForm.controls['objectives'].setValue(proObjsIDs);
-        this.projInfoForm.controls['objectives'].valueChanges   
+        this.projInfoForm.controls['objectives'].valueChanges
             .subscribe((selectedOptions) => {
                 this.objectiveSelected = selectedOptions; //contains all the selected Options TODO
-            });        
+            });
+
         // PROJECT MONITOR COORDINATION
         let projmcIDs: Array<number> = [];
         this.projectParts.ProjMon.forEach(mc => { projmcIDs.push(mc.monitoring_coordination_id); }) // push in each id for preselecting
-        this.projInfoForm.controls['monitorCoords'].setValue(projmcIDs);
-        this.projInfoForm.controls['monitorCoords'].valueChanges   
-            .subscribe((selectedOptions) => {
-                this.monitorCoordsSelected = selectedOptions; //contains all the selected Options TODO
-            });
+        this.projInfoForm.controls['monitorCoords'].setValue(projmcIDs);      
         // DESCRIPTION
-        this.projInfoForm.controls['description'].setValue(this.aProject.description);
+        projectControlGrp.controls['description'].setValue(this.aProject.description);
 
         // PROJECT KEYWORDS & PROJECT URLS  handled by projectPartList.component
 
         // ADDITIONAL_INFO
-        this.projInfoForm.controls['additional_info'].setValue(this.aProject.additional_info);
-
+        projectControlGrp.controls['additional_info'].setValue(this.aProject.additional_info);
        
         // open the modal now
         this._modalService.open(this.modalElement, {backdrop: 'static', keyboard: false, size: 'lg'} ).result.then((valid) =>{           
-            let closeResult = `Closed with: ${valid}`;
+            let closeResult = `Closed with: ${valid}`;           
             if (valid){
-                //its valid
-                let areYouSure = "what?";
-                this.modalResponseEvent.emit(true);
+                // save the project
+                let updatedProject: IProject = this.projInfoForm.controls['projectGrp'].value;
+                if (updatedProject.start_date !== null)
+                    updatedProject.start_date = new Date(updatedProject.start_date['year'], updatedProject.start_date['month'], updatedProject.start_date['day']);
+                if (updatedProject.end_date !== null)
+                    updatedProject.end_date = new Date(updatedProject.end_date['year'], updatedProject.end_date['month'], updatedProject.end_date['day']);
+    
+                updatedProject.last_edited_stamp = new Date();
+                //what about READY_FLAG ??? 
+                
+                
+                
+                let worked = "maybe";
+                
+                // this.newestKeywords (all for this proj)   this.keywordsToRemove
+
+                //its valid        
             } else {
                 //invalid. do something about it
             }            
@@ -192,25 +234,52 @@ export class EditProjectModal {
         else return  `with: ${reason}`;
     }
 
-    // each time they remove a key this gets updated, then the areYouSureDialogResponse function handles the are you sure modal close
-    public updatePrjPartToRemove(e){
+    // each time they add/remove a key or url this gets updated, then the areYouSureDialogResponse function handles the are you sure modal close
+    public updatePrjPart(e){
         //  [term, this.thingToRemove];
-        if (e[1] == "Keyword") this.aKeywordToRemove = e;
-        else this.aURLtoRemove = e;
+        if (e[0] == "Keyword") this.newestKeywords = e[1];
+        else {
+            this.newestURLs = e[1];
+            let projectControlGrp = <FormArray>this.projInfoForm.controls['projectGrp'];
+            projectControlGrp.controls['url'].setValue(e[1].join("|"));
+        }
     }
-      // response from dialog (either want to leave here without saving edits or want to delete datahost)
-  public AreYouSureDialogResponse(val:boolean){
-    this._dialogService.setAreYouSureModal(false);   
-    //if they clicked Yes
-    if (val) {
-        let test = this.aKeywordToRemove;
-         //delete the keyword (temporarily)
-        this.keywordsToRemove.push(this.aKeywordToRemove);
-        this.aKeywordToRemove = undefined; //clear it for the next one
-        //store it to pass back up to delete when SAVING
-        this.projectParts.ProjKeys.splice(this.projectParts.ProjKeys.indexOf(test), 1);
-    }
-  }
 
+    //they removed a keyword or url from projectPartList.component, output emitter sent it here to add to array
+    public removeKeyorURL(e){
+        this.aKeywordToRemove = undefined; 
+        this.aURLToRemove = undefined;
+        if (e[0] == "Keyword") this.aKeywordToRemove = e[1];
+        else {
+            this.aURLToRemove = e[1];            
+        }
+    }
+
+    // response from dialog (want to delete the keyword or url)
+    public AreYouSureDialogResponse(val:boolean){
+        this._dialogService.setAreYouSureModal(false);   
+        //if they clicked Yes
+        if (val) {
+            //keyword or url?
+            if (this.aKeywordToRemove !== undefined) {
+                //delete the keyword (temporarily)
+                this.keywordsToRemove.push(this.aKeywordToRemove);
+                //store it to pass back up to delete when SAVING
+                let keyIndex = this.projectParts.ProjKeys.findIndex(x => x.keyword_id == this.aKeywordToRemove.keyword_id && x.term == this.aKeywordToRemove.term);
+                this.projectParts.ProjKeys.splice(keyIndex, 1);
+            } else {
+                //it's a url
+                //delete the url (temporarily)
+                this.urlsToRemove.push(this.aURLToRemove);
+                //store it to pass back up to delete when SAVING
+                let urlIndex = this.projectParts.ProjUrls.findIndex(x => x == this.aURLToRemove);
+                this.projectParts.ProjUrls.splice(urlIndex, 1);
+
+                let projectControlGrp = <FormArray>this.projInfoForm.controls['projectGrp'];
+                projectControlGrp.controls['url'].setValue(this.projectParts.ProjUrls.join("|"));
+            }
+        }
+    }
     
+
 }

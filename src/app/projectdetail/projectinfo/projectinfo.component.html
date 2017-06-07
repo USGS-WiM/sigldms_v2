@@ -15,36 +15,30 @@
                 <label>Project Name:</label>
                 <span>{{project.name}}</span>
             </div>
-
             <hr />
             <!-- Project Duration -->
             <div class="sigl-edit-form-group">
                 <label>Project Duration:</label>              
                 <span *ngFor="let d of DurationList | myfilter: {proj_duration_id : project.proj_duration_id}">{{ d.duration_value }}</span> 
             </div>
-
             <!-- Project Status -->
             <div class="sigl-edit-form-group">
                 <label>Project Status:</label>
                 <span *ngFor="let s of StatusList | myfilter: {proj_status_id : project.proj_status_id}">{{ s.status_value }}</span>
             </div>
-
             <!-- Project Start Date -->
             <div class="sigl-edit-form-group">
                 <label>Project Start Date:</label>
                 <span *ngIf="project.start_date">{{project.start_date | date: 'MM/dd/yyyy'}}</span>
                 <span *ngIf="!project.start_date">---</span>
             </div>
-
             <!-- Project Completion Date -->
             <div class="sigl-edit-form-group">
                 <label>Project Completion Date:</label>
                 <span *ngIf="project.end_date">{{project.start_date | date: 'MM/dd/yyyy'}}</span>
                 <span *ngIf="!project.end_date">---</span>
             </div>
-
             <hr />
-
             <!-- Project Objectives -->
             <div class="sigl-edit-form-group">
                 <label>Project Objectives:</label>
@@ -53,7 +47,6 @@
                 </ul>
                 <span *ngIf="ProjectObjectives?.length == 0">---</span>
             </div>
-
             <!-- Project Monitoring Coordination -->
             <div class="sigl-edit-form-group">
                 <label>Monitoring Coordination Effort:</label>
@@ -62,13 +55,11 @@
                 </ul>
                 <span *ngIf="ProjectMonitorCoords?.length == 0">---</span>
             </div>
-
             <!-- Project Description -->
             <div class="sigl-edit-form-group">
                 <label>Description:</label>
                 <textarea autosize [readonly]="true" class="form-control" id="description" rows="3" [(ngModel)]="project.description" name="description"></textarea>
-            </div>
-            
+            </div>            
             <hr />
             <!-- Project Keywords -->
             <div class="sigl-edit-form-group">
@@ -78,8 +69,6 @@
                 </ul>
                 <span *ngIf="ProjectKeywords?.length == 0">---</span>
             </div>
-
-
             <hr />
             <!-- Project Websites -->
             <div class="sigl-edit-form-group">
@@ -89,17 +78,15 @@
                 </ul>
                 <span *ngIf="ProjectParts.ProjUrls?.length == 0">---</span>
             </div>
-
             <!-- Project Additional Info -->
             <div class="sigl-edit-form-group">
                 <label>Additional Information:</label>
                 <textarea autosize [readonly]="true" class="form-control" id="additional_info" rows="3" [(ngModel)]="project.additional_info" name="additional_info"></textarea>
             </div>
-
         </fieldset>
     </form>
 </div>
-<button (click)="gotoProjects()">Back</button>
+<button type="button" (click)="gotoProjects()">Back</button>
 
 <editproject [aProject]="project" [projectParts]="ProjectParts"></editproject>
 

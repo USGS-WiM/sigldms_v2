@@ -11,7 +11,10 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { NgbActiveModal, NgbModule } from "@ng-bootstrap/ng-bootstrap";
+import { SwitchComponent } from 'angular2-bootstrap-switch/components';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+ 
+// import { NgbActiveModal, NgbModule } from "@ng-bootstrap/ng-bootstrap";
 
 import { ProjectdetailComponent } from "app/projectdetail/projectdetail.component";
 import { ProjectinfoComponent } from "app/projectdetail/projectinfo/projectinfo.component";
@@ -33,14 +36,13 @@ import { SharedModule } from "app/shared/shared.module";
 import { ProjectDetailRoutingModule } from "app/projectdetail/projectdetail-routing.module";
 import { EditProjectModal } from "app/projectdetail/projectinfo/projectinfo.modal";
 import { ProjPartList } from "app/projectdetail/projectinfo/projectPartList.component";
-//import { AddRemoveList } from "app/projectdetail/projectinfo/addRemoveList.component";
 
 @NgModule({
-  imports: [ CommonModule, FormsModule, ProjectDetailRoutingModule, PipesModule, SharedModule, ReactiveFormsModule, NgbModule ],
+  imports: [ CommonModule, FormsModule, ProjectDetailRoutingModule, PipesModule, SharedModule, ReactiveFormsModule, BrowserAnimationsModule ],// , NgbModule ],
   declarations: [ProjectdetailComponent, ProjectinfoComponent, EditProjectModal, ProjPartList, ProjectcontactComponent, ProjectcooperatorComponent, 
                 ProjectdataComponent, NewDataComponent, ProjectpublicationComponent, NewPublicationComponent, ProjectsiteComponent, 
-                ProjectsitelistComponent, ProjectsitespreadsheetComponent  ],
-  exports: [ProjectdetailComponent],// , NewDataComponent],
-  providers: [ProjectdetailService, FullProjectResolve, ProjectSitesResolve, NgbActiveModal ]
+                ProjectsitelistComponent, ProjectsitespreadsheetComponent, SwitchComponent  ],
+  exports: [ProjectdetailComponent],
+  providers: [ProjectdetailService, FullProjectResolve, ProjectSitesResolve]//, NgbActiveModal ]
 })
 export class ProjectdetailModule { }

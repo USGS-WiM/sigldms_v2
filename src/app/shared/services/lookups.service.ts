@@ -12,7 +12,7 @@ import { Injectable } from '@angular/core';
 
 import { Http, Response, Headers, RequestOptions, URLSearchParams } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
-import { CONFIG } from "app/shared/CONFIG";
+import { CONFIG } from "app/shared/services/CONFIG";
 import { Subject } from "rxjs/Subject";
 import { IProjDuration } from "app/shared/interfaces/lookups/projduration.interface";
 import { IDivision } from "app/shared/interfaces/lookups/division.interface";

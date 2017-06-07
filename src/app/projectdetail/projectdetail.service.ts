@@ -12,7 +12,7 @@ import { Injectable } from '@angular/core';
 
 import { Http, Response, Headers, RequestOptions, URLSearchParams } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
-import { CONFIG } from "app/shared/CONFIG";
+import { CONFIG } from "app/shared/services/CONFIG";
 import { IFullproject } from "app/shared/interfaces/projects/fullProject.interface";
 import { Subject } from "rxjs/Subject";
 import { IOrganizationresource } from "app/shared/interfaces/projects/orgresource.interface";
@@ -223,7 +223,7 @@ export class ProjectdetailService {
     }
 
     // modal for editing project
-    private _projInfoModal:BehaviorSubject<boolean> = <BehaviorSubject<boolean>>new BehaviorSubject(false);
+    private _projInfoModal: BehaviorSubject<boolean> = <BehaviorSubject<boolean>>new BehaviorSubject(false);
     public setProjectInfoModal(val:any){
         this._projInfoModal.next(val);
     }

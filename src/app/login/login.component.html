@@ -11,7 +11,7 @@
         
         <label for="password">PASSWORD:</label>
         <input type="password" name="password" [(ngModel)]="password" placeholder="Enter Password" />
-        <button (click)="login()" id="sigl-login-button" *ngIf="!_loginService.isLoggedIn">Login</button>
+        <button (click)="login()" type="button" id="sigl-login-button" *ngIf="!_loginService.isLoggedIn">Login</button>
         <!--<div class="">
             <a href="" ng-click="forgotPassword()">forgot my password</a>
         </div>

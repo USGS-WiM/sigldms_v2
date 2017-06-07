@@ -23,10 +23,10 @@
                 </div>
             </div> <!-- end data-display -->
             <div class="data-controls">
-                <button *ngIf="!p.isEditing" class="sigl-btn btn-small" (click)="EditRowClicked(i)">Edit</button>
-                <button *ngIf="!p.isEditing" class="sigl-btn btn-orange btn-small" (click)="deletePublication(p.publication_id)">Delete</button>             
-                <button *ngIf="p.isEditing" class="sigl-btn btn-small" (click)="savePublication(p, i)">Save</button>
-                <button *ngIf="p.isEditing" class="sigl-btn btn-orange btn-small" (click)="CancelEditRowClicked(i)">Cancel</button>   
+                <button type="button" *ngIf="!p.isEditing" class="sigl-btn btn-small" (click)="EditRowClicked(i)">Edit</button>
+                <button type="button" *ngIf="!p.isEditing" class="sigl-btn btn-orange btn-small" (click)="deletePublication(p.publication_id)">Delete</button>             
+                <button type="button" *ngIf="p.isEditing" class="sigl-btn btn-small" (click)="savePublication(p, i)">Save</button>
+                <button type="button" *ngIf="p.isEditing" class="sigl-btn btn-orange btn-small" (click)="CancelEditRowClicked(i)">Cancel</button>   
             </div>
         </div>
     </div>
