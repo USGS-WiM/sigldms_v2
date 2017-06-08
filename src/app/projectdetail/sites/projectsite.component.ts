@@ -25,11 +25,16 @@ import { IFullsite } from "app/shared/interfaces/projects/fullSite.interface";
 })
 export class ProjectsiteComponent implements OnInit {
   public projectSites: Array<IFullsite>;
+  private dataSubscript;
+
   constructor(private _route: ActivatedRoute) { }
 
   ngOnInit() {
-    this._route.parent.data.subscribe((data: { projectSites: Array<IFullsite> }) => {
+    this.dataSubscript = this._route.parent.data.subscribe((data: { projectSites: Array<IFullsite> }) => {
       this.projectSites = data.projectSites
     });
+   }
+   ngOnDestroy(){
+      this.dataSubscript.unsubscribe();
    }
 }

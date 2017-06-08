@@ -25,7 +25,7 @@ import { SharedModule } from "app/shared/shared.module";
 @NgModule({
   declarations: [ AppComponent, LoginComponent, PageNotFoundComponent ],// Your components should go here 
   imports: [
-    BrowserModule, FormsModule, HttpModule, SharedModule, ProjectlistModule, LoginRoutingModule, AppRoutingModule
+    BrowserModule, FormsModule, HttpModule, SharedModule.forRoot(), ProjectlistModule, LoginRoutingModule, AppRoutingModule
   ],// Your module imports should go here
   providers: [], // Your global providers should go here
   bootstrap: [AppComponent]

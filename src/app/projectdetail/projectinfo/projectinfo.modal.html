@@ -41,7 +41,7 @@
                             <span class="fa fa-question-circle sigl-tooltip" [ngbTooltip]="projTips.startDate" placement="right"></span>
                         </label>
                         <div class="input-group">                        
-                            <input class="form-control" placeholder="yyyy-mm-dd" validateDates="end_date" formControlName="start_date" ngbDatepicker #sd="ngbDatepicker">
+                            <input class="form-control" placeholder="dd-mm-yyyy" validateDates="end_date" formControlName="start_date" ngbDatepicker #sd="ngbDatepicker">
                             <div class="input-group-addon btn-cal" (click)="sd.toggle()"><i class="fa fa-calendar-o" style="width: 1.2rem; height: 1rem; cursor: pointer;"></i></div>
                         </div>
                         <div class="alert alert-danger" *ngIf="!projInfoForm.get('projectGrp').get('start_date').valid && projInfoForm.get('projectGrp').get('start_date').dirty">Start date must come before Completion date.</div>
@@ -115,7 +115,7 @@
         </fieldset>
     </form>
 </ng-template>
-<areYouSureModal [message]="messageToShow" (modalResponseEvent)="AreYouSureDialogResponse($event)"></areYouSureModal>
+<areYouSureModal #areYouSure [message]="messageToShow" (modalResponseEvent)="AreYouSureDialogResponse($event)"></areYouSureModal>
 
 <ng-template #invalidDates let-c="close" let-d="dismiss">
     <div class="modal-header">

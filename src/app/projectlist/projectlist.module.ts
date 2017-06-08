@@ -20,7 +20,7 @@ import { ProjectdetailModule } from "app/projectdetail/projectdetail.module";
 import { SharedModule } from "app/shared/shared.module";
 
 @NgModule({
-  imports: [ CommonModule, FormsModule, SharedModule, ProjectdetailModule, ProjectListRoutingModule],
+  imports: [ CommonModule, FormsModule, SharedModule.forRoot(), ProjectdetailModule, ProjectListRoutingModule],
   declarations: [ProjectlistComponent],
   exports: [ProjectlistComponent],
   providers: [ProjectlistService, ProjectListResolve]

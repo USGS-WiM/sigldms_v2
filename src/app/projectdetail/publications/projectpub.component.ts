@@ -14,6 +14,7 @@ import { IPublication } from "app/shared/interfaces/projects/publication.interfa
 import { ActivatedRoute, Router } from "@angular/router";
 import { IFullproject } from "app/shared/interfaces/projects/fullProject.interface";
 import { DialogService } from "app/shared/services/dialog.service";
+import { AreYouSureModal } from "app/shared/components/areYouSure.modal";
 
 @Component({
   templateUrl: "projectpub.component.html"//,
@@ -21,6 +22,7 @@ import { DialogService } from "app/shared/services/dialog.service";
 })
 export class ProjectpublicationComponent implements OnInit {
   @ViewChild('PubEditForm') PubEditForm;
+  @ViewChild('areYouSure') areYouSure: AreYouSureModal;
 
   public componentName: string;
   public projectId: number;
@@ -35,6 +37,14 @@ export class ProjectpublicationComponent implements OnInit {
   private deleteID: number;
   public errorMessage: string;
 
+  private dataSubscript;
+  private putSubscript;
+  private messageSubscript;
+  private pubSubscript;
+  private urlSubscript;
+  private postSubscript;
+  private deleteSubscript;
+
   constructor(private _projectDetService: ProjectdetailService, private _dialogService: DialogService, private _route: ActivatedRoute, public _router: Router) { 
     this.errorFlag = false; // this keeps the showReqModal() subscription from firing twice and showing 2 modals
   }
@@ -42,7 +52,7 @@ export class ProjectpublicationComponent implements OnInit {
   ngOnInit() { 
     this.componentName = "ProjData";
     this.neededUpdating = false; this.rowBeingEdited = -1; //start it off neg  
-    this._route.parent.data.subscribe((data: { fullProject: IFullproject }) => {
+    this.dataSubscript = this._route.parent.data.subscribe((data: { fullProject: IFullproject }) => {
       this.projectPubs = data.fullProject.Publications;    
       this.projectId = data.fullProject.ProjectId;
       for (var pdu = 0; pdu < this.projectPubs.length; pdu++) {
@@ -53,7 +63,7 @@ export class ProjectpublicationComponent implements OnInit {
               this.neededUpdating = true;
               this.projectPubs[ind].url = 'http://' + this.projectPubs[ind].url;
 
-              this._projectDetService.putPublication(this.projectPubs[ind].publication_id, this.projectPubs[ind]).subscribe((p: IPublication) => {
+              this.putSubscript = this._projectDetService.putPublication(this.projectPubs[ind].publication_id, this.projectPubs[ind]).subscribe((p: IPublication) => {
                 p.isEditing = false;
                 this.projectPubs[ind] = p;                        
               });// end put
@@ -64,14 +74,14 @@ export class ProjectpublicationComponent implements OnInit {
       //if they needed updating, update the service
       if (this.neededUpdating) this._projectDetService.setProjectPublications(this.projectPubs);
 
-      this._dialogService.MessageToShow.subscribe((m: string) => {
+      this.messageSubscript = this._dialogService.MessageToShow.subscribe((m: string) => {
         this.messageToShow = m;
       }); 
     });
-    this._projectDetService.projPublications().subscribe((p: Array<IPublication>) => {
+    this.pubSubscript = this._projectDetService.projPublications().subscribe((p: Array<IPublication>) => {
       this.projectPubs = p;
     });
-    this._dialogService.nextUrl.subscribe((s:any) => {
+    this.urlSubscript = this._dialogService.nextUrl.subscribe((s:any) => {
       this.nextURL = s;
     });
   } // end ngOnInit()
@@ -101,7 +111,7 @@ export class ProjectpublicationComponent implements OnInit {
       this.ShowRequiredModal(true);
     } else {      
       delete p.isEditing;
-      this._projectDetService.putPublication(p.publication_id, p).subscribe((p: IPublication) => {
+      this.putSubscript = this._projectDetService.putPublication(p.publication_id, p).subscribe((p: IPublication) => {
         p.isEditing = false;
         this.projectPubs[i] = p;
         this._projectDetService.setProjectPublications(this.projectPubs);
@@ -114,8 +124,8 @@ export class ProjectpublicationComponent implements OnInit {
     }
   }
   public deletePublication(id: number){
-    this._dialogService.setMessage("Are you sure you want to delete this?");
-    this._dialogService.setAreYouSureModal(true); //shows the modal. listener is AreYouSureDialogResponse()
+    this._dialogService.setMessage("Are you sure you want to delete this?");    
+    this.areYouSure.showSureModal(); // listener is AreYouSureDialogResponse()
     this.deleteID = id;
   }
 
@@ -127,7 +137,7 @@ export class ProjectpublicationComponent implements OnInit {
   // create new data host
   public AddPublication(p: IPublication){
     // p.project_id = this.projectId;
-    this._projectDetService.postPublication(this.projectId, p).subscribe(
+    this.postSubscript = this._projectDetService.postPublication(this.projectId, p).subscribe(
       res => {
         this._projectDetService.setLastEditDate(new Date());
         console.log("project Publication updated")
@@ -137,7 +147,6 @@ export class ProjectpublicationComponent implements OnInit {
   }
   // response from dialog (either want to leave here without saving edits or want to delete datahost)
   public AreYouSureDialogResponse(val:boolean){
-    this._dialogService.setAreYouSureModal(false);   
     //if they clicked Yes
     if (val) {
       //if they are coming form the change tabs are you sure modal
@@ -154,7 +163,7 @@ export class ProjectpublicationComponent implements OnInit {
           return pp.publication_id === this.deleteID;
         });
         //delete it
-        this._projectDetService.deletePublication(this.projectId, this.deleteID).subscribe(
+        this.deleteSubscript = this._projectDetService.deletePublication(this.projectId, this.deleteID).subscribe(
           result => {
             this.projectPubs.splice(ind, 1); //delete from array
             this._projectDetService.setProjectPublications(this.projectPubs); // udpdate service
@@ -168,14 +177,53 @@ export class ProjectpublicationComponent implements OnInit {
   
   // did they make a change and not save?
   public canDeactivate(nextUrl): Promise<boolean> | boolean {    
-    this._dialogService.setAreYouSureModal(false); // make sure this is false first so it fires
-    
     if (this.PubEditForm.form.dirty) {
       this._dialogService.setMessage("Are you sure you want to change tabs? Any unsaved information will be lost.");
-      this._dialogService.setAreYouSureModal(true);
+      this.areYouSure.showSureModal();
     } else {
       return true;
     }
   }  
+  ngOnDestroy(){
+    this.dataSubscript.unsubscribe();
+    this.messageSubscript.unsubscribe();
+    this.pubSubscript.unsubscribe();
+    this.urlSubscript.unsubscribe();
+    this.projectId = undefined;
+    this.projectPubs = undefined;
+
+    if (this.putSubscript) this.putSubscript.unsubscribe();
+    if (this.postSubscript) this.postSubscript.unsubscribe();
+    if (this.deleteSubscript) this.deleteSubscript.unsubscribe();    
+  }
 }
+/*HOW TO PROPERLY UNSUBSCRIBE
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import 'rxjs/add/operator/takeUntil';
+import { Subject } from 'rxjs/Subject';
+import { MyThingService } from '../my-thing.service';
+
+@Component({
+    selector: 'my-thing',
+    templateUrl: './my-thing.component.html'
+})
+export class MyThingComponent implements OnDestroy, OnInit {
+    private ngUnsubscribe: Subject<void> = new Subject<void>();
+    constructor(private myThingService: MyThingService) { }
+
+    ngOnInit() {
+        this.myThingService.getThings()
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(things => console.log(things));
+
+        this.myThingService.getOtherThings()
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(things => console.log(things));
+    }
+
+    ngOnDestroy() {
+        this.ngUnsubscribe.next();
+        this.ngUnsubscribe.complete();
+    }
+}*/
 

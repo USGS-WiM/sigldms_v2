@@ -22,16 +22,22 @@ import { IFullproject } from "app/shared/interfaces/projects/fullProject.interfa
 export class ProjectcooperatorComponent implements OnInit {
   public projectCoops: Array<IOrganizationresource>;
   public componentName: string;
-  
+  private dataSubscript;
+
   constructor(private _projectDetService: ProjectdetailService, private _route: ActivatedRoute) { }
 
   ngOnInit() { 
-    this._route.parent.data.subscribe((data: { fullProject: IFullproject }) => {
+    this.dataSubscript = this._route.parent.data.subscribe((data: { fullProject: IFullproject }) => {
       this.projectCoops = data.fullProject.Organizations;       
     });
     this.componentName = "projCoop"; 
   }
 
+  ngOnDestroy() {
+      // Clean up to avoid memory leak. unsubscribe from all stuff
+      this.dataSubscript.unsubscribe()
+      
+  }
   public canDeactivate(): Promise<boolean> | boolean {
     // Allow synchronous navigation (`true`) if no crisis or the crisis is unchanged
     // if (!this.crisis || this.crisis.name === this.editName) {

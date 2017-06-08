@@ -42,22 +42,25 @@ export class EditProjectModal {
     public projStatusList: Array<IProjStatus>; // dropdown
     public projTips: any; // tooltips
     private tempProj: IProject; // holds original when editing in case they cancel
-
     public objectiveMulti: Array<IMultiSelectOption> = []; // dropdown multiselect contents
     public objectiveSelected: Array<number>; // holds ids of selected
     public monitorCoordsMulti: Array<IMultiSelectOption> = [];
     public monitorCoordsSelected: Array<number>; // holds ids of selected
     public multiSettings: IMultiSelectSettings;
-
     public aKeywordToRemove: IKeyword; //removing keyword emitter hits function that populates this so that when AreYouSure comes back true, will have value to store for deletion
     public keywordsToRemove: Array<IKeyword>; // storage of keywords removed to delete at POST/PUT time
     public newestKeywords: Array<IKeyword>; //passed up from projectPartlist everytime one is added or removed
-
     public aURLToRemove: string; //removing url emitter hits function that populates this so that when AreYouSure comes back true, will have value to store for deletion
     public urlsToRemove: Array<string>; // storage of urls removed to delete at POST/PUT time
     public newestURLs: Array<string>;    
-
     public undetermined: boolean; // enable/disable end date based on proj_status_id
+    
+    private infoModalSubscript;
+    private projSubscript;
+    private durSubscript;
+    private statSubscript;
+    private objSubscript;
+    private monSubscript;
 
     constructor(private _projDetailService: ProjectdetailService, private _dialogService: DialogService, 
                 private _modalService: NgbModal,  private _lookupService: LookupsService, private _fb: FormBuilder) {
@@ -110,26 +113,26 @@ export class EditProjectModal {
             addInfo: "Include any other information about your project here."
         }
         // when show == true, show the modal
-        this._projDetailService.showProjectInfoModal.subscribe((show: boolean) => {
+        this.infoModalSubscript = this._projDetailService.showProjectInfoModal.subscribe((show: boolean) => {
             if (show) this.showProjectModal();
         });
 
-        this._projDetailService.fullProj().subscribe(fullProj => {
+        this.projSubscript = this._projDetailService.fullProj().subscribe(fullProj => {
             this.fullProject = fullProj;
         });
         //get all the lookups I need
-        this._lookupService.getProjDurations().subscribe((pd: Array<IProjDuration>) => {
+        this.durSubscript = this._lookupService.getProjDurations().subscribe((pd: Array<IProjDuration>) => {
              this.projDurationList = pd;    
         });
-        this._lookupService.getProjStatus().subscribe((ps: Array<IProjStatus>) => {
+        this.statSubscript = this._lookupService.getProjStatus().subscribe((ps: Array<IProjStatus>) => {
              this.projStatusList = ps;    
         });
-        this._lookupService.getObjectives().subscribe((o: Array<IObjective>) => {
+        this.objSubscript = this._lookupService.getObjectives().subscribe((o: Array<IObjective>) => {
             this.objectiveMulti = [];
             o.forEach((obj) => 
                 this.objectiveMulti.push({id: obj.objective_type_id, name: obj.objective}));
         });
-        this._lookupService.getMonCoords().subscribe((mc: Array<IMonitorCoord>) => {
+        this.monSubscript = this._lookupService.getMonCoords().subscribe((mc: Array<IMonitorCoord>) => {
             this.monitorCoordsMulti = [];
             mc.forEach((moniCoord) => 
                 this.monitorCoordsMulti.push({id: moniCoord.monitoring_coordination_id, name: moniCoord.effort}));
@@ -175,9 +178,15 @@ export class EditProjectModal {
              }
         });
         // START_DATE
-        projectControlGrp.controls['start_date'].setValue(this.aProject.start_date || null);     
+        if (this.aProject.start_date.toString() !== "") {
+            let stDate: Date = new Date(this.aProject.start_date);
+            projectControlGrp.controls['start_date'].setValue({year: stDate.getFullYear(), month: stDate.getMonth()+1, day: stDate.getDate()});
+        } else projectControlGrp.controls['start_date'].setValue( null);     
         // END_DATE
-        projectControlGrp.controls['end_date'].setValue(this.aProject.end_date || null);
+        if (this.aProject.end_date.toString() !== "") {
+            let eDate: Date = new Date(this.aProject.end_date);
+            projectControlGrp.controls['end_date'].setValue({year: eDate.getFullYear(), month: eDate.getMonth()+1, day: eDate.getDate()});
+        } else projectControlGrp.controls['end_date'].setValue(null);
         // PROJECT OBJECTIVES
         let proObjsIDs: Array<number> = [];
         this.projectParts.ProjObjs.forEach(po => {proObjsIDs.push(po.objective_type_id);}); // push in each id for preselecting
@@ -202,14 +211,16 @@ export class EditProjectModal {
         // open the modal now
         this._modalService.open(this.modalElement, {backdrop: 'static', keyboard: false, size: 'lg'} ).result.then((valid) =>{           
             let closeResult = `Closed with: ${valid}`;           
-            if (valid){
-                // save the project
+          //  if (valid){
+                // PUT the project
+                // get just Iproject entity
                 let updatedProject: IProject = this.projInfoForm.controls['projectGrp'].value;
+                // fix dates if present
                 if (updatedProject.start_date !== null)
                     updatedProject.start_date = new Date(updatedProject.start_date['year'], updatedProject.start_date['month'], updatedProject.start_date['day']);
                 if (updatedProject.end_date !== null)
                     updatedProject.end_date = new Date(updatedProject.end_date['year'], updatedProject.end_date['month'], updatedProject.end_date['day']);
-    
+                // apply last edited stamp to now
                 updatedProject.last_edited_stamp = new Date();
                 //what about READY_FLAG ??? 
                 
@@ -220,9 +231,9 @@ export class EditProjectModal {
                 // this.newestKeywords (all for this proj)   this.keywordsToRemove
 
                 //its valid        
-            } else {
+           // } else {
                 //invalid. do something about it
-            }            
+           // }            
         }, (reason) => {
             this.CloseResult = `Dismissed ${this.getDismissReason(reason)}`
         });
@@ -256,8 +267,7 @@ export class EditProjectModal {
     }
 
     // response from dialog (want to delete the keyword or url)
-    public AreYouSureDialogResponse(val:boolean){
-        this._dialogService.setAreYouSureModal(false);   
+    public AreYouSureDialogResponse(val:boolean) {
         //if they clicked Yes
         if (val) {
             //keyword or url?
@@ -280,6 +290,19 @@ export class EditProjectModal {
             }
         }
     }
+
+    ngOnDestroy() {
+        // Clean sub to avoid memory leak. unsubscribe from all stuff
+        this.infoModalSubscript.unsubscribe()
+        this.projSubscript.unsubscribe();
+        this.durSubscript.unsubscribe();
+        this.statSubscript.unsubscribe();
+        this.objSubscript.unsubscribe();
+        this.monSubscript.unsubscribe();
+        this.modalElement = undefined;
+        this.fullProject = undefined;
+    }
     
+  
 
 }

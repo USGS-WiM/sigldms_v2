@@ -145,6 +145,13 @@ export class ProjectdetailService {
     }
 
     // HTTP PUT REQUESTS //////////////////////////////////////
+    // put a project
+    public putProject(id: number, aProject:IProject){
+        let options = new RequestOptions({headers: CONFIG.JSON_AUTH_HEADERS });
+        return this._http.put(CONFIG.PROJECT_URL + '/' + id, aProject, options)
+        .map(res => <IProject>res.json())
+        .catch(this.handleError);            
+    }
     // put a datahost
     public putDatahost(id: number, aDataHost:IDatahost){
         let options = new RequestOptions({headers: CONFIG.JSON_AUTH_HEADERS });

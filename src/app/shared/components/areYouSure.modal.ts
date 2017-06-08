@@ -33,27 +33,27 @@ import { DialogService } from "app/shared/services/dialog.service";
 })
 
 export class AreYouSureModal {    
-    @ViewChild('areYouSure') public areYouSureModal; // : ModalDirective;  //modal for validator        
+    @ViewChild('areYouSure') public areYouSureModal;    
     @Input() message: string;
     @Output() modalResponseEvent = new EventEmitter<boolean>(); // when they hit save, emit to projectdata.component
 
     private modalElement: any;
     public CloseResult:any;
     public ModalMessage: string;
+    private messageSubscript;
+
     constructor(private _dialogService: DialogService, private _modalService: NgbModal){ 
-        this.message = "";
-    /*    this._dialogService.showAreYouSureModal.subscribe((show: boolean) => {
+        this.message = "";    
+     /*   this.dialogSubscript = this._dialogService.showAreYouSureModal
+            .subscribe((show: boolean) => {
             if (show) this.showSureModal();               
-        }); 
-        this.modalElement = this.areYouSureModal; */
+        });*/ 
     }
     
     ngOnInit() {        
-        this._dialogService.MessageToShow.subscribe(m => { this.message = m; });
+        this.messageSubscript = this._dialogService.MessageToShow.subscribe(m => { this.message = m; });
       //show the filter modal == Change Filters button was clicked in sidebar
-     //   this._dialogService.showAreYouSureModal.subscribe((show: boolean) => {
-     //       if (show) this.showSureModal();               
-    //    }); 
+        
         this.modalElement = this.areYouSureModal;
     }
      
@@ -79,6 +79,10 @@ export class AreYouSureModal {
         else return  `with: ${reason}`;
     }
 
+    ngOnDestroy() {
+        this.messageSubscript.unsubscribe();
+        this.modalElement = undefined;
+    }
     /*
         Help with making this not rely on a service go-between
         https://plnkr.co/edit/TyvCfbntYGHhaLI5fbeq?p=preview

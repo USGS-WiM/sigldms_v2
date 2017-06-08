@@ -33,12 +33,13 @@ export class AtLeast1RequiredModal {
     @ViewChild('atLeastOne') public atLeast1ReqModal; // : ModalDirective;  //modal for validator    
     private modalElement: any;
     public CloseResult: any;
+    private modalSubscript;
 
     constructor(private _dialogService: DialogService, private _modalService: NgbModal){ }
     
     ngOnInit() {
       //show the filter modal == Change Filters button was clicked in sidebar
-      this._dialogService.showAtLeast1Modal.subscribe((show: boolean) => {
+      this.modalSubscript = this._dialogService.showAtLeast1Modal.subscribe((show: boolean) => {
           if (show) this.showReqModal();
       });
       this.modalElement = this.atLeast1ReqModal;
@@ -60,5 +61,8 @@ export class AtLeast1RequiredModal {
         if (reason === ModalDismissReasons.ESC) return 'by pressing ESC';
         else if (reason === ModalDismissReasons.BACKDROP_CLICK) return 'by clicking on a backdrop';
         else return  `with: ${reason}`;
+    }
+    ngOnDestroy() {
+        this.modalSubscript.unsubscribe();
     }
 }

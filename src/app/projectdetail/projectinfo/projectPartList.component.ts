@@ -1,6 +1,7 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ViewChild } from '@angular/core';
 import { IKeyword } from "app/shared/interfaces/lookups/keyword.interface";
 import { DialogService } from "app/shared/services/dialog.service";
+import { AreYouSureModal } from "app/shared/components/areYouSure.modal";
 
 @Component({
   selector: 'projpart-list',
@@ -34,6 +35,7 @@ export class ProjPartList {
     @Input() projectThing: string;
     @Output() thingToRemove = new EventEmitter<any>();
     @Output() allTheThings = new EventEmitter<any>();
+    @ViewChild('areYouSure') areYouSure: AreYouSureModal;
 
     public newThing: string;    
     public keyTip: string;
@@ -72,7 +74,7 @@ export class ProjPartList {
 
     public removePart(term, i){
         this._dialogService.setMessage("Are you sure you want to delete this?");
-        this._dialogService.setAreYouSureModal(true); //shows the modal. listener is projectinfo.modal.ts AreYouSureDialogResponse()
+        this.areYouSure.showSureModal(); // listener is projectinfo.modal.ts AreYouSureDialogResponse()
 
         let keywordToRemove = this.projectThing == "Keyword" ? {keyword_id: term.keyword_id, term: term.term} : term;
         let sendThis = [this.projectThing, keywordToRemove];

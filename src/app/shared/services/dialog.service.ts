@@ -19,12 +19,15 @@ import 'rxjs/add/operator/catch';
 import { CONFIG } from "app/shared/services/CONFIG";
 import { IDatamanager } from "app/shared/interfaces/settings/datamanager.interface";
 import { Router } from "@angular/router";
+import { BehaviorSubject } from "rxjs/BehaviorSubject";
 
 @Injectable()
 export class DialogService {
     public redirectUrl: string; // store the URL so we can redirect after logging in
  
-    constructor(private _http: Http, public _router: Router ) {}
+    constructor(private _http: Http, public _router: Router ) {
+        console.log("'build dialog service instance ...");
+    }
 
     // show/hide modal for dataHost and Publication
     private _showHideAtLeast1Modal: Subject<boolean> = new Subject<boolean>();
@@ -35,14 +38,7 @@ export class DialogService {
     public get showAtLeast1Modal():any{
         return this._showHideAtLeast1Modal.asObservable();
     }
-
-    private _areYouSureModal: Subject<boolean> = new Subject<boolean>();
-    public setAreYouSureModal(val:any){
-        this._areYouSureModal.next(val);
-    }
-    public get showAreYouSureModal():any {
-        return this._areYouSureModal.asObservable();
-    }
+    
     private _nextUrl: Subject<any> = new Subject<any>();
     public setNextUrl(val:any){
         this._nextUrl.next(val);

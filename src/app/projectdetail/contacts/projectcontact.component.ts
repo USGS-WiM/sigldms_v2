@@ -41,10 +41,12 @@ import { ActivatedRoute } from "@angular/router";
 export class ProjectcontactComponent {//} implements OnInit {
   public componentName: string;
   public projectContacts: Array<IContactresource>;
+  private dataSubscript;
+
   constructor( private _projectDetService: ProjectdetailService, private _route: ActivatedRoute) { }
 
   ngOnInit() { 
-    this._route.parent.data.subscribe((data: { fullProject: IFullproject }) => {
+    this.dataSubscript = this._route.parent.data.subscribe((data: { fullProject: IFullproject }) => {
       this.projectContacts = data.fullProject.Contacts;       
     });
     this.componentName = "projContacts";
@@ -53,7 +55,11 @@ export class ProjectcontactComponent {//} implements OnInit {
 
   //make sure phone is formatted
 
-  
+  ngOnDestroy() {
+      // Clean up to avoid memory leak. unsubscribe from all stuff
+      this.dataSubscript.unsubscribe()
+      
+  }
   public canDeactivate(): Promise<boolean> | boolean {
     // Allow synchronous navigation (`true`) if no crisis or the crisis is unchanged
     // if (!this.crisis || this.crisis.name === this.editName) {

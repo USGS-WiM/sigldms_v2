@@ -34,4 +34,4 @@
 <newdata [editing]="isEditing" (errorMessagePleaseEvent)="ShowRequiredModal($event)" (addDataHostEvent)="AddDataHost($event)"></newdata>
 
 <atLeast1Modal></atLeast1Modal>
-<areYouSureModal [message]="messageToShow" (modalResponseEvent)="AreYouSureDialogResponse($event)"></areYouSureModal>
+<areYouSureModal #areYouSure [message]="messageToShow" (modalResponseEvent)="AreYouSureDialogResponse($event)"></areYouSureModal>

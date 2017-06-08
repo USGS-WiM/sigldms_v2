@@ -14,8 +14,7 @@ import { IDatahost } from "app/shared/interfaces/projects/datahost.interface";
 import { ActivatedRoute, Router } from "@angular/router";
 import { IFullproject } from "app/shared/interfaces/projects/fullProject.interface";
 import { DialogService } from "app/shared/services/dialog.service";
-
-// import { NewDataComponent } from './newdatahost.component';
+import { AreYouSureModal } from "app/shared/components/areYouSure.modal";
 
 @Component({
   templateUrl: "projectdata.component.html",
@@ -23,7 +22,8 @@ import { DialogService } from "app/shared/services/dialog.service";
 })
 export class ProjectdataComponent implements OnInit {
   @ViewChild('DataEditForm') DataEditForm;
-
+  @ViewChild('areYouSure') areYouSure: AreYouSureModal;
+  
   public componentName: string;
   public projectId: number;
   public projectData: Array<IDatahost>;
@@ -36,6 +36,13 @@ export class ProjectdataComponent implements OnInit {
   public messageToShow: string;
   private deleteID: number;
   public errorMessage: string;
+  private dataSubscript;
+  private putDHsubscript;
+  private messageSubscript;
+  private pdataSubscript;
+  private nextUrlSubscript;
+  private postDHsubscript;
+  private deleteDHsubscript;
 
   constructor(private _projectDetService: ProjectdetailService, private _dialogService: DialogService, private _route: ActivatedRoute, public _router: Router) { 
     this.errorFlag = false; // this keeps the showReqModal() subscription from firing twice and showing 2 modals
@@ -44,7 +51,7 @@ export class ProjectdataComponent implements OnInit {
   ngOnInit() { 
     this.componentName = "ProjData";
     this.neededUpdating = false; this.rowBeingEdited = -1; //start it off neg  
-    this._route.parent.data.subscribe((data: { fullProject: IFullproject }) => {
+    this.dataSubscript = this._route.parent.data.subscribe((data: { fullProject: IFullproject }) => {
       this.projectData = data.fullProject.DataHosts;    
       this.projectId = data.fullProject.ProjectId;
       // if any ProjDatum, make sure the url (if one) is formatted properly
@@ -56,7 +63,7 @@ export class ProjectdataComponent implements OnInit {
               this.neededUpdating = true;
               this.projectData[ind].portal_url = 'http://' + this.projectData[ind].portal_url;
 
-              this._projectDetService.putDatahost(this.projectData[ind].data_host_id, this.projectData[ind]).subscribe((r: IDatahost) => {
+              this.putDHsubscript = this._projectDetService.putDatahost(this.projectData[ind].data_host_id, this.projectData[ind]).subscribe((r: IDatahost) => {
                 r.isEditing = false;
                 this.projectData[ind] = r;                        
               });// end put
@@ -67,14 +74,14 @@ export class ProjectdataComponent implements OnInit {
       //if they needed updating, update the service
       if (this.neededUpdating) this._projectDetService.setProjectData(this.projectData);
 
-      this._dialogService.MessageToShow.subscribe((m: string) => {
+      this.messageSubscript = this.messageSubscript = this._dialogService.MessageToShow.subscribe((m: string) => {
         this.messageToShow = m;
       }); 
     });
-    this._projectDetService.projData().subscribe((d: Array<IDatahost>) => {
+    this.pdataSubscript = this._projectDetService.projData().subscribe((d: Array<IDatahost>) => {
       this.projectData = d;
     });
-    this._dialogService.nextUrl.subscribe((s:any) => {
+    this.nextUrlSubscript = this._dialogService.nextUrl.subscribe((s:any) => {
       this.nextURL = s;
     });
   } // end ngOnInit()
@@ -104,7 +111,7 @@ export class ProjectdataComponent implements OnInit {
       this.ShowRequiredModal(true);
     } else {      
       delete d.isEditing;
-      this._projectDetService.putDatahost(d.data_host_id, d).subscribe((r: IDatahost) => {
+      this.putDHsubscript = this._projectDetService.putDatahost(d.data_host_id, d).subscribe((r: IDatahost) => {
         //  alert("data host updated");
         r.isEditing = false;
         this.projectData[i] = r;
@@ -118,7 +125,7 @@ export class ProjectdataComponent implements OnInit {
   }
   public deleteDataHost(id: number){
     this._dialogService.setMessage("Are you sure you want to delete this?");
-    this._dialogService.setAreYouSureModal(true); //shows the modal. listener is AreYouSureDialogResponse()
+    this.areYouSure.showSureModal(); // listener is AreYouSureDialogResponse()
     this.deleteID = id;
   }
 
@@ -129,7 +136,7 @@ export class ProjectdataComponent implements OnInit {
   // create new data host
   public AddDataHost(d: IDatahost){
     d.project_id = this.projectId;
-    this._projectDetService.postDatahost(d).subscribe(
+    this.postDHsubscript = this._projectDetService.postDatahost(d).subscribe(
       res => {
         this._projectDetService.setLastEditDate(new Date());
         console.log("project datahosts updated")
@@ -139,7 +146,6 @@ export class ProjectdataComponent implements OnInit {
   }
   // response from dialog (either want to leave here without saving edits or want to delete datahost)
   public AreYouSureDialogResponse(val:boolean){
-    this._dialogService.setAreYouSureModal(false);   
     //if they clicked Yes
     if (val) {
       //if they are coming form the change tabs are you sure modal
@@ -156,7 +162,7 @@ export class ProjectdataComponent implements OnInit {
           return pdh.data_host_id === this.deleteID;
         });
         //delete it
-        this._projectDetService.deleteDatahost(this.deleteID).subscribe(
+        this.deleteDHsubscript = this._projectDetService.deleteDatahost(this.deleteID).subscribe(
           result => {
             this.projectData.splice(ind, 1); //delete from array
             this._projectDetService.setProjectData(this.projectData); // udpdate service
@@ -168,13 +174,26 @@ export class ProjectdataComponent implements OnInit {
     }
   }
   
+  ngOnDestroy() {
+      // Clean up to avoid memory leak. unsubscribe from all stuff
+      this.dataSubscript.unsubscribe();      
+      this.messageSubscript.unsubscribe();
+      this.pdataSubscript.unsubscribe();
+      this.nextUrlSubscript.unsubscribe();
+
+      if (this.putDHsubscript) this.putDHsubscript.unsubscribe();
+      if (this.postDHsubscript) this.postDHsubscript.unsubscribe();
+      if (this.deleteDHsubscript) this.deleteDHsubscript.unsubscribe();
+      this.projectData = undefined;
+      this.projectId = undefined;
+      if (this.tempData) this.tempData = undefined;
+  }
+
   // did they make a change and not save?
   public canDeactivate(nextUrl): Promise<boolean> | boolean {    
-    this._dialogService.setAreYouSureModal(false); // make sure this is false first so it fires
-    
     if (this.DataEditForm.form.dirty) {
       this._dialogService.setMessage("Are you sure you want to change tabs? Any unsaved information will be lost.");
-      this._dialogService.setAreYouSureModal(true);
+      this.areYouSure.showSureModal();
     } else {
       return true;
     }

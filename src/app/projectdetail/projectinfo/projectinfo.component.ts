@@ -41,6 +41,13 @@ export class ProjectinfoComponent {
   public ProjectMonitorCoords: Array<IMonitorCoord>
   public urls: Array<string>;
   public testCloseResult: any;
+  //subscriptions
+  private dataSubscript;
+  private durationSubscript;
+  private statSubscript;
+  private objsSubscript;
+  private monSubscript;
+  private keysSubscript;  
 
   constructor(private _route: ActivatedRoute, private _router: Router,
     private _projectDetService: ProjectdetailService, private _lookupServices: LookupsService,
@@ -48,7 +55,7 @@ export class ProjectinfoComponent {
     
   ngOnInit() {
     this._projectDetService.setProjectInfoModal(false); //start it off false so that the true below triggers listeners
-    this._route.parent.data.subscribe((data: { fullProject: IFullproject }) => {
+    this.dataSubscript = this._route.parent.data.subscribe((data: { fullProject: IFullproject }) => {
       this.urls = [];
       this.project = data.fullProject !== undefined ? this._projectDetService.updateProjInfo(data.fullProject) : { created_stamp: new Date(), data_manager_id: Number(localStorage.getItem('loggedInID')) };
       this.ProjectParts = {ProjObjs: [], ProjMon: [], ProjKeys: [], ProjUrls: []};
@@ -96,10 +103,10 @@ export class ProjectinfoComponent {
       } //end there's a url
     }); // end route subscribe
     
-    this._lookupServices.getProjDurations().subscribe((pd: Array<IProjDuration>) => {
+    this.durationSubscript = this._lookupServices.getProjDurations().subscribe((pd: Array<IProjDuration>) => {
           this.DurationList = pd;    
     });
-    this._lookupServices.getProjStatus().subscribe((ps: Array<IProjStatus>) => {
+    this.statSubscript = this._lookupServices.getProjStatus().subscribe((ps: Array<IProjStatus>) => {
           this.StatusList = ps;    
     });
     //get projectObjectives
@@ -109,16 +116,23 @@ export class ProjectinfoComponent {
       this._projectDetService.getProjectMonitorCoords(this.project.project_id);
     }
     //subscribe to the get values
-    this._projectDetService.projectObjectives.subscribe(projO => { this.ProjectObjectives = projO; });
-    this._projectDetService.projMonCoords.subscribe(projM => { this.ProjectMonitorCoords = projM;});
-    this._projectDetService.projKeywords.subscribe(projK => { this.ProjectKeywords = projK;});
+    this.objsSubscript = this._projectDetService.projectObjectives.subscribe(projO => { this.ProjectObjectives = projO; });
+    this.monSubscript = this._projectDetService.projMonCoords.subscribe(projM => { this.ProjectMonitorCoords = projM;});
+    this.keysSubscript = this._projectDetService.projKeywords.subscribe(projK => { this.ProjectKeywords = projK;});
   /*  if (this.project.project_id == undefined)
       this.openProjectModal("new");*/
   }
 
   ngOnDestroy() {
-    // Clean sub to avoid memory leak
-    //this.sub.unsubscribe();
+    // Clean sub to avoid memory leak. unsubscribe from all stuff
+    this.dataSubscript.unsubscribe();
+    this.durationSubscript.unsubscribe();
+    this.statSubscript.unsubscribe();
+    this.objsSubscript.unsubscribe();
+    this.monSubscript.unsubscribe();
+    this.keysSubscript.unsubscribe();
+    this.project = undefined;
+    
   }
  
   public gotoProjects(){

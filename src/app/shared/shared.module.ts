@@ -26,11 +26,19 @@ import { DataTableModule } from "angular2-datatable";
 import { validateDates } from "app/shared/directives/validDates.validator";
 
 @NgModule({
-  imports: [ PipesModule, NgbModule.forRoot(), MultiselectDropdownModule, DataTableModule], 
-  declarations: [ Autosize, httpPrefix, AtLeast1RequiredModal, AreYouSureModal, validateDates ],
-  exports: [Autosize, httpPrefix,  AtLeast1RequiredModal, AreYouSureModal, validateDates, MultiselectDropdownModule, DataTableModule, NgbModule],
-  providers: [ AuthGuard, CanDeactivateGuard, LookupsService, AuthService, DialogService, NgbActiveModal]
+  declarations: [ Autosize, httpPrefix,  AtLeast1RequiredModal, AreYouSureModal, validateDates ],
+  exports: [Autosize, httpPrefix, AtLeast1RequiredModal, AreYouSureModal, validateDates, MultiselectDropdownModule, DataTableModule, NgbModule],
+  imports: [ PipesModule, NgbModule.forRoot(), MultiselectDropdownModule, DataTableModule]
+  
+  //providers: [ ]// AuthGuard, CanDeactivateGuard, LookupsService, AuthService, NgbActiveModal] //DialogService
 })
 
 export class SharedModule {
- }
+  static forRoot(): ModuleWithProviders {
+    return {
+      ngModule: SharedModule,
+      providers: [AuthGuard, CanDeactivateGuard, LookupsService, AuthService, NgbActiveModal, DialogService]
+    }
+  }
+
+}

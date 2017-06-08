@@ -38,7 +38,7 @@ import { EditProjectModal } from "app/projectdetail/projectinfo/projectinfo.moda
 import { ProjPartList } from "app/projectdetail/projectinfo/projectPartList.component";
 
 @NgModule({
-  imports: [ CommonModule, FormsModule, ProjectDetailRoutingModule, PipesModule, SharedModule, ReactiveFormsModule, BrowserAnimationsModule ],// , NgbModule ],
+  imports: [ CommonModule, FormsModule, ProjectDetailRoutingModule, PipesModule, SharedModule.forRoot(), ReactiveFormsModule, BrowserAnimationsModule ],// , NgbModule ],
   declarations: [ProjectdetailComponent, ProjectinfoComponent, EditProjectModal, ProjPartList, ProjectcontactComponent, ProjectcooperatorComponent, 
                 ProjectdataComponent, NewDataComponent, ProjectpublicationComponent, NewPublicationComponent, ProjectsiteComponent, 
                 ProjectsitelistComponent, ProjectsitespreadsheetComponent, SwitchComponent  ],

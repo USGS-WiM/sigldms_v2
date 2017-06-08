@@ -28,7 +28,7 @@ import { AreYouSureModal } from "app/shared/components/areYouSure.modal";
           {{fullProject.Name}}
           <div id="edit-publish-buttons">
             <h4>Project published on SiGL Mapper?</h4>
-            <switch [status]="switchStatus" [onText]="'Yes'" [offText]="'No'" [onColor]="'sky-blue'" [offColor]="'default'" [size]="'normal'" (statusChange)="onFlagChange($event)"></switch>
+            <switch [(status)]="switchStatus" [onText]="'Yes'" [offText]="'No'" [onColor]="'sky-blue'" [offColor]="'default'" [size]="'normal'" (statusChange)="onFlagChange($event)"></switch>
           </div>
         </div>
         <div id="sigl-edit-left">
@@ -62,40 +62,39 @@ export class ProjectdetailComponent implements OnInit {
   public datahosts: Array<IDatahost>;
   public publications: Array<IPublication>;
   private flaggingBool: boolean; //updates when they change switch
+  private dataSubscript;
+  private pubSubscript;
+  private dateSubscript;
+  private projDataSubscript;
+  private siteDataSubscript;
+  private putProjsubscript;
 
   constructor(private _route: ActivatedRoute, private _projectDetService: ProjectdetailService, private _lookupService: LookupsService, private _dialogService: DialogService,){}
   
-  ngOnInit(){    
-    
-    this._dialogService.setMessage("Are you sure this project is ready to publish on the SiGL Mapper?");
- //     this._dialogService.setAreYouSureModal(false);
-    //go populate the rest of the dropdowns
-    if (localStorage.getItem('creds') !== null)
-    //  this._lookupService.getLookups();
+  ngOnInit(){
     // needed to keep count updated
-    this._projectDetService.projData().subscribe((d: Array<IDatahost>) => {
+    this.dataSubscript = this._projectDetService.projData().subscribe((d: Array<IDatahost>) => {
       this.datahosts = d;
     });
     // needed to keep count updated
-    this._projectDetService.projPublications().subscribe((p: Array<IPublication>) => {
+    this.pubSubscript = this._projectDetService.projPublications().subscribe((p: Array<IPublication>) => {
       this.publications = p;
     });
     // needed to keep last_updated date updated
-    this._projectDetService.lastEditDate.subscribe((d: Date) => {
+    this.dateSubscript = this._projectDetService.lastEditDate.subscribe((d: Date) => {
       this.lastEdited = d;
     });
-
     // routed here, populate project and sites
-    this._route.data.subscribe((data: { fullProject: IFullproject }) => {
+    this.projDataSubscript = this._route.data.subscribe((data: { fullProject: IFullproject }) => {
         this.fullProject = data.fullProject;  
         if (this.fullProject !== undefined) {
           this._projectDetService.setLastEditDate(this.fullProject.last_edited_stamp);
         } else {
-          this.fullProject = {Name: "", created_stamp: new Date()};
           //this is a new project being created
+          this.fullProject = {Name: "", created_stamp: new Date()};          
         }
     });    
-    this._route.data.subscribe((data: { projectSites: Array<IFullsite> }) => {
+    this.siteDataSubscript = this._route.data.subscribe((data: { projectSites: Array<IFullsite> }) => {
         this.fullSites = data.projectSites;
         if (this.fullSites !== undefined) {
           this.fullProject.Sites = this.fullSites;
@@ -109,35 +108,38 @@ export class ProjectdetailComponent implements OnInit {
     this.switchStatus = this.fullProject.ready_flag == 1 ? true : false;
   }
 
+  // they flagged the project ready/notready
   public onFlagChange(e) {
     this.flaggingBool = e;
     if (e){
       //flag ready for mapper
       this._dialogService.setMessage("Are you sure this project is ready to publish on the SiGL Mapper?");
-   //   this._dialogService.setAreYouSureModal(true); //shows the modal. listener is AreYouSureDialogResponse()
-      this.areYouSure.showSureModal();
+      this.areYouSure.showSureModal(); // listener is AreYouSureDialogResponse()   
     } else {
       //remove flag
-
+      this._dialogService.setMessage("Are you sure you want to remove this project from being published on the SiGL Mapper?");
+      this.areYouSure.showSureModal(); // listener is AreYouSureDialogResponse()   
     }
-    this.switchStatus = !e;
-    let test = this.fullProject.ready_flag;
   }
+
   // response from dialog (either want to flag/unflag or cancel
   public AreYouSureDialogResponse(val:boolean){
-    this._dialogService.setAreYouSureModal(false);   
     //if they clicked Yes
     if (val) {
-      this.switchStatus = true;
       //flag or unflag project answer in: this.flaggingBool
         // update project with flagged state
       let aProject: IProject = this.getProjectProps(this.fullProject);
-      aProject.ready_flag = val ? 1 : 0;
-      //now PUT it
-
+      aProject.ready_flag = this.flaggingBool ? 1 : 0;
+      // now PUT it
+      this.putProjsubscript = this._projectDetService.putProject(aProject.project_id, aProject).subscribe((r: IProject) => {
+        //  alert("Project updated");
+        this.fullProject.ready_flag = r.ready_flag;        
+        this._projectDetService.setFullProject(this.fullProject);
+        this._projectDetService.setLastEditDate(new Date());        
+      });
     } else {
       //they cancelled
-      this.switchStatus = false;
+      this.switchStatus = !this.flaggingBool;
     }
   }
 
@@ -157,7 +159,20 @@ export class ProjectdetailComponent implements OnInit {
       created_stamp: proj.created_stamp,
       last_edited_stamp: new Date()
     }
-
     return project;
+  }
+
+  ngOnDestroy() {
+    this.dataSubscript.unsubscribe();
+    this.pubSubscript.unsubscribe();
+    this.dateSubscript.unsubscribe();
+    this.projDataSubscript.unsubscribe();
+    this.siteDataSubscript.unsubscribe();
+    this.fullProject = undefined;
+    this.fullSites = undefined;
+    this.datahosts = undefined;
+    this.publications = undefined;
+    if (this.putProjsubscript) this.putProjsubscript.unsubscribe();
+
   }
 }
