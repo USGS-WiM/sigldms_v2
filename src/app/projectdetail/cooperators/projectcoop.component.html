@@ -1,0 +1,20 @@
+<div class="sigl-edit-form">
+    <legend style="margin-bottom:25px;margin-top:0;">Organizations</legend>
+
+    <form #DataEditForm="ngForm">
+        <div class="form-group" *ngIf="projectCoops">
+            <div class="current-data-list" *ngFor="let o of projectCoops; let i = index">
+                <div class="data-display">
+                    <div>
+                        <button type="button" class="sigl-btn btn-orange btn-xs" style="margin-right:10px" (click)="deleteProjOrg(o.organization_system_id)">Delete</button>
+                        <span>{{ o.OrganizationName }}</span><span *ngIf="o.div_id">, {{o.DivisionName}}</span><span *ngIf="o.sec_id">, {{o.SectionName}}</span>
+                    </div>
+                </div> <!-- end data-display -->            
+            </div>
+        </div>
+    </form>
+</div>
+
+<button (click)="showOrgModal()" type="button">Show It</button>
+
+<organizationModal [orgDrop]="orgList" [divDrop]="divisionList" [secDrop]="sectionList" #orgModal></organizationModal>

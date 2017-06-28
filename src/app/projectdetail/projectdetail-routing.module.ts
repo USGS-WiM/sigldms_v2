@@ -3,12 +3,10 @@
 // ------------------------------------------------------------------------------
 
 // copyright:   2016 WiM - USGS
-//
-// authors:  Tonia Roddick USGS Wisconsin Internet Mapping             
-//
+// authors:  Tonia Roddick USGS Wisconsin Internet Mapping
 // purpose: routes for the project details module (parent/children/subchildren)
 
-import { NgModule }             from '@angular/core';
+import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { ProjectdetailComponent } from "app/projectdetail/projectdetail.component";
 import { ProjectcooperatorComponent } from "app/projectdetail/cooperators/projectcoop.component";
@@ -26,7 +24,7 @@ import { ProjectSitesResolve } from "app/projectdetail/projectSites.resolve";
 
 const projectdetailRoutes: Routes = [
   {
-    path: 'projectdetail/:id',// '',
+    path: 'projectdetail/:id',
     component: ProjectdetailComponent,
     canActivateChild: [ AuthGuard ],
     resolve: {

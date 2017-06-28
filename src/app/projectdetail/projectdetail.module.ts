@@ -41,8 +41,8 @@ import { ProjPartList } from "app/projectdetail/projectinfo/projectPartList.comp
   imports: [ CommonModule, FormsModule, ProjectDetailRoutingModule, PipesModule, SharedModule.forRoot(), ReactiveFormsModule, BrowserAnimationsModule ],// , NgbModule ],
   declarations: [ProjectdetailComponent, ProjectinfoComponent, EditProjectModal, ProjPartList, ProjectcontactComponent, ProjectcooperatorComponent, 
                 ProjectdataComponent, NewDataComponent, ProjectpublicationComponent, NewPublicationComponent, ProjectsiteComponent, 
-                ProjectsitelistComponent, ProjectsitespreadsheetComponent, SwitchComponent  ],
+                ProjectsitelistComponent, ProjectsitespreadsheetComponent, SwitchComponent ],
   exports: [ProjectdetailComponent],
-  providers: [ProjectdetailService, FullProjectResolve, ProjectSitesResolve]//, NgbActiveModal ]
+  providers: [ProjectdetailService, FullProjectResolve, ProjectSitesResolve]
 })
 export class ProjectdetailModule { }

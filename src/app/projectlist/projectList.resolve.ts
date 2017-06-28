@@ -20,6 +20,6 @@ export class ProjectListResolve implements Resolve<Array<IindexProject>> {
   constructor(private _projectListService: ProjectlistService) {}
 
   resolve() {
-    return this._projectListService.getProjects();
+    return this._projectListService.getFullProject();
   }
 }

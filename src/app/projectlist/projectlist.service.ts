@@ -20,10 +20,10 @@ export class ProjectlistService {
     constructor(private _http: Http){}
 
     // gets resolved when coming to this route
-    public getProjects(){
+    public getFullProject(){
      //   return PROJECTS;
          let options = new RequestOptions({headers: CONFIG.JSON_AUTH_HEADERS});
-         return this._http.get(CONFIG.PROJECT_URL + "/IndexProjects", options)
-            .map(p => <Array<IindexProject>>p.json())
+         return this._http.get(CONFIG.INDEX_PROJECT_URL, options)
+            .map(p => <Array<IindexProject>>p.json())            
     }
 }

@@ -38,6 +38,17 @@ export class DialogService {
     public get showAtLeast1Modal():any{
         return this._showHideAtLeast1Modal.asObservable();
     }
+
+    // show/hide modal for organizations
+    private _showOrganizationModal: Subject<boolean> = new Subject<boolean>();
+    public setOrganizationModal(val:any){
+        this._showOrganizationModal.next(val);
+    }
+    //show the filter modal in the mainview
+    public get showOrganizationModal():any{
+        return this._showHideAtLeast1Modal.asObservable();
+    }
+    
     
     private _nextUrl: Subject<any> = new Subject<any>();
     public setNextUrl(val:any){

@@ -3,9 +3,7 @@
 // ------------------------------------------------------------------------------
 
 // copyright:   2016 WiM - USGS
-//
-// authors:  Tonia Roddick USGS Wisconsin Internet Mapping             
-//
+// authors:  Tonia Roddick USGS Wisconsin Internet Mapping
 // purpose: logic for projectList page and shell for the projectdetail parts
 
 import { Component, OnInit } from '@angular/core';
@@ -28,15 +26,13 @@ export class ProjectlistComponent implements OnInit {
   ngOnInit() {
     // give me the indexProjects that were resolved in the navigate to this route
     this.projectList = this._route.snapshot.data['projectList'];   
-   
-    //go populate the rest of the dropdowns
- //   if (localStorage.getItem('creds') !== null)
- //     this._lookupService.getLookups();
-  
   } // end onInit()
-  get userRole(): string {
+
+  // getter used in html for which columns to show
+  get userRole(): string {    
     return localStorage.getItem('loggedInRole');
   }
+  
   // clicked project name
   public onSelect(proj: IindexProject) {
     this._router.navigate(['/projectdetail', proj.project_id]);

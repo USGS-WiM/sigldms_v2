@@ -3,24 +3,21 @@
 // ------------------------------------------------------------------------------
 
 // copyright:   2016 WiM - USGS
-//
-// authors:  Tonia Roddick USGS Wisconsin Internet Mapping             
-//
+// authors:  Tonia Roddick USGS Wisconsin Internet Mapping
 // purpose: modal used to edit Project information
 
 import { Component, ViewChild, Output, EventEmitter, Input } from '@angular/core';
+import { FormBuilder, FormGroup, Validators, FormControl, FormArray } from '@angular/forms';
 import { NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
-import { DialogService } from "app/shared/services/dialog.service";
+import { IMultiSelectOption, IMultiSelectSettings  } from "angular-2-dropdown-multiselect";
 import { IProject } from "app/shared/interfaces/projects/project.interface";
-import { ProjectdetailService } from "app/projectdetail/projectdetail.service";
 import { IFullproject } from "app/shared/interfaces/projects/fullProject.interface";
+import { ProjectdetailService } from "app/projectdetail/projectdetail.service";
 import { LookupsService } from "app/shared/services/lookups.service";
 import { IProjDuration } from "app/shared/interfaces/lookups/projduration.interface";
 import { IProjStatus } from "app/shared/interfaces/lookups/projstatus.interface";
 import { IObjective } from "app/shared/interfaces/lookups/objective.interface";
 import { IMonitorCoord } from "app/shared/interfaces/lookups/monitorcoord.interface";
-import { FormBuilder, FormGroup, Validators, FormControl, FormArray } from '@angular/forms';
-import { IMultiSelectOption, IMultiSelectSettings  } from "angular-2-dropdown-multiselect";
 import { IKeyword } from "app/shared/interfaces/lookups/keyword.interface";
 
 @Component({
@@ -31,39 +28,55 @@ import { IKeyword } from "app/shared/interfaces/lookups/keyword.interface";
 export class EditProjectModal {    
     @ViewChild('editProjectInfo') public editProjectInfoModal; // : ModalDirective;  //modal for validator    
     private modalElement: any;
-    @Input() aProject: IProject; // will be the project being edited or 0 for create new
-    @Input() projectParts:any;
-    @Output() modalResponseEvent = new EventEmitter<boolean>(); // when they hit save, emit to projectdata.component
+    @Input() modalFullProject: IFullproject; // will be the project being edited or 0 for create new
+    @Input() modalProjectParts: any; // holds the project stuff (MonCoords, Objectives, Keywords)
+    @Output() updatedVersion = new EventEmitter<any>(); // when they hit save or create, emit to projectdata.component the new stuff
     
     public projInfoForm: FormGroup; //myform
     public CloseResult: any; //why the close the modal (not sure if I need this yet)
-    public fullProject: IFullproject; 
+  //  public fullProject: IFullproject; 
     public projDurationList: Array<IProjDuration>; // dropdown
     public projStatusList: Array<IProjStatus>; // dropdown
     public projTips: any; // tooltips
-    private tempProj: IProject; // holds original when editing in case they cancel
+    private tempProj: IFullproject; // holds original when editing in case they cancel
+    public multiSettings: IMultiSelectSettings;
+    public undetermined: boolean; // enable/disable end date based on proj_status_id
+
+    private originalProjObjsIDs: Array<number>; // holds initial project objectiveIDs to use when updating (compares to objectiveSelected that updates onChange)
+    private objectivesChosenObjectArray: Array<IObjective>; // need to keep this updated with the objective objects
     public objectiveMulti: Array<IMultiSelectOption> = []; // dropdown multiselect contents
     public objectiveSelected: Array<number>; // holds ids of selected
-    public monitorCoordsMulti: Array<IMultiSelectOption> = [];
+
+    private originalProjMonCoordIDs: Array<number>; // holds initial project monCoordIDs to use when updating (compares to monitorCoordsSelected that updates onChange)
+    public monitorsChosenObjectArray: Array<IMonitorCoord>; // need to keep this updated with the monCoord objects
+    public monitorCoordsMulti: Array<IMultiSelectOption> = []; // dropdown multiselect contents
     public monitorCoordsSelected: Array<number>; // holds ids of selected
-    public multiSettings: IMultiSelectSettings;
+    
     public aKeywordToRemove: IKeyword; //removing keyword emitter hits function that populates this so that when AreYouSure comes back true, will have value to store for deletion
     public keywordsToRemove: Array<IKeyword>; // storage of keywords removed to delete at POST/PUT time
     public newestKeywords: Array<IKeyword>; //passed up from projectPartlist everytime one is added or removed
+    
     public aURLToRemove: string; //removing url emitter hits function that populates this so that when AreYouSure comes back true, will have value to store for deletion
     public urlsToRemove: Array<string>; // storage of urls removed to delete at POST/PUT time
     public newestURLs: Array<string>;    
-    public undetermined: boolean; // enable/disable end date based on proj_status_id
     
     private infoModalSubscript;
     private projSubscript;
     private durSubscript;
     private statSubscript;
+    private keysSubscript;
     private objSubscript;
     private monSubscript;
+    private putProjsubscript;
+    private deleteProjKeysubscript;
+    private postProjKeysubscript;
+    private postProjObjsubscript;
+    private deleteProjObjsubscript;
+    private postProjMonsubscript;
+    private deleteProjMonsubscript;
 
-    constructor(private _projDetailService: ProjectdetailService, private _dialogService: DialogService, 
-                private _modalService: NgbModal,  private _lookupService: LookupsService, private _fb: FormBuilder) {
+    constructor(private _projDetService: ProjectdetailService, private _modalService: NgbModal,
+                private _lookupService: LookupsService, private _fb: FormBuilder) {
                     
         this.projInfoForm = _fb.group({
             projectGrp: _fb.group({
@@ -113,13 +126,14 @@ export class EditProjectModal {
             addInfo: "Include any other information about your project here."
         }
         // when show == true, show the modal
-        this.infoModalSubscript = this._projDetailService.showProjectInfoModal.subscribe((show: boolean) => {
+        this.infoModalSubscript = this._projDetService.showProjectInfoModal.subscribe((show: boolean) => {
             if (show) this.showProjectModal();
         });
 
-        this.projSubscript = this._projDetailService.fullProj().subscribe(fullProj => {
+      /* not sure I need this since the fullProject is passed in via opening the modal
+        this.projSubscript = this._projDetService.getFullProj().subscribe(fullProj => {
             this.fullProject = fullProj;
-        });
+        });*/
         //get all the lookups I need
         this.durSubscript = this._lookupService.getProjDurations().subscribe((pd: Array<IProjDuration>) => {
              this.projDurationList = pd;    
@@ -136,104 +150,201 @@ export class EditProjectModal {
             this.monitorCoordsMulti = [];
             mc.forEach((moniCoord) => 
                 this.monitorCoordsMulti.push({id: moniCoord.monitoring_coordination_id, name: moniCoord.effort}));
-        });
-        if (this.aProject.project_id == undefined) this.showProjectModal();
+        });        
+        if (this.modalFullProject.ProjectId == undefined) this.showProjectModal();
     }
      
      // show the modal, populate the form and subscribe to form changes
     public showProjectModal(): void {
         //if editing, make a copy in case they cancel, send back original
-        if (this.aProject.project_id) 
-            this.tempProj = Object.assign({}, this.aProject); // make a copy in case they cancel
+        if (this.modalFullProject.ProjectId) 
+            this.tempProj = Object.assign({}, this.modalFullProject); // make a copy in case they cancel
         
         // populate form        
         let projectControlGrp = <FormArray>this.projInfoForm.controls['projectGrp'];
         
         // PROJECT_ID
-        if (this.aProject.project_id) {
-            projectControlGrp.controls['project_id'].setValue(this.aProject.project_id);
-            projectControlGrp.controls['science_base_id'].setValue(this.aProject.science_base_id);
-            projectControlGrp.controls['ready_flag'].setValue(this.aProject.ready_flag || 0);
-            projectControlGrp.controls['data_manager_id'].setValue(this.aProject.data_manager_id);
-             projectControlGrp.controls['created_stamp'].setValue(this.aProject.created_stamp);
+        if (this.modalFullProject.ProjectId) {
+            projectControlGrp.controls['project_id'].setValue(this.modalFullProject.ProjectId);
+            projectControlGrp.controls['science_base_id'].setValue(this.modalFullProject.ScienceBaseId);
+            projectControlGrp.controls['ready_flag'].setValue(this.modalFullProject.ready_flag || 0);
+            projectControlGrp.controls['data_manager_id'].setValue(this.modalFullProject.DataManagerId);
+            projectControlGrp.controls['created_stamp'].setValue(this.modalFullProject.created_stamp);
         }
         // NAME 
-        projectControlGrp.controls['name'].setValue(this.aProject.name);
+        projectControlGrp.controls['name'].setValue(this.modalFullProject.Name);
         // PROJ_DURATION_ID
-        projectControlGrp.controls['proj_duration_id'].setValue(this.projDurationList.filter(c => c.proj_duration_id === this.aProject.proj_duration_id)[0]);
+        projectControlGrp.controls['proj_duration_id'].setValue(this.projDurationList.filter(c => c.proj_duration_id === this.modalFullProject.duration_id)[0]);
         
         // PROJ_STATUS_ID
-        projectControlGrp.controls['proj_status_id'].setValue(this.projStatusList.filter(c => c.proj_status_id === this.aProject.proj_status_id)[0]);
+        projectControlGrp.controls['proj_status_id'].setValue(this.projStatusList.filter(c => c.proj_status_id === this.modalFullProject.status_id)[0]);
         projectControlGrp.controls['proj_status_id'].valueChanges.subscribe(ps => {
-          //  this.aProject.proj_status_id = ps;
+            //  this.aProject.proj_status_id = ps;
             if (ps == 1) {
                 if (projectControlGrp.controls['end_date'].value !== undefined && projectControlGrp.controls['end_date'].value !== null && projectControlGrp.controls['end_date'].value !== "") {
-                        projectControlGrp.controls['end_date'].setValue(undefined);
-                    }
-                    projectControlGrp.get('end_date').disable();
-                    this.undetermined = true;
-             } else {
+                    projectControlGrp.controls['end_date'].setValue(undefined);
+                }
+                projectControlGrp.get('end_date').disable();
+                this.undetermined = true;
+            } else {
                  projectControlGrp.get('end_date').enable();
                  this.undetermined = false;
-             }
+            }
         });
         // START_DATE
-        if (this.aProject.start_date.toString() !== "") {
-            let stDate: Date = new Date(this.aProject.start_date);
+        if (this.modalFullProject.StartDate !== undefined && this.modalFullProject.StartDate.toString() !== "") {
+            let stDate: Date = new Date(this.modalFullProject.StartDate);
             projectControlGrp.controls['start_date'].setValue({year: stDate.getFullYear(), month: stDate.getMonth()+1, day: stDate.getDate()});
-        } else projectControlGrp.controls['start_date'].setValue( null);     
+        } else projectControlGrp.controls['start_date'].setValue(null);  
+        projectControlGrp.controls['start_date'].valueChanges.subscribe((newVal) => {
+            //if value is cleared, set it to null so that it stays valid on save
+            if (newVal == "") projectControlGrp.controls['start_date'].setValue(null);
+        });
         // END_DATE
-        if (this.aProject.end_date.toString() !== "") {
-            let eDate: Date = new Date(this.aProject.end_date);
+        if (this.modalFullProject.EndDate !== undefined && this.modalFullProject.EndDate.toString() !== "") {
+            let eDate: Date = new Date(this.modalFullProject.EndDate);
             projectControlGrp.controls['end_date'].setValue({year: eDate.getFullYear(), month: eDate.getMonth()+1, day: eDate.getDate()});
         } else projectControlGrp.controls['end_date'].setValue(null);
+        projectControlGrp.controls['end_date'].valueChanges.subscribe((newVal) => {
+            //if value is cleared, set it to null so that it stays valid on save
+            if (newVal == "") projectControlGrp.controls['end_date'].setValue(null);
+        });
         // PROJECT OBJECTIVES
-        let proObjsIDs: Array<number> = [];
-        this.projectParts.ProjObjs.forEach(po => {proObjsIDs.push(po.objective_type_id);}); // push in each id for preselecting
-        this.projInfoForm.controls['objectives'].setValue(proObjsIDs);
+        this.objectiveSelected = this.modalProjectParts.ProjObjs.map(x => x.objective_type_id);
+        this.originalProjObjsIDs = this.modalProjectParts.ProjObjs.map(x => x.objective_type_id);
+        this.objectivesChosenObjectArray = this.modalProjectParts.ProjObjs.map(x => Object.assign({}, x));
+        this.projInfoForm.controls['objectives'].setValue(this.modalProjectParts.ProjObjs.map(x => x.objective_type_id));
         this.projInfoForm.controls['objectives'].valueChanges
             .subscribe((selectedOptions) => {
-                this.objectiveSelected = selectedOptions; //contains all the selected Options TODO
+                this.objectiveSelected = selectedOptions; //contains all the selected Options
+                this.objectivesChosenObjectArray = []; // keep the objects updated for later
+                selectedOptions.forEach(o => {
+                    let thisObj = this.objectiveMulti.filter(om=>{return om.id == o;})[0];
+                    this.objectivesChosenObjectArray.push({objective_type_id: thisObj.id, objective: thisObj.name});
+                });
             });
 
         // PROJECT MONITOR COORDINATION
-        let projmcIDs: Array<number> = [];
-        this.projectParts.ProjMon.forEach(mc => { projmcIDs.push(mc.monitoring_coordination_id); }) // push in each id for preselecting
-        this.projInfoForm.controls['monitorCoords'].setValue(projmcIDs);      
+        this.monitorCoordsSelected = this.modalProjectParts.ProjMon.map(m => m.monitoring_coordination_id);
+        this.originalProjMonCoordIDs = this.modalProjectParts.ProjMon.map(m => m.monitoring_coordination_id);
+        this.monitorsChosenObjectArray = this.modalProjectParts.ProjMon.map(x => Object.assign({}, x));
+        this.projInfoForm.controls['monitorCoords'].setValue(this.modalProjectParts.ProjMon.map(m => m.monitoring_coordination_id));
+        this.projInfoForm.controls['monitorCoords'].valueChanges
+            .subscribe((selectedOptions) => {
+                this.monitorCoordsSelected = selectedOptions; //contains all the selected Options
+                this.monitorsChosenObjectArray = []; // keep the objects updated for later
+                selectedOptions.forEach(o => {
+                    let thisMC = this.monitorCoordsMulti.filter(om=>{return om.id == o;})[0];
+                    this.monitorsChosenObjectArray.push({monitoring_coordination_id: thisMC.id, effort: thisMC.name});
+                });
+            });
         // DESCRIPTION
-        projectControlGrp.controls['description'].setValue(this.aProject.description);
+        projectControlGrp.controls['description'].setValue(this.modalFullProject.Description);
 
         // PROJECT KEYWORDS & PROJECT URLS  handled by projectPartList.component
-
+        this.newestKeywords = this.modalProjectParts.ProjKeys;
         // ADDITIONAL_INFO
-        projectControlGrp.controls['additional_info'].setValue(this.aProject.additional_info);
+        projectControlGrp.controls['additional_info'].setValue(this.modalFullProject.AdditionalInfo);
        
         // open the modal now
         this._modalService.open(this.modalElement, {backdrop: 'static', keyboard: false, size: 'lg'} ).result.then((valid) =>{           
             let closeResult = `Closed with: ${valid}`;           
-          //  if (valid){
+            if (valid){
                 // PUT the project
                 // get just Iproject entity
                 let updatedProject: IProject = this.projInfoForm.controls['projectGrp'].value;
                 // fix dates if present
-                if (updatedProject.start_date !== null)
-                    updatedProject.start_date = new Date(updatedProject.start_date['year'], updatedProject.start_date['month'], updatedProject.start_date['day']);
-                if (updatedProject.end_date !== null)
-                    updatedProject.end_date = new Date(updatedProject.end_date['year'], updatedProject.end_date['month'], updatedProject.end_date['day']);
+                if (updatedProject.start_date !== null && updatedProject.start_date !== undefined)
+                    updatedProject.start_date = new Date(updatedProject.start_date['year'], updatedProject.start_date['month']-1, updatedProject.start_date['day']);
+                if (updatedProject.end_date !== null && updatedProject.end_date !== undefined)
+                    updatedProject.end_date = new Date(updatedProject.end_date['year'], updatedProject.end_date['month']-1, updatedProject.end_date['day']);
                 // apply last edited stamp to now
-                updatedProject.last_edited_stamp = new Date();
-                //what about READY_FLAG ??? 
+                updatedProject.last_edited_stamp = new Date();               
                 
-                
-                
-                let worked = "maybe";
-                
-                // this.newestKeywords (all for this proj)   this.keywordsToRemove
+                // PUT the project and then update the multiselect relationship tables
+                this.putProjsubscript = this._projDetService.putProject(updatedProject.project_id, updatedProject).subscribe((r: IProject) => {    
+                    // KEYWORDS (remove then add all that are in new)
+                    let removePromises = []; let addPromises = [];
+                    this.keywordsToRemove.forEach(pkey => {
+                        this.deleteProjKeysubscript = this._projDetService.deleteProjKeyword(r.project_id, pkey.keyword_id).toPromise();
+                        removePromises.push(this.deleteProjKeysubscript);
+                    });
+                    this.newestKeywords.forEach(newKeys => {                        
+                        if (newKeys.keyword_id == 0) {
+                            this.postProjKeysubscript = this._projDetService.postProjKeyword(r.project_id, newKeys.term).toPromise();
+                            addPromises.push(this.postProjKeysubscript);
+                        }
+                    });
+                    // OBJECTIVES ( remove then add new ones)
+                    let removedObjs = this.difference(this.originalProjObjsIDs, this.objectiveSelected);
+                    removedObjs.forEach(oldObj => {
+                        this.deleteProjObjsubscript = this._projDetService.deleteProjObjective(r.project_id, oldObj).toPromise();
+                        removePromises.push(this.deleteProjObjsubscript);
+                    });
+                    let addedObjIDs = this.difference(this.objectiveSelected, this.originalProjObjsIDs);
+                    addedObjIDs.forEach(newObj => {
+                        this.modalProjectParts.ProjObjs = []; this.modalProjectParts.ProjObjs.push(this.objectiveMulti.filter(o => { return o.id == newObj;})[0]);
+                        this.postProjObjsubscript = this._projDetService.postProjObjective(r.project_id, newObj).toPromise();
+                        addPromises.push(this.postProjObjsubscript);
+                    });
+                    // MONITOR COORDS (remove then add new ones)
+                    let removedMonCoords = this.difference(this.originalProjMonCoordIDs, this.monitorCoordsSelected);                   
+                    removedMonCoords.forEach(oldMC => {
+                        this.deleteProjMonsubscript = this._projDetService.deleteProjMonitorCoord(r.project_id, oldMC).toPromise();
+                        removePromises.push(this.deleteProjMonsubscript);
+                    });
+                    let addedMonCoords = this.difference(this.monitorCoordsSelected, this.originalProjMonCoordIDs);
+                    addedMonCoords.forEach(newMon => {
+                        this.modalProjectParts.ProjMon = []; 
+                        this.modalProjectParts.ProjMon.push(this.monitorCoordsMulti.filter(o => { return o.id == newMon;})[0]);
+                        this.postProjMonsubscript = this._projDetService.postProjMonitorCoord(r.project_id, newMon).toPromise();
+                        addPromises.push(this.postProjMonsubscript);
+                    });
+                    // clean up
+                    this.keywordsToRemove = []; this.newestKeywords = [];
 
-                //its valid        
-           // } else {
+                    Promise.all(removePromises).then((results1) =>{
+                        let something = results1;
+                        Promise.all(addPromises).then((results2) =>{
+                            this.modalFullProject.Name = r.name;
+                            this.modalFullProject.StartDate = r.start_date;
+                            this.modalFullProject.EndDate = r.end_date;
+                            this.modalFullProject.status_id = r.proj_status_id;
+                            this.modalFullProject.Status = r.proj_status_id !== undefined ? this.projStatusList.filter(s=> {return s.proj_status_id == r.proj_status_id;})[0].status_value : "";
+                            this.modalFullProject.duration_id = r.proj_duration_id;
+                            this.modalFullProject.Duration = r.proj_duration_id !== undefined ? this.projDurationList.filter(d=> {return d.proj_duration_id == r.proj_duration_id;})[0].duration_value : "";
+                            this.modalFullProject.Description = r.description; this.modalFullProject.AdditionalInfo = r.additional_info; 
+                            this.modalFullProject.ProjectWebsite = r.url; 
+                            this.modalFullProject.last_edited_stamp = r.last_edited_stamp; this.modalFullProject.ready_flag = r.ready_flag;                            
+                            this.modalFullProject.Objectives = this.objectivesChosenObjectArray;
+                            this.modalFullProject.MonitoringCoords = this.monitorsChosenObjectArray;    
+                            //need to store new keyword ids too after post                 
+                            if (this.modalProjectParts.ProjKeys.filter(k => k.keyword_id == 0).length > 0) {
+                                results2.forEach((r) => {
+                                    if (Object.keys(r[0])[0] == 'keyword_id')
+                                        this.modalFullProject.Keywords = r;
+                                });
+                            } else 
+                                this.modalFullProject.Keywords = this.modalProjectParts.ProjKeys;                            
+                            
+                            this._projDetService.setFullProject(this.modalFullProject);
+                            this._projDetService.setLastEditDate(new Date());   
+                        }).catch(function(err1){
+                            let errorResponse1 = err1;
+                            // show toaster that it failed this._modalService.open(this.modalElement);
+                            //something went wrong on adds
+                        });
+                        
+                    }).catch(function(err2){
+                        let errorResponse2 = err2;
+                        this._modalService.open(this.modalElement);
+                        //something went wrong on removes
+                    });                    
+                });                
+            } else {
                 //invalid. do something about it
-           // }            
+                this._modalService.open(this.modalElement);
+            }            
         }, (reason) => {
             this.CloseResult = `Dismissed ${this.getDismissReason(reason)}`
         });
@@ -260,12 +371,35 @@ export class EditProjectModal {
     public removeKeyorURL(e){
         this.aKeywordToRemove = undefined; 
         this.aURLToRemove = undefined;
-        if (e[0] == "Keyword") this.aKeywordToRemove = e[1];
+        if (e[0] == "Keyword") {
+            this.aKeywordToRemove = e[1];
+            this.keywordsToRemove.push(this.aKeywordToRemove);
+            //store it to pass back up to delete when SAVING
+         //   let keyIndex = this.modalProjectParts.ProjKeys.findIndex(x => x.keyword_id == this.aKeywordToRemove.keyword_id && x.term == this.aKeywordToRemove.term);
+         //   this.modalProjectParts.ProjKeys.splice(keyIndex, 1);            
+        }
         else {
-            this.aURLToRemove = e[1];            
+            this.aURLToRemove = e[1];      
+            this.urlsToRemove.push(this.aURLToRemove);
+            //store it to pass back up to delete when SAVING
+            let urlIndex = this.modalProjectParts.ProjUrls.findIndex(x => x == this.aURLToRemove);
+            this.modalProjectParts.ProjUrls.splice(urlIndex, 1);
+
+            let projectControlGrp = <FormArray>this.projInfoForm.controls['projectGrp'];
+            projectControlGrp.controls['url'].setValue(this.modalProjectParts.ProjUrls.join("|"));      
         }
     }
-
+    
+    // compare two arrays to determine what was added and what was removed for POST/DELETE
+    private difference(a1,a2): Array<number> {
+        let result: Array<any> = [];
+        for (var oi = 0; oi < a1.length; oi++) {
+            if ((a2.map(function (o) { return o; }).indexOf(a1[oi])) === -1) {
+                result.push(a1[oi]);
+            }
+        }        
+        return result;
+    }
     // response from dialog (want to delete the keyword or url)
     public AreYouSureDialogResponse(val:boolean) {
         //if they clicked Yes
@@ -275,23 +409,23 @@ export class EditProjectModal {
                 //delete the keyword (temporarily)
                 this.keywordsToRemove.push(this.aKeywordToRemove);
                 //store it to pass back up to delete when SAVING
-                let keyIndex = this.projectParts.ProjKeys.findIndex(x => x.keyword_id == this.aKeywordToRemove.keyword_id && x.term == this.aKeywordToRemove.term);
-                this.projectParts.ProjKeys.splice(keyIndex, 1);
+                let keyIndex = this.modalProjectParts.ProjKeys.findIndex(x => x.keyword_id == this.aKeywordToRemove.keyword_id && x.term == this.aKeywordToRemove.term);
+                this.modalProjectParts.ProjKeys.splice(keyIndex, 1);
             } else {
                 //it's a url
                 //delete the url (temporarily)
                 this.urlsToRemove.push(this.aURLToRemove);
                 //store it to pass back up to delete when SAVING
-                let urlIndex = this.projectParts.ProjUrls.findIndex(x => x == this.aURLToRemove);
-                this.projectParts.ProjUrls.splice(urlIndex, 1);
+                let urlIndex = this.modalProjectParts.ProjUrls.findIndex(x => x == this.aURLToRemove);
+                this.modalProjectParts.ProjUrls.splice(urlIndex, 1);
 
                 let projectControlGrp = <FormArray>this.projInfoForm.controls['projectGrp'];
-                projectControlGrp.controls['url'].setValue(this.projectParts.ProjUrls.join("|"));
+                projectControlGrp.controls['url'].setValue(this.modalProjectParts.ProjUrls.join("|"));
             }
         }
     }
 
-    ngOnDestroy() {
+ /*   ngOnDestroy() {
         // Clean sub to avoid memory leak. unsubscribe from all stuff
         this.infoModalSubscript.unsubscribe()
         this.projSubscript.unsubscribe();
@@ -299,10 +433,12 @@ export class EditProjectModal {
         this.statSubscript.unsubscribe();
         this.objSubscript.unsubscribe();
         this.monSubscript.unsubscribe();
+        if (this.putProjsubscript) this.putProjsubscript.unsubscribe();
+      //  if (this.deleteProjKeysubscript) this.deleteProjKeysubscript.unsubscribe();
+      //  if (this.deleteProjObjsubscript) this.deleteProjObjsubscript.unsubscribe();
+      //  if (this.postProjMonsubscript) this.postProjMonsubscript.unsubscribe();
+      //  if (this.deleteProjMonsubscript) this.deleteProjMonsubscript.unsubscribe();
         this.modalElement = undefined;
-        this.fullProject = undefined;
-    }
-    
-  
-
+        this.modalFullProject = undefined;
+    } */
 }

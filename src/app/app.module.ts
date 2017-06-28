@@ -21,9 +21,10 @@ import { PageNotFoundComponent } from './not-found/not-found.component';
 import { LoginRoutingModule } from "app/login/login-routing.module";
 import { LoginComponent } from "app/login/login.component";
 import { SharedModule } from "app/shared/shared.module";
+import { LoginErrorModal } from "app/login/error.modal";
 
 @NgModule({
-  declarations: [ AppComponent, LoginComponent, PageNotFoundComponent ],// Your components should go here 
+  declarations: [ AppComponent, LoginComponent, PageNotFoundComponent, LoginErrorModal ],// Your components should go here 
   imports: [
     BrowserModule, FormsModule, HttpModule, SharedModule.forRoot(), ProjectlistModule, LoginRoutingModule, AppRoutingModule
   ],// Your module imports should go here

@@ -8,44 +8,44 @@
 // 
 // purpose: login/logout logic for the application
 
-import { Component }   from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { LoginService } from 'app/login/login.service';
 import { AuthService } from "app/shared/services/auth.service";
+import { NgbModal } from "@ng-bootstrap/ng-bootstrap";
+import { LoginErrorModal } from "app/login/error.modal";
 
 @Component({
-  templateUrl: './login.component.html',
-  styleUrls:  ['./login.component.css']
+	templateUrl: './login.component.html',
+	styleUrls: ['./login.component.css']
 })
 
 export class LoginComponent {
-  public message: string;
-  public username: string;
-  public password: string;
-  constructor(public _loginService: LoginService, public _authService: AuthService, public _router: Router) {
-    this.setMessage();
-  }
+  	@ViewChild('loginErrorModal') loginErrorModal: LoginErrorModal;
+	public errorMessage: string;
+	public username: string;
+	public password: string;
+	constructor(public _loginService: LoginService, public _authService: AuthService, public _router: Router, private _mdService: NgbModal) {}
 
-  public setMessage() {
-    this.message = 'Logged ' + (this._loginService.isLoggedIn ? 'in' : 'out');
-  }
+	public login() {
+		this._loginService.login(this.username, this.password).subscribe(() => {
+			if (this._loginService.isLoggedIn) {
+				// Get the redirect URL from our auth service
+				// If no redirect has been set, use the default
+				let redirect = this._authService.redirectUrl ? this._authService.redirectUrl : '/projects';
+				// Redirect the user
+				this._router.navigate([redirect]);
+			}
+		}, (err) => {
+			this.errorMessage = err;
+			this.loginErrorModal.showErrorModal();
+		});
+	}
 
-  public login() {
-    this.message = 'Trying to log in ...';
-    this._loginService.login(this.username,this.password).subscribe(() => {
-      this.setMessage();
-      if (this._loginService.isLoggedIn) {
-        // Get the redirect URL from our auth service
-        // If no redirect has been set, use the default
-        let redirect = this._authService.redirectUrl ? this._authService.redirectUrl : '/projects';
-        // Redirect the user
-        this._router.navigate([redirect]);
-      }
-    });
-  }
-
-  public logout() {
-    this._loginService.logout();
-    this.setMessage();
-  }
+	public LogInErrorDialogResponse(){		
+	}
+	
+	public logout() {
+		this._loginService.logout();
+	}
 }

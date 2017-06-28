@@ -32,7 +32,7 @@ import { BehaviorSubject } from "rxjs/BehaviorSubject";
 @Injectable()
 export class LookupsService {    
     private _divisions:  BehaviorSubject<Array<IDivision>> = <BehaviorSubject<IDivision[]>>new BehaviorSubject([]);
-    public getDivisions(): Observable<Array<IDivision>> { // getter
+    public get Divisions(): Observable<Array<IDivision>> { // getter
         return this._divisions.asObservable();
     }
     private _frequencies:  BehaviorSubject<Array<IFrequency>> = <BehaviorSubject<IFrequency[]>>new BehaviorSubject([]);
@@ -56,7 +56,7 @@ export class LookupsService {
         return this._objectives.asObservable();
     }
     private _orgs:  BehaviorSubject<Array<IOrganization>> = <BehaviorSubject<IOrganization[]>>new BehaviorSubject([]);
-    public getOrgs(): Observable<Array<IOrganization>> { // getter
+    public get Orgs(): Observable<Array<IOrganization>> { // getter
         return this._orgs.asObservable();
     }
     private _params:  BehaviorSubject<Array<IParameter>> = <BehaviorSubject<IParameter[]>>new BehaviorSubject([]);
@@ -76,7 +76,7 @@ export class LookupsService {
         return this._resources.asObservable();
     }
     private _sections: BehaviorSubject<Array<ISection>> = <BehaviorSubject<ISection[]>>new BehaviorSubject([]);
-    public getSections(): Observable<Array<ISection>> { // getter
+    public get Sections(): Observable<Array<ISection>> { // getter
         return this._sections.asObservable();
     }
     private _states: BehaviorSubject<Array<IState>> = <BehaviorSubject<IState[]>>new BehaviorSubject([]);

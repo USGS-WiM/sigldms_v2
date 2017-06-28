@@ -359,3 +359,13 @@ a {
 .bootstrap-switch-container{
     background: #fff !important;
 }
+.sigl-btn.btn-xs {
+    font-size: 6.5pt;
+    padding: 3px 6px;
+    border: 1px solid #419690;
+    display: inline-block;
+    margin: 3px 0 5px 0;
+}
+.sigl-btn.btn-xs.btn-orange {
+    border: 1px solid #bd3b1e;
+}

@@ -11,8 +11,8 @@ export interface IFullproject {
     ProjectId?: number;
     ScienceBaseId?: string;
     Name?: string;
-    StartDate?: string;
-    EndDate?: string;
+    StartDate?: Date;
+    EndDate?: Date;
     DataManagerId?: number;
     status_id?: number;
     Status?: string;
@@ -29,7 +29,7 @@ export interface IFullproject {
     Contacts?: Array<IContactresource>;
     Publications?: Array<IPublication>;
     Sites?: Array<IFullsite>
-    created_stamp?: string;
-    last_edited_stamp?: string;
+    created_stamp?: Date;
+    last_edited_stamp?: Date;
     ready_flag?: number;
 }

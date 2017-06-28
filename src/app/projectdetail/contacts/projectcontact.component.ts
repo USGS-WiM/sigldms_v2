@@ -43,7 +43,7 @@ export class ProjectcontactComponent {//} implements OnInit {
   public projectContacts: Array<IContactresource>;
   private dataSubscript;
 
-  constructor( private _projectDetService: ProjectdetailService, private _route: ActivatedRoute) { }
+  constructor( private _projDetService: ProjectdetailService, private _route: ActivatedRoute) { }
 
   ngOnInit() { 
     this.dataSubscript = this._route.parent.data.subscribe((data: { fullProject: IFullproject }) => {

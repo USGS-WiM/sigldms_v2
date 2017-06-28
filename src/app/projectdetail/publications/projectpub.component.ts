@@ -45,7 +45,7 @@ export class ProjectpublicationComponent implements OnInit {
   private postSubscript;
   private deleteSubscript;
 
-  constructor(private _projectDetService: ProjectdetailService, private _dialogService: DialogService, private _route: ActivatedRoute, public _router: Router) { 
+  constructor(private _projDetService: ProjectdetailService, private _dialogService: DialogService, private _route: ActivatedRoute, public _router: Router) { 
     this.errorFlag = false; // this keeps the showReqModal() subscription from firing twice and showing 2 modals
   }
 
@@ -63,7 +63,7 @@ export class ProjectpublicationComponent implements OnInit {
               this.neededUpdating = true;
               this.projectPubs[ind].url = 'http://' + this.projectPubs[ind].url;
 
-              this.putSubscript = this._projectDetService.putPublication(this.projectPubs[ind].publication_id, this.projectPubs[ind]).subscribe((p: IPublication) => {
+              this.putSubscript = this._projDetService.putPublication(this.projectPubs[ind].publication_id, this.projectPubs[ind]).subscribe((p: IPublication) => {
                 p.isEditing = false;
                 this.projectPubs[ind] = p;                        
               });// end put
@@ -72,13 +72,13 @@ export class ProjectpublicationComponent implements OnInit {
       } // end foreach
 
       //if they needed updating, update the service
-      if (this.neededUpdating) this._projectDetService.setProjectPublications(this.projectPubs);
+      if (this.neededUpdating) this._projDetService.setProjectPublications(this.projectPubs);
 
       this.messageSubscript = this._dialogService.MessageToShow.subscribe((m: string) => {
         this.messageToShow = m;
       }); 
     });
-    this.pubSubscript = this._projectDetService.projPublications().subscribe((p: Array<IPublication>) => {
+    this.pubSubscript = this._projDetService.projPublications().subscribe((p: Array<IPublication>) => {
       this.projectPubs = p;
     });
     this.urlSubscript = this._dialogService.nextUrl.subscribe((s:any) => {
@@ -111,12 +111,12 @@ export class ProjectpublicationComponent implements OnInit {
       this.ShowRequiredModal(true);
     } else {      
       delete p.isEditing;
-      this.putSubscript = this._projectDetService.putPublication(p.publication_id, p).subscribe((p: IPublication) => {
+      this.putSubscript = this._projDetService.putPublication(p.publication_id, p).subscribe((p: IPublication) => {
         p.isEditing = false;
         this.projectPubs[i] = p;
-        this._projectDetService.setProjectPublications(this.projectPubs);
+        this._projDetService.setProjectPublications(this.projectPubs);
         //update project's last_edit_date
-        this._projectDetService.setLastEditDate(new Date());
+        this._projDetService.setLastEditDate(new Date());
         this.rowBeingEdited = -1;
         this.isEditing = false; // set to true so create new is disabled
         if (this.PubEditForm.form.dirty) this.PubEditForm.reset();
@@ -137,9 +137,9 @@ export class ProjectpublicationComponent implements OnInit {
   // create new data host
   public AddPublication(p: IPublication){
     // p.project_id = this.projectId;
-    this.postSubscript = this._projectDetService.postPublication(this.projectId, p).subscribe(
+    this.postSubscript = this._projDetService.postPublication(this.projectId, p).subscribe(
       res => {
-        this._projectDetService.setLastEditDate(new Date());
+        this._projDetService.setLastEditDate(new Date());
         console.log("project Publication updated")
       },
       error => this.errorMessage = error
@@ -163,11 +163,11 @@ export class ProjectpublicationComponent implements OnInit {
           return pp.publication_id === this.deleteID;
         });
         //delete it
-        this.deleteSubscript = this._projectDetService.deletePublication(this.projectId, this.deleteID).subscribe(
+        this.deleteSubscript = this._projDetService.deletePublication(this.projectId, this.deleteID).subscribe(
           result => {
             this.projectPubs.splice(ind, 1); //delete from array
-            this._projectDetService.setProjectPublications(this.projectPubs); // udpdate service
-            this._projectDetService.setLastEditDate(new Date());
+            this._projDetService.setProjectPublications(this.projectPubs); // udpdate service
+            this._projDetService.setLastEditDate(new Date());
           },
           error => this.errorMessage = error
         );

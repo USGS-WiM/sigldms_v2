@@ -26,6 +26,7 @@ import { AreYouSureModal } from "app/shared/components/areYouSure.modal";
                 
                 <button type="button" class="input-add-button" (click)="addThisPart()">Add</button>
             </div>
+            <areYouSureModal #areYouSure [message]="messageToShow" (modalResponseEvent)="AreYouSureDialogResponse($event)"></areYouSureModal>
     `
 //  styleUrls: ['app/todolist/todolist.css']
 })
@@ -40,7 +41,7 @@ export class ProjPartList {
     public newThing: string;    
     public keyTip: string;
     public allNewThings: Array<any>;
-
+    private removeThing: any;
     constructor(private _dialogService: DialogService){}
 
     ngOnInit() {        
@@ -63,21 +64,44 @@ export class ProjPartList {
                 this.allNewThings.push(this.newThing);
             }
             this.newThing = "";
-            let sendThis = [this.projectThing, this.allNewThings];
+            let sendThis = [this.projectThing, this.projectPart];
             this.allTheThings.emit(sendThis);
         } else {
             alert("Need to add a value first");
         }
-        var target = e.target;
-        target.blur();
+        if (e !== undefined){
+            var target = e.target;
+            target.blur();
+        }
     }
 
     public removePart(term, i){
+        this.removeThing = term;
         this._dialogService.setMessage("Are you sure you want to delete this?");
-        this.areYouSure.showSureModal(); // listener is projectinfo.modal.ts AreYouSureDialogResponse()
+        this.areYouSure.showSureModal(); // listener is AreYouSureDialogResponse()
+    }
 
-        let keywordToRemove = this.projectThing == "Keyword" ? {keyword_id: term.keyword_id, term: term.term} : term;
-        let sendThis = [this.projectThing, keywordToRemove];
-        this.thingToRemove.emit(sendThis);
+    private AreYouSureDialogResponse(val){
+        //if they clicked Yes
+        if (val) {
+            //keyword or url?
+            if (this.projectThing == "Keyword"){
+                let keywordToRemove = {keyword_id: this.removeThing.keyword_id, term: this.removeThing.term};
+                // remove it from projectPart, update parent's version
+                let i = this.projectPart.findIndex(x => x.keyword_id == this.removeThing.keyword_id && x.term == this.removeThing.term);
+                this.projectPart.splice(i,1);
+
+                //send removing one back up to parent
+                let sendThis = [this.projectThing, this.projectPart];
+                this.allTheThings.emit(sendThis);
+            
+                let sendThis2 = [this.projectThing, keywordToRemove];
+                this.thingToRemove.emit(sendThis2);
+            } else {
+                let keywordToRemove = this.removeThing;
+                let sendThis2 = [this.projectThing, keywordToRemove];
+                this.thingToRemove.emit(sendThis2);
+            }
+        }
     }
 }

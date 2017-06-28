@@ -3,7 +3,7 @@ import {Headers}    from "@angular/http";
 
 @Injectable()
 export class CONFIG {
-    private static baseURL: string = "https://sigldev.wim.usgs.gov/SiGLServices/";
+    private static baseURL: string = "https://sigldev.wim.usgs.gov/SiGLServices/"; 
 
     // login
     public static get LOGIN_URL(): string { return this.baseURL + "login";};
@@ -13,7 +13,9 @@ export class CONFIG {
 
     // allProjects, aProject, and all projectParts 
     // :id/objectives, /MonitorCoordinations, /keywords, /OrganizationResources, /datahosts, /contacts, /publications, /ProjectFullSites
-    public static get PROJECT_URL(): string { return this.baseURL + "projects"};
+    public static get PROJECT_URL(): string { return this.baseURL + "Projects"};
+    public static get INDEX_PROJECT_URL(): string { return this.baseURL + "Projects/IndexProjects"};
+    public static get FULL_PROJECT_URL(): string { return this.baseURL + "Projects/GetFullProject"};
 
     // lookups
     public static get PROJ_DURATIONS_URL(): string { return this.baseURL + "ProjectDuration"; };

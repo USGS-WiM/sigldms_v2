@@ -43,11 +43,7 @@ export class AreYouSureModal {
     private messageSubscript;
 
     constructor(private _dialogService: DialogService, private _modalService: NgbModal){ 
-        this.message = "";    
-     /*   this.dialogSubscript = this._dialogService.showAreYouSureModal
-            .subscribe((show: boolean) => {
-            if (show) this.showSureModal();               
-        });*/ 
+        this.message = "";     
     }
     
     ngOnInit() {        
