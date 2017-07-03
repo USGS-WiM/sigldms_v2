@@ -35,6 +35,9 @@ export class LookupsService {
     public get Divisions(): Observable<Array<IDivision>> { // getter
         return this._divisions.asObservable();
     }
+    public setDivisions(d: Array<IDivision>){
+        this._divisions.next(d);
+    }
     private _frequencies:  BehaviorSubject<Array<IFrequency>> = <BehaviorSubject<IFrequency[]>>new BehaviorSubject([]);
     public getFrequencies(): Observable<Array<IFrequency>> { // getter
         return this._frequencies.asObservable();
@@ -59,6 +62,9 @@ export class LookupsService {
     public get Orgs(): Observable<Array<IOrganization>> { // getter
         return this._orgs.asObservable();
     }
+    public setOrganizations(o: Array<IOrganization>){
+        this._orgs.next(o);
+    }
     private _params:  BehaviorSubject<Array<IParameter>> = <BehaviorSubject<IParameter[]>>new BehaviorSubject([]);
     public getParameters(): Observable<Array<IParameter>> { // getter
         return this._params.asObservable();
@@ -78,6 +84,9 @@ export class LookupsService {
     private _sections: BehaviorSubject<Array<ISection>> = <BehaviorSubject<ISection[]>>new BehaviorSubject([]);
     public get Sections(): Observable<Array<ISection>> { // getter
         return this._sections.asObservable();
+    }
+    public setSections(s: Array<ISection>){
+        this._sections.next(s);
     }
     private _states: BehaviorSubject<Array<IState>> = <BehaviorSubject<IState[]>>new BehaviorSubject([]);
     public getStates(): Observable<Array<IState>> { // getter

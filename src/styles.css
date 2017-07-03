@@ -248,7 +248,7 @@ a {
 .sigl-modal-form .sigl-modal-form-group label {
     display: block;
     width: 100%;
-    vertical-align: middle;
+  /*  vertical-align: middle;*/
     font-size: 10pt;
     margin-bottom: 5px;
     font-weight: bold;
@@ -258,10 +258,6 @@ a {
     width: auto;
     font-size: 10pt;
     display: inline-block;
-}
-.dropdown-item a
-{
-    color: #292b2c;
 }
 .sigl-modal-form .list-remove-item {
     color: #de5030;
@@ -290,6 +286,10 @@ a {
     color: #fff;
     background-color: #323432;
     transition: .09s;
+}
+.dropdown-item a
+{
+    color: #292b2c;
 }
 .sigl-section .section-bottom-button {
     background-color: #55B5AE;
@@ -355,7 +355,6 @@ a {
     background-color: #323432;
     transition: .09s;
 }
-
 .bootstrap-switch-container{
     background: #fff !important;
 }
@@ -368,4 +367,15 @@ a {
 }
 .sigl-btn.btn-xs.btn-orange {
     border: 1px solid #bd3b1e;
+}
+.sigl-edit-form .sigl-edit-form-group .sigl-form-add-new {
+    background-color: transparent;
+    color: #55b5ae;
+    float: right;
+    display: block;
+    font-size: 9pt;
+    box-sizing: border-box;
+    padding: 5px 0 0 0;
+    border: none;
+    text-transform: uppercase;
 }

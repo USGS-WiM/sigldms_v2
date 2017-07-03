@@ -1,26 +1,26 @@
 
 <form [formGroup]="newDataForm" class="sigl-edit-form">
     <div class="subhead">Add New Data Source</div>
-     <div class="sigl-edit-form-group">
+    <div class="sigl-edit-form-group">
         <label>Data management system or data description:
             <span class="fa fa-question-circle sigl-tooltip" [ngbTooltip]="dataTip.description" placement="right"></span>
         </label>
         <textarea class="form-control" rows="3" placeholder="" [formControl]="newDataForm.controls['description']"></textarea>
-      </div>
-      <div class="sigl-edit-form-group">
+    </div>
+    <div class="sigl-edit-form-group">
         <label>Data Hosting Entity:
             <span class="fa fa-question-circle sigl-tooltip" [ngbTooltip]="dataTip.host" placement="right"></span>
         </label>
         <input class="form-control" type="text" placeholder="" [formControl]="newDataForm.controls['host_name']">
-      </div>
-      <div class="sigl-edit-form-group">
+    </div>
+    <div class="sigl-edit-form-group">
         <label>Online Data Location:
             <span class="fa fa-question-circle sigl-tooltip" [ngbTooltip]="dataTip.location" placement="right"></span>
         </label>
         <input class="form-control" type="text" placeholder="" httpprefix ngControl="portal_url" [formControl]="newDataForm.controls['portal_url']">
-      </div>
-      <!--submit button -->
-        <div class="sigl-edit-form-group" style="text-align: right;">
-            <button type="button" class="sigl-btn" (click)="AddData(newDataForm.valid, newDataForm.value)">Add</button>
-        </div>
+    </div>
+    <!--submit button -->
+    <div class="sigl-edit-form-group" style="text-align: right;">
+        <button type="button" class="sigl-btn" (click)="AddData(newDataForm.valid, newDataForm.value)">Add</button>
+    </div>
 </form>

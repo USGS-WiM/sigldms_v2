@@ -10,16 +10,19 @@
 
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
-import { Http } from '@angular/http';
+import { Http, Response, Headers, RequestOptions, URLSearchParams } from '@angular/http';
 import { Subject }      from 'rxjs/Subject';
-
+import { CONFIG } from "app/shared/services/CONFIG";
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
 
-import { CONFIG } from "app/shared/services/CONFIG";
+
 import { IDatamanager } from "app/shared/interfaces/settings/datamanager.interface";
 import { Router } from "@angular/router";
 import { BehaviorSubject } from "rxjs/BehaviorSubject";
+import { IOrganization } from "app/shared/interfaces/lookups/organization.interface";
+import { IDivision } from "app/shared/interfaces/lookups/division.interface";
+import { ISection } from "app/shared/interfaces/lookups/section.interface";
 
 @Injectable()
 export class DialogService {
@@ -49,7 +52,27 @@ export class DialogService {
         return this._showHideAtLeast1Modal.asObservable();
     }
     
-    
+    // post organization created in modal
+    public postOrganization(newOrg: IOrganization) {
+        let options = new RequestOptions({ headers: CONFIG.JSON_AUTH_HEADERS });
+        return this._http.post(CONFIG.ORGANIZATION_URL, newOrg, options)
+            .map(res=> <IOrganization>res.json())
+            .catch(this.handleError);
+    }
+    // post division created in modal
+    public postDivision(newDiv: IDivision) {
+        let options = new RequestOptions({ headers: CONFIG.JSON_AUTH_HEADERS });
+        return this._http.post(CONFIG.DIVISION_URL, newDiv, options)
+            .map(res=> <IDivision>res.json())
+            .catch(this.handleError);
+    }
+    // post section created in modal
+    public postSection(newSec: ISection) {
+        let options = new RequestOptions({ headers: CONFIG.JSON_AUTH_HEADERS });
+        return this._http.post(CONFIG.SECTION_URL, newSec, options)
+            .map(res=> <ISection>res.json())
+            .catch(this.handleError);
+    }
     private _nextUrl: Subject<any> = new Subject<any>();
     public setNextUrl(val:any){
         this._nextUrl.next(val);
@@ -63,5 +86,12 @@ export class DialogService {
     }
     public get MessageToShow():any {
         return this._modalMessage.asObservable();
+    }
+
+     private handleError(error: any) {
+        let errMsg = (error.message) ? error.message :
+            error.status ? `${error.status} - ${error.statusText}` : 'Server error';
+        console.error(errMsg);
+        return Observable.throw(errMsg);
     }
 }

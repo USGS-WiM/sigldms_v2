@@ -6,9 +6,9 @@ import { Pipe } from "@angular/core";
 export class ArraySortPipe {
   transform(array: Array<string>, args: string): Array<string> {
     array.sort((a: any, b: any) => {
-      if (a[args] < b[args]) {
+      if (a[args].toLowerCase() < b[args].toLowerCase()) {
         return -1;
-      } else if (a[args] > b[args]) {
+      } else if (a[args].toLowerCase() > b[args].toLowerCase()) {
         return 1;
       } else {
         return 0;

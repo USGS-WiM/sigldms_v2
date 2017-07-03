@@ -26,7 +26,7 @@ import { DialogService } from "app/shared/services/dialog.service";
 import { AreYouSureModal } from "app/shared/components/areYouSure.modal";
 import { DataTableModule } from "angular2-datatable";
 import { validateDates } from "app/shared/directives/validDates.validator";
-import { OrganizationModal } from "app/shared/components/organization.modal";
+import { OrganizationModal } from "app/shared/components/organization/organization.modal";
 
 
 @NgModule({

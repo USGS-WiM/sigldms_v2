@@ -1,0 +1,69 @@
+<ng-template #organization let-c="close" let-d="dismiss">
+    <div class="modal-header">
+        <h4 class="modal-title">ORGANIZATIONS</h4>                  
+    </div>
+    <div class="modal-body">
+        <form class="sigl-modal-form">
+            <div class="sigl-modal-form-group">
+                <label for="chosenOrg">Organization:</label>
+                <div *ngIf="!showAddOrgInput">
+                    <select class="form-control" name="chosenOrg" [(ngModel)]="chosenOrg" (ngModelChange)="onOrgChange($event)">
+                        <option value=""></option>
+                        <option *ngFor="let o of orgDrop | sort: 'organization_name'" [ngValue]="o.organization_id">{{o.organization_name}}</option>
+                    </select>
+                    <span *ngIf="!showAddDivInput && !showAddSecInput" style="display: block; font-size: 8pt;">
+                        <a style="color:#f34b11; cursor:pointer" (click)="addOrgName()">Add Organization</a>
+                    </span>
+                </div>
+                <div *ngIf="showAddOrgInput">
+                    <input class="form-control" type="text" [(ngModel)]="NewOrgName" name="NewOrgName" (keyup.enter)="postOrgPart('org', NewOrgName)" placeholder="New Organization Name" />
+                    <button type="button" class="sigl-btn btn-small" (click)="postOrgPart('org', NewOrgName)">Add</button>
+                    <button type="button" class="sigl-btn btn-small" (click)="neverMind('org')">Cancel</button>
+                </div>
+            </div>
+            <br/>
+
+            <div class="sigl-modal-form-group">
+                <label for="chosenDiv">Division:</label>
+                <div *ngIf="!showAddDivInput">
+                    <select class="form-control" name="chosenDiv" [(ngModel)]="chosenDiv" (ngModelChange)="onDivChange($event)">
+                        <option value=""></option>
+                        <option *ngFor="let d of orgDivisions | sort: 'division_name'" [ngValue]="d.division_id">{{d.division_name}}</option>
+                    </select>
+                    <span *ngIf="chosenOrg && !showAddDivInput && !showAddSecInput" style="display: block; font-size: 8pt;">
+                        <a style="color:#f34b11; cursor:pointer" (click)="addDivName()">Add Division</a>
+                    </span>
+                </div>
+                <div *ngIf="showAddDivInput">
+                    <input class="form-control" type="text" [(ngModel)]="NewDivName" name="NewDivName" (keyup.enter)="postOrgPart('div', NewDivName)" placeholder="New Division Name" />
+                    <button type="button" class="sigl-btn btn-small" (click)="postOrgPart('div', NewDivName)">Add</button>
+                    <button type="button" class="sigl-btn btn-small" (click)="neverMind('div')">Cancel</button>
+                </div>
+            </div>
+            <br/>
+            <div class="sigl-modal-form-group">
+                <label for="chosenSec">Section:</label>
+                <div *ngIf="!showAddSecInput">
+                    <select class="form-control" name="chosenSec" [(ngModel)]="chosenSec">
+                        <option value=""></option>
+                        <option *ngFor="let s of divSections | sort: 'section_name'" [ngValue]="s.section_id">{{s.section_name}}</option>
+                    </select>
+                    <span *ngIf="chosenDiv && !showAddSecInput" style="display: block; font-size: 8pt;">
+                        <a style="color:#f34b11; cursor:pointer" (click)="addSecName()">Add Section</a>
+                    </span>
+                </div>
+                <div *ngIf="showAddSecInput">
+                    <input class="form-control" type="text" [(ngModel)]="NewSecName" name="NewSecName" (keyup.enter)="postOrgPart('sec', NewSecName)" placeholder="New Section Name" />
+                    <button class="sigl-btn btn-small" (click)="postOrgPart('sec', NewSecName)">Add</button>
+                    <button class="sigl-btn btn-small" (click)="neverMind('sec')">Cancel</button>
+                </div>
+            </div>
+            <br/>
+            Request that an organization name be edited or deleted.
+        </form>
+    </div> <!-- end modal-body-->
+    <div class="modal-footer">
+        <button type="button" class="sigl-btn" (click)="c('done')">Close</button>
+    </div><!-- end modal-footer-->
+    
+</ng-template>

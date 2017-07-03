@@ -1,20 +1,55 @@
 <div class="sigl-edit-form">
     <legend style="margin-bottom:25px;margin-top:0;">Organizations</legend>
-
-    <form #DataEditForm="ngForm">
+    <form [formGroup]="newOrgForm">
         <div class="form-group" *ngIf="projectCoops">
-            <div class="current-data-list" *ngFor="let o of projectCoops; let i = index">
-                <div class="data-display">
-                    <div>
-                        <button type="button" class="sigl-btn btn-orange btn-xs" style="margin-right:10px" (click)="deleteProjOrg(o.organization_system_id)">Delete</button>
-                        <span>{{ o.OrganizationName }}</span><span *ngIf="o.div_id">, {{o.DivisionName}}</span><span *ngIf="o.sec_id">, {{o.SectionName}}</span>
-                    </div>
-                </div> <!-- end data-display -->            
+            <div *ngFor="let o of projectCoops; let i = index">
+                <div>
+                    <button type="button" class="sigl-btn btn-orange btn-xs" style="margin-right:10px" (click)="deleteOrgFromProject(o.organization_system_id)">Delete</button>
+                    <span>{{ o.OrganizationName }}</span><span *ngIf="o.div_id">, {{o.DivisionName}}</span><span *ngIf="o.sec_id">, {{o.SectionName}}</span>
+                </div>
             </div>
         </div>
+
+        <div class="subhead">Add New Organization</div>
+    
+       <div class="sigl-edit-form-group">
+            <label>Organization:
+                <span class="fa fa-question-circle sigl-tooltip" [ngbTooltip]="orgTip.orgName" placement="right"></span>
+            </label>
+            <select class="form-control" id="OrgName" formControlName="OrganizationName">
+                <option value=""></option>
+                <option *ngFor="let o of orgList | sort: 'organization_name'" [ngValue]="o.organization_id">{{o.organization_name}}</option>
+            </select>            
+            <button type="button" class="sigl-form-add-new" (click)="showOrgModal()">Add New</button>
+        </div> 
+
+        <div class="sigl-edit-form-group">
+            <label>Division:</label>
+            <select class="form-control" id="DivName" formControlName="DivisionName">
+                <option value=""></option>
+                <option *ngFor="let d of orgDivList | sort: 'division_name'" [ngValue]="d.division_id">{{d.division_name}}</option>
+            </select>  
+            <button type="button" class="sigl-form-add-new" (click)="showOrgModal()">Add New</button>
+        </div>
+        
+        <div class="sigl-edit-form-group">
+            <label>Section:</label>
+            <select class="form-control" id="SecName" formControlName="SectionName">
+                <option value=""></option>
+                <option *ngFor="let s of divSecList | sort: 'section_name'" [ngValue]="s.section_id">{{s.section_name}}</option>
+            </select>  
+            <button type="button" class="sigl-form-add-new" (click)="showOrgModal()">Add New</button>
+        </div>
+
+        <br><br>
+
+        <!--submit button-->
+        <div class="sigl-edit-form-group" style="text-align:center;">
+            <button type="button" class="sigl-btn" (click)="addOrgToProj()">Add this Organization to the Project</button>
+        </div>
+
     </form>
 </div>
 
-<button (click)="showOrgModal()" type="button">Show It</button>
-
-<organizationModal [orgDrop]="orgList" [divDrop]="divisionList" [secDrop]="sectionList" #orgModal></organizationModal>
+<organizationModal [orgDrop]="orgList" [divDrop]="divisionList" [secDrop]="sectionList" [selectedOrg]="newOrg" (modalResponseEvent)="newValuesFromOrgModal($event)" #orgModal></organizationModal>
+<areYouSureModal #areYouSure [message]="messageToShow" (modalResponseEvent)="AreYouSureDialogResponse($event)"></areYouSureModal>

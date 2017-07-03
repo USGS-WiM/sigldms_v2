@@ -25,6 +25,9 @@ import { IObjective } from "app/shared/interfaces/lookups/objective.interface";
 import { IMonitorCoord } from "app/shared/interfaces/lookups/monitorcoord.interface";
 import { IKeyword } from "app/shared/interfaces/lookups/keyword.interface";
 import { BehaviorSubject } from "rxjs/BehaviorSubject";
+import { IOrganization, IOrganizationsystem } from "app/shared/interfaces/lookups/organization.interface";
+import { IDivision } from "app/shared/interfaces/lookups/division.interface";
+import { ISection } from "app/shared/interfaces/lookups/section.interface";
 
 @Injectable()
 export class ProjectdetailService {
@@ -50,7 +53,7 @@ export class ProjectdetailService {
     public get projectObjectives(): Observable<Array<IObjective>> { return this._projObjectives.asObservable(); }
     public get projMonCoords(): Observable<Array<IMonitorCoord>> { return this._projMonCoords.asObservable(); }
     public get projKeywords(): Observable<Array<IKeyword>> { return this._projKeywords.asObservable(); }
-    public projOrganizations(): Observable<Array<IOrganizationresource>> { return this._projOrgs.asObservable(); }
+    public get projOrganizations(): Observable<Array<IOrganizationresource>> { return this._projOrgs.asObservable(); }
     public projData(): Observable<Array<IDatahost>> { return this._projDatahosts.asObservable(); }
     public projContacts(): Observable<Array<IContactresource>> { return this._projContacts.asObservable(); }
     public projPublications(): Observable<Array<IPublication>> { return this._projPublications.asObservable(); }
@@ -80,6 +83,7 @@ export class ProjectdetailService {
     public setProjMonCoords(newProjMonCo: Array<IMonitorCoord>) { this._projMonCoords.next(newProjMonCo); }
     public setProjKeywords(newProjKeys: Array<IKeyword>) { this._projKeywords.next(newProjKeys); }
     public setLastEditDate(newEditDate: Date) { this._lastEditedDate.next(newEditDate); }
+
 
     // HTTP GET REQUESTS //////////////////////////////////////
     // get this project they clicked on from the projectlist page
@@ -184,6 +188,24 @@ export class ProjectdetailService {
            // .catch(this.handleError);
     }
 
+    // post new project organization
+    public postProjOrganizationRes(projID: number, orgId: number, divId: number, secId: number) {
+        let orgParams: URLSearchParams = new URLSearchParams();
+        orgParams.set('OrganizationId', orgId.toString());
+        orgParams.set('DivisionId', divId.toString());
+        orgParams.set('SectionId', secId.toString());
+
+        let options = new RequestOptions({ headers: CONFIG.JSON_AUTH_HEADERS, search: orgParams });
+        return this._http.post(CONFIG.PROJECT_URL + "/" + projID + "/AddOrganization", null, options)
+            .map(res => { this._projOrgs.next(<Array<IOrganizationresource>>res.json()); })
+            .catch(this.handleError);
+    }
+    public postOrganizationSystem(anOrgSys: IOrganizationsystem) {
+        let options = new RequestOptions({ headers: CONFIG.JSON_AUTH_HEADERS });
+        return this._http.post(CONFIG.ORGANIZATIONSYSTEM_URL, anOrgSys, options)
+            .map(res => <IOrganizationsystem>res.json())
+            .catch(this.handleError);
+    }
 
     ///////////////////////// HTTP PUT REQUESTS //////////////////////////////////////
     // put a project
@@ -210,6 +232,13 @@ export class ProjectdetailService {
             .catch(this.handleError);
     }
 
+    // put contact
+    public putContact(id: number, aContact: IContactresource){
+        let options = new RequestOptions({ headers: CONFIG.JSON_AUTH_HEADERS });
+        return this._http.put(CONFIG.CONTACT_URL + '/' + id, aContact, options)
+            .map(res => <IContactresource>res.json())
+            .catch(this.handleError);
+    }
     ///////////////////////// HTTP DELETE REQUESTS //////////////////////////////////////
     // delete a datahost
     public deleteDatahost(id: number) {
@@ -255,6 +284,15 @@ export class ProjectdetailService {
 
         let options = new RequestOptions({ headers: CONFIG.JSON_AUTH_HEADERS, search: pubParams });
         return this._http.delete(CONFIG.PROJECT_URL + '/' + projID + "/RemovePublication", options)
+            .catch(this.handleError);;
+    }
+    //delete project org
+    public deleteProjOrganizationRes(projID: number, orgSysID: number) {
+        let orgSysParams: URLSearchParams = new URLSearchParams();
+        orgSysParams.set('OrgSystemId', orgSysID.toString());
+
+        let options = new RequestOptions({ headers: CONFIG.JSON_AUTH_HEADERS, search: orgSysParams });
+        return this._http.delete(CONFIG.PROJECT_URL + '/' + projID + "/removeOrganization", options)
             .catch(this.handleError);;
     }
 
