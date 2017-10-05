@@ -15,6 +15,7 @@ import { ActivatedRoute, Router } from "@angular/router";
 import { IFullproject } from "app/shared/interfaces/projects/fullProject.interface";
 import { DialogService } from "app/shared/services/dialog.service";
 import { AreYouSureModal } from "app/shared/components/areYouSure.modal";
+import { Toast } from 'angular2-toaster';
 
 @Component({
 	templateUrl: "projectdata.component.html",
@@ -120,6 +121,19 @@ export class ProjectdataComponent implements OnInit {
 				this.rowBeingEdited = -1;
 				this.isEditing = false; // set to true so create new is disabled
 				if (this.DataEditForm.form.dirty) this.DataEditForm.reset();
+				let toast: Toast = {
+					type: 'success',
+					title: 'Success',
+					body: 'Data Source updated'
+				};
+				this._dialogService.showToast(toast); 
+			}, error => {
+				let toast: Toast = {
+					type: 'error',
+					title: 'Error',
+					body: 'Error updating Data Source: ' + error
+				};
+				this._dialogService.showToast(toast); 
 			});
 		}
 	}
@@ -139,9 +153,22 @@ export class ProjectdataComponent implements OnInit {
 		this.postDHsubscript = this._projDetService.postDatahost(d).subscribe(
 			res => {
 				this._projDetService.setLastEditDate(new Date());
-				console.log("project datahosts updated")
+				console.log("project datahosts updated");
+				let toast: Toast = {
+					type: 'success',
+					title: 'Success',
+					body: 'Data Source added'
+				};
+				this._dialogService.showToast(toast); 
 			},
-			error => this.errorMessage = error
+			error => {
+				let toast: Toast = {
+					type: 'error',
+					title: 'Error',
+					body: 'Error adding Data Source: ' + error
+				};
+				this._dialogService.showToast(toast); 
+			}
 		);
 	}
 	// response from dialog (either want to leave here without saving edits or want to delete datahost)
@@ -167,8 +194,21 @@ export class ProjectdataComponent implements OnInit {
 						this.projectData.splice(ind, 1); //delete from array
 						this._projDetService.setProjectData(this.projectData); // udpdate service
 						this._projDetService.setLastEditDate(new Date());
+						let toast: Toast = {
+							type: 'success',
+							title: 'Success',
+							body: 'Data Source deleted'
+						};
+						this._dialogService.showToast(toast); 
 					},
-					error => this.errorMessage = error
+					error => {
+						let toast: Toast = {
+							type: 'error',
+							title: 'Error',
+							body: 'Error deleting Data Source: ' + error
+						};
+						this._dialogService.showToast(toast); 
+					}
 				);
 			}
 		}

@@ -21,6 +21,7 @@ import { ISection } from "app/shared/interfaces/lookups/section.interface";
 import { IOrganization } from "app/shared/interfaces/lookups/organization.interface";
 import { DialogService } from "app/shared/services/dialog.service";
 import { AreYouSureModal } from "app/shared/components/areYouSure.modal";
+import { Toast } from 'angular2-toaster';
 
 
 @Component({
@@ -130,7 +131,7 @@ export class ProjectcooperatorComponent implements OnInit {
 			let orgId = this.newOrgForm.controls['OrganizationName'].value;
 			let divId = this.newOrgForm.controls['DivisionName'].value < 1 ? 0 : this.newOrgForm.controls['DivisionName'].value;
 			let secId = this.newOrgForm.controls['SectionName'].value < 1 ? 0 : this.newOrgForm.controls['SectionName'].value;
-			this._projDetService.postProjOrganizationRes(this.projectId, orgId, divId, secId).subscribe(
+			this._projDetService.postProjOrganizationRes(this.projectId, orgId, divId, secId).subscribe(			
 				res => {
 					this._projDetService.setLastEditDate(new Date());
 					console.log("project organization added");
@@ -138,8 +139,23 @@ export class ProjectcooperatorComponent implements OnInit {
 					this.newOrgForm.controls['OrganizationName'].setValue(null);
 					this.newOrgForm.controls['DivisionName'].setValue(null);
 					this.newOrgForm.controls['SectionName'].setValue(null);
+					// show toast that all went well
+                    let toast: Toast = {
+                        type: 'success',
+                        title: 'Success',
+                        body: 'Project organization added'
+                    };
+                    this._dialogService.showToast(toast); 
 				},
-				error => this.errorMessage = error
+				error => {
+					// show toast that all went well
+                    let toast: Toast = {
+                        type: 'error',
+                        title: 'Error',
+                        body: 'Error adding project organization: ' + error
+                    };
+                    this._dialogService.showToast(toast); 
+				}
 			);		
 
 		}

@@ -15,6 +15,7 @@ import { ActivatedRoute, Router } from "@angular/router";
 import { IFullproject } from "app/shared/interfaces/projects/fullProject.interface";
 import { DialogService } from "app/shared/services/dialog.service";
 import { AreYouSureModal } from "app/shared/components/areYouSure.modal";
+import { Toast } from 'angular2-toaster';
 
 @Component({
 	templateUrl: "projectpub.component.html"//,
@@ -119,6 +120,19 @@ export class ProjectpublicationComponent implements OnInit {
 				this.rowBeingEdited = -1;
 				this.isEditing = false; // set to true so create new is disabled
 				if (this.PubEditForm.form.dirty) this.PubEditForm.reset();
+				let toast: Toast = {
+					type: 'success',
+					title: 'Success',
+					body: 'Publication updated'
+				};
+				this._dialogService.showToast(toast); 
+			}, error => {
+				let toast: Toast = {
+					type: 'error',
+					title: 'Error',
+					body: 'Error updating publication: ' + error
+				};
+				this._dialogService.showToast(toast); 
 			});
 		}
 	}
@@ -139,9 +153,21 @@ export class ProjectpublicationComponent implements OnInit {
 		this.postSubscript = this._projDetService.postPublication(this.projectId, p).subscribe(
 			res => {
 				this._projDetService.setLastEditDate(new Date());
-				console.log("project Publication updated")
+				let toast: Toast = {
+					type: 'success',
+					title: 'Success',
+					body: 'Publication added'
+				};
+				this._dialogService.showToast(toast); 
 			},
-			error => this.errorMessage = error
+			error => {
+				let toast: Toast = {
+					type: 'error',
+					title: 'Error',
+					body: 'Error adding publication: ' + error
+				};
+				this._dialogService.showToast(toast); 
+			}
 		);
 	}
 	// response from dialog (either want to leave here without saving edits or want to delete datahost)
@@ -154,7 +180,7 @@ export class ProjectpublicationComponent implements OnInit {
 				this._router.navigate([this.nextURL]); // go to where they want to go
 			}
 			else {
-				//delete the datahost
+				//delete the publication
 				//get the index to be deleted by the id
 				let ind: number;
 				this.projectPubs.some((pp, index, _ary) => {
@@ -167,8 +193,21 @@ export class ProjectpublicationComponent implements OnInit {
 						this.projectPubs.splice(ind, 1); //delete from array
 						this._projDetService.setProjectPublications(this.projectPubs); // udpdate service
 						this._projDetService.setLastEditDate(new Date());
+						let toast: Toast = {
+							type: 'success',
+							title: 'Success',
+							body: 'Publication deleted'
+						};
+						this._dialogService.showToast(toast); 
 					},
-					error => this.errorMessage = error
+					error => {
+						let toast: Toast = {
+							type: 'error',
+							title: 'Error',
+							body: 'Error deleting publication: ' + error
+						};
+						this._dialogService.showToast(toast); 
+					}
 				);
 			}
 		}

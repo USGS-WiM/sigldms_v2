@@ -23,6 +23,7 @@ import { BehaviorSubject } from "rxjs/BehaviorSubject";
 import { IOrganization } from "app/shared/interfaces/lookups/organization.interface";
 import { IDivision } from "app/shared/interfaces/lookups/division.interface";
 import { ISection } from "app/shared/interfaces/lookups/section.interface";
+import { Toast } from 'angular2-toaster/src/toast';
 
 @Injectable()
 export class DialogService {
@@ -30,6 +31,17 @@ export class DialogService {
  
     constructor(private _http: Http, public _router: Router ) {
         console.log("'build dialog service instance ...");
+    }
+
+    // toaster  getter/setter
+    private toast: Toast;
+    private toastBind: Subject<Toast> = new Subject<Toast>();    
+    public showToast(t: Toast) {
+        this.toast = t;
+        this.toastBind.next(t);
+    }
+    public getToast(): Observable<Toast> {
+        return this.toastBind.asObservable();
     }
 
     // show/hide modal for dataHost and Publication
@@ -57,21 +69,21 @@ export class DialogService {
         let options = new RequestOptions({ headers: CONFIG.JSON_AUTH_HEADERS });
         return this._http.post(CONFIG.ORGANIZATION_URL, newOrg, options)
             .map(res=> <IOrganization>res.json())
-            .catch(this.handleError);
+            .catch((err) => this.handleError(err));
     }
     // post division created in modal
     public postDivision(newDiv: IDivision) {
         let options = new RequestOptions({ headers: CONFIG.JSON_AUTH_HEADERS });
         return this._http.post(CONFIG.DIVISION_URL, newDiv, options)
             .map(res=> <IDivision>res.json())
-            .catch(this.handleError);
+            .catch((err) => this.handleError(err));
     }
     // post section created in modal
     public postSection(newSec: ISection) {
         let options = new RequestOptions({ headers: CONFIG.JSON_AUTH_HEADERS });
         return this._http.post(CONFIG.SECTION_URL, newSec, options)
             .map(res=> <ISection>res.json())
-            .catch(this.handleError);
+            .catch((err) => this.handleError(err));
     }
     private _nextUrl: Subject<any> = new Subject<any>();
     public setNextUrl(val:any){

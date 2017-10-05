@@ -28,6 +28,7 @@ import { BehaviorSubject } from "rxjs/BehaviorSubject";
 import { IOrganization, IOrganizationsystem } from "app/shared/interfaces/lookups/organization.interface";
 import { IDivision } from "app/shared/interfaces/lookups/division.interface";
 import { ISection } from "app/shared/interfaces/lookups/section.interface";
+import { IContact } from "app/shared/interfaces/projects/contact.interface";
 
 @Injectable()
 export class ProjectdetailService {
@@ -200,10 +201,19 @@ export class ProjectdetailService {
             .map(res => { this._projOrgs.next(<Array<IOrganizationresource>>res.json()); })
             .catch(this.handleError);
     }
+    // post new organization system (org/div/sec combo)
     public postOrganizationSystem(anOrgSys: IOrganizationsystem) {
         let options = new RequestOptions({ headers: CONFIG.JSON_AUTH_HEADERS });
         return this._http.post(CONFIG.ORGANIZATIONSYSTEM_URL, anOrgSys, options)
             .map(res => <IOrganizationsystem>res.json())
+            .catch(this.handleError);
+    }
+
+    //post new project contact
+    public postProjContact(projID: number, newContact: IContactresource) {
+        let options = new RequestOptions({ headers: CONFIG.JSON_AUTH_HEADERS });
+        return this._http.post(CONFIG.PROJECT_URL + "/" + projID + "/addContact", newContact, options)
+            .map(res => <Array<IContact>>res.json())
             .catch(this.handleError);
     }
 
@@ -284,7 +294,15 @@ export class ProjectdetailService {
 
         let options = new RequestOptions({ headers: CONFIG.JSON_AUTH_HEADERS, search: pubParams });
         return this._http.delete(CONFIG.PROJECT_URL + '/' + projID + "/RemovePublication", options)
-            .catch(this.handleError);;
+            .catch(this.handleError);
+    }
+    public deleteProjContact(projID: number, contactID: number) {
+        let conParams: URLSearchParams = new URLSearchParams();
+        conParams.set('ContactId', contactID.toString());
+
+        let options = new RequestOptions({ headers: CONFIG.JSON_AUTH_HEADERS, search: conParams });
+        return this._http.delete(CONFIG.PROJECT_URL + '/' + projID + "/removeContact", options)
+            .catch(this.handleError);
     }
     //delete project org
     public deleteProjOrganizationRes(projID: number, orgSysID: number) {

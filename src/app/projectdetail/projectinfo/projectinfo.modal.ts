@@ -19,6 +19,8 @@ import { IProjStatus } from "app/shared/interfaces/lookups/projstatus.interface"
 import { IObjective } from "app/shared/interfaces/lookups/objective.interface";
 import { IMonitorCoord } from "app/shared/interfaces/lookups/monitorcoord.interface";
 import { IKeyword } from "app/shared/interfaces/lookups/keyword.interface";
+import { DialogService } from 'app/shared/services/dialog.service';
+import { Toast } from 'angular2-toaster';
 
 @Component({
   selector: 'editproject',
@@ -75,9 +77,8 @@ export class EditProjectModal {
     private postProjMonsubscript;
     private deleteProjMonsubscript;
 
-    constructor(private _projDetService: ProjectdetailService, private _modalService: NgbModal,
-                private _lookupService: LookupsService, private _fb: FormBuilder) {
-                    
+    constructor(private _projDetService: ProjectdetailService, private _modalService: NgbModal, private _lookupService: LookupsService, 
+        private _fb: FormBuilder, private _dialogService: DialogService) {
         this.projInfoForm = _fb.group({
             projectGrp: _fb.group({
                 'project_id': new FormControl(null),
@@ -96,8 +97,7 @@ export class EditProjectModal {
                 'last_edited_stamp': new FormControl(null)
             }),
             'objectives': new FormControl([]),
-            'monitorCoords': new FormControl([])
-            
+            'monitorCoords': new FormControl([])            
         });
     }
     
@@ -129,11 +129,7 @@ export class EditProjectModal {
         this.infoModalSubscript = this._projDetService.showProjectInfoModal.subscribe((show: boolean) => {
             if (show) this.showProjectModal();
         });
-
-      /* not sure I need this since the fullProject is passed in via opening the modal
-        this.projSubscript = this._projDetService.getFullProj().subscribe(fullProj => {
-            this.fullProject = fullProj;
-        });*/
+        
         //get all the lookups I need
         this.durSubscript = this._lookupService.getProjDurations().subscribe((pd: Array<IProjDuration>) => {
              this.projDurationList = pd;    
@@ -329,24 +325,46 @@ export class EditProjectModal {
                             
                             this._projDetService.setFullProject(this.modalFullProject);
                             this._projDetService.setLastEditDate(new Date());   
-                        }).catch(function(err1){
-                            let errorResponse1 = err1;
+                            // show toast that all went well
+                            let toast: Toast = {
+                                type: 'success',
+                                title: 'Success',
+                                body: 'Project updated'
+                            };
+                            this._dialogService.showToast(toast); 
+                        }).catch((err1) => {
+                            let toast: Toast = {
+                                type: 'error',
+                                title: 'Error',
+                                body: 'Error updating project parts: ' + err1.statusText
+                            };
+                            this._dialogService.showToast(toast); 
                             // show toaster that it failed this._modalService.open(this.modalElement);
                             //something went wrong on adds
-                        });
-                        
-                    }).catch(function(err2){
-                        let errorResponse2 = err2;
-                        this._modalService.open(this.modalElement);
+                        });                        
+                    }).catch((err2) => {
                         //something went wrong on removes
+                        let toast: Toast = {
+                            type: 'error',
+                            title: 'Error',
+                            body: 'Error removing project parts: ' + err2.statusText
+                        };
+                        this._dialogService.showToast(toast); 
+                        this._modalService.open(this.modalElement);                        
                     });                    
+                }, error => {
+                    // show toast that all went well
+                    let toast: Toast = {
+                        type: 'error',
+                        title: 'Error',
+                        body: 'Error updating project: ' + error
+                    };
+                    this._dialogService.showToast(toast); 
                 });                
             } else {
                 //invalid. do something about it
                 this._modalService.open(this.modalElement);
             }            
-        }, (reason) => {
-            this.CloseResult = `Dismissed ${this.getDismissReason(reason)}`
         });
     }
 
@@ -373,10 +391,7 @@ export class EditProjectModal {
         this.aURLToRemove = undefined;
         if (e[0] == "Keyword") {
             this.aKeywordToRemove = e[1];
-            this.keywordsToRemove.push(this.aKeywordToRemove);
-            //store it to pass back up to delete when SAVING
-         //   let keyIndex = this.modalProjectParts.ProjKeys.findIndex(x => x.keyword_id == this.aKeywordToRemove.keyword_id && x.term == this.aKeywordToRemove.term);
-         //   this.modalProjectParts.ProjKeys.splice(keyIndex, 1);            
+            this.keywordsToRemove.push(this.aKeywordToRemove);            
         }
         else {
             this.aURLToRemove = e[1];      
@@ -384,7 +399,6 @@ export class EditProjectModal {
             //store it to pass back up to delete when SAVING
             let urlIndex = this.modalProjectParts.ProjUrls.findIndex(x => x == this.aURLToRemove);
             this.modalProjectParts.ProjUrls.splice(urlIndex, 1);
-
             let projectControlGrp = <FormArray>this.projInfoForm.controls['projectGrp'];
             projectControlGrp.controls['url'].setValue(this.modalProjectParts.ProjUrls.join("|"));      
         }
