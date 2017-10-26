@@ -21,6 +21,7 @@ import { LookupsService } from "app/shared/services/lookups.service";
 import { DialogService } from "app/shared/services/dialog.service";
 import { IOrganizationresource } from "app/shared/interfaces/projects/orgresource.interface";
 import { IContact } from "app/shared/interfaces/projects/contact.interface";
+import { Toast } from 'angular2-toaster';
 
 @Component({
 	templateUrl: 'projectcontact.component.html',
@@ -214,7 +215,7 @@ export class ProjectcontactComponent {//} implements OnInit {
 					phone: aContact.phone,
 					organization_system_id: aContact.organization_system_id,
 					science_base_id: aContact.science_base_id
-				};				
+				};
 				this._projDetService.putContact(updateContact.contact_id, updateContact).subscribe((r: IContactresource) => {
 					//  alert("contact updated");
 					aContact.isEditing = false;
@@ -225,14 +226,27 @@ export class ProjectcontactComponent {//} implements OnInit {
 					this.rowBeingEdited = -1;
 					this.isEditing = false; // set to true so create new is disabled
 					this.ContactEditForm.reset(formValueSnap, true);
-			//		if (this.ContactEditForm.form.dirty) this.ContactEditForm.reset();
+					let toast: Toast = {
+						type: 'success',
+						title: 'Success',
+						body: 'Contact updated'
+					};
+					this._dialogService.showToast(toast); 
 				}, (err) => {
-				this.errorMessage = err;
-				//this.loginErrorModal.showErrorModal();
-			}); //end putContact
+					let toast: Toast = {
+						type: 'error',
+						title: 'Error',
+						body: 'Error updating contact: ' + err
+					};
+					this._dialogService.showToast(toast); 
+				}); //end putContact
 			}, (err) => {
-				this.errorMessage = err;
-				//this.loginErrorModal.showErrorModal();
+				let toast: Toast = {
+					type: 'error',
+					title: 'Error',
+					body: 'Error updating contact organization: ' + err
+				};
+				this._dialogService.showToast(toast); 
 			}); //end postOrganizationSystem			
 		}		
 	}
@@ -259,28 +273,33 @@ export class ProjectcontactComponent {//} implements OnInit {
 				this.newContact.div_id = this.newOrg.div_id;
 				this.newContact.ContactSecName = this.newOrg.SectionName;
 				this.newContact.sec_id = this.newOrg.sec_id;
-				
-				/*  contact_id?: number;		
-					science_base_id?: string;
-					name: string;
-					email: string;
-					phone: string;
-					organization_system_id?: number;
-
-					org_id?: number;
-					ContactOrgName?: string;
-					div_id?: number;
-					ContactDivName?: string;
-					ContactSecName?: string;
-					sec_id?: number;
-					isEditing?: boolean;
-				*/
+								
 				//returns array of contacts.. need to be array<IContactresource
 				this.projectContacts.push(this.newContact);
 				this._projDetService.setProjectContacts(this.projectContacts);
 				this._projDetService.setLastEditDate(new Date());
 				this.newContactForm.reset();
+				let toast: Toast = {
+					type: 'success',
+					title: 'Success',
+					body: 'Contact added'
+				};
+				this._dialogService.showToast(toast); 
+			}, error => {
+				let toast: Toast = {
+					type: 'error',
+					title: 'Error',
+					body: 'Error adding contact: ' + error
+				};
+				this._dialogService.showToast(toast); 
 			});
+		}, error => {
+			let toast: Toast = {
+				type: 'error',
+				title: 'Error',
+				body: 'Error adding contact organization: ' + error
+			};
+			this._dialogService.showToast(toast); 
 		}); 
 	}
 	public DeleteContact(id: number){
@@ -312,8 +331,21 @@ export class ProjectcontactComponent {//} implements OnInit {
 						this.projectContacts.splice(ind, 1); //delete from array
 						this._projDetService.setProjectContacts(this.projectContacts); // udpdate service
 						this._projDetService.setLastEditDate(new Date());
+						let toast: Toast = {
+							type: 'success',
+							title: 'Success',
+							body: 'Contact deleted'
+						};
+						this._dialogService.showToast(toast); 
 					},
-					error => this.errorMessage = error
+					error => {
+						let toast: Toast = {
+							type: 'error',
+							title: 'Error',
+							body: 'Error deleting contact: ' + error
+						};
+						this._dialogService.showToast(toast); 
+					}
 				);
 			}
 		}

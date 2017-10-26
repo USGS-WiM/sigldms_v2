@@ -97,8 +97,7 @@ export class LookupsService {
       //  this._projDurations = <BehaviorSubject<IProjDuration[]>>new BehaviorSubject([]);
     }
 
-    public getLookups(){
-     
+    public getLookups(){     
          let options = new RequestOptions({headers: CONFIG.JSON_AUTH_HEADERS});
 
          //divisions

@@ -106,17 +106,6 @@ export class ProjectinfoComponent {
     this._projDetService.setProjectInfoModal(true); //shows the modal. listener is  
   }
 
-/* dont think this is being called from anywhere
-  private getDismissReason(reason: any): string {
-    if (reason === ModalDismissReasons.ESC) {
-      return 'by pressing ESC';
-    } else if (reason === ModalDismissReasons.BACKDROP_CLICK) {
-      return 'by clicking on a backdrop';
-    } else {
-      return  `with: ${reason}`;
-    }
-  }*/
-
   // when the fullProject gets updated or just loaded, need to update all project related things (called 2x above)
   private updateAllProjectRelatedStuff(fproj){
     this.urls = [];

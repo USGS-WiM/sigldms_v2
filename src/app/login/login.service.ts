@@ -46,7 +46,7 @@ export class LoginService {
 					this._authService.storeUserInfo(user);
 				}
 			})
-			.catch(this.handleError);
+			.catch((err) => this.handleError(err));
 	}
 
 	public logout(): void {
