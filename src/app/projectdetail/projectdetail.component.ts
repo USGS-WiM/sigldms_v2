@@ -17,6 +17,8 @@ import { LookupsService } from "app/shared/services/lookups.service";
 import { DialogService } from "app/shared/services/dialog.service";
 import { IProject } from "app/shared/interfaces/projects/project.interface";
 import { AreYouSureModal } from "app/shared/components/areYouSure.modal";
+import { IOrganizationresource } from "app/shared/interfaces/projects/orgresource.interface";
+import { IContactresource } from "app/shared/interfaces/projects/contactresource.interface";
 
 @Component({
   template:`
@@ -30,9 +32,9 @@ import { AreYouSureModal } from "app/shared/components/areYouSure.modal";
         </div>
         <div id="sigl-edit-left">
           <a [routerLink]="['info']" routerLinkActive="active">Project Information</a>
-          <a [routerLink]="['cooperators']"  routerLinkActive="active">Organizations<span class="badge badge-pill badge-default pull-right">{{fullProject?.Organizations?.length}}</span></a>
+          <a [routerLink]="['cooperators']"  routerLinkActive="active">Organizations<span class="badge badge-pill badge-default pull-right">{{orgs?.length}}</span></a>
           <a [routerLink]="['data']" routerLinkActive="active">Data Sources<span class="badge badge-pill badge-default pull-right">{{datahosts?.length}}</span></a>
-          <a [routerLink]="['contacts']" routerLinkActive="active">Contacts<span class="badge badge-pill badge-default pull-right">{{fullProject?.Contacts?.length}}</span></a>
+          <a [routerLink]="['contacts']" routerLinkActive="active">Contacts<span class="badge badge-pill badge-default pull-right">{{contacts?.length}}</span></a>
           <a [routerLink]="['publications']" routerLinkActive="active">Publications<span class="badge badge-pill badge-default pull-right">{{publications?.length}}</span></a>
           <a [routerLink]="['sites/sitelist']" routerLinkActive="active" id="siteTab">Sites<span class="badge badge-pill badge-default pull-right">{{fullSites?.length}}</span></a>
           
@@ -56,6 +58,8 @@ export class ProjectdetailComponent implements OnInit {
   public fullSites: Array<IFullsite>;
   public datahosts: Array<IDatahost>;
   public publications: Array<IPublication>;
+  public orgs: Array<IOrganizationresource>;
+  public contacts: Array<IContactresource>;
   public switchStatus: boolean; // used for Flag Project ready for mapper
   private flaggingBool: boolean; //updates when they change switch
   private dataSubscript;
@@ -76,6 +80,14 @@ export class ProjectdetailComponent implements OnInit {
     this.pubSubscript = this._projDetService.projPublications().subscribe((p: Array<IPublication>) => {
       this.publications = p;
     });
+    // needed to keep count updated
+    this._projDetService.projOrganizations.subscribe((po: Array<IOrganizationresource>) => {
+			this.orgs = po;
+		})
+    // needed to keep count updated
+    this._projDetService.projContacts().subscribe((c: Array<IContactresource>) => {
+			this.contacts = c;
+		});
     // needed to keep last_updated date updated
     this.dateSubscript = this._projDetService.lastEditDate.subscribe((d: Date) => {
       this.lastEdited = d;

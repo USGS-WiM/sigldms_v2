@@ -1,39 +1,123 @@
 <div class="sigl-edit-form">
     <legend style="margin-bottom:25px;margin-top:0;">Contacts</legend>
 </div>
+
 <form #ContactEditForm="ngForm">
     <div class="form-group" *ngIf="projectContacts">
         <div class="current-data-list" *ngFor="let c of projectContacts; let i = index">
             <div class="data-display">
-                <div>
-                    <label>Name:</label>
-                    <span *ngIf="!c.isEditing">{{ c.name }}</span> 
+                <div class="sigl-modal-form-group required">
+                    <label [ngClass]="{'req': c.isEditing}" for="name">Name:</label>
+                    <span *ngIf="!c.isEditing">{{c.name}}</span>  
                     <span *ngIf="c.isEditing" class="editable-wrap">
-                       <input type="text" class="form-control editable-input" name="name" [(ngModel)]="c.name" />
+                        <input type="text" class="form-control editable-input" required name="name" [(ngModel)]="c.name" />
+                        <div class="alert alert-danger col-md-6" *ngIf="!ContactEditForm.controls.name?.valid && ContactEditForm.controls.name?.dirty">Contact name is required.</div>
                     </span>
                 </div>
-                <div>
-                    <label>Email:</label>
+                <div class="sigl-modal-form-group required">
+                    <label [ngClass]="{'req': c.isEditing}" for="email">Email:</label>
                     <span *ngIf="!c.isEditing">{{ c.email }}</span>
-                    <span *ngIf="c.isEditing" class="editable-wrap"><input type="email" class="form-control editable-input" name="email" [(ngModel)]="c.email"></span>
+                    <span *ngIf="c.isEditing" class="editable-wrap">
+                        <input type="email" id="email" class="form-control editable-input" required pattern="[^ @]*@[^ @]*" name="email" [(ngModel)]="c.email" />
+                        <div class="alert alert-danger col-md-6" *ngIf="!ContactEditForm.controls.email?.valid && ContactEditForm.controls.email?.dirty">
+                            <div *ngIf="ContactEditForm.controls.email.errors.required">Contact email is required.</div>
+                            <div *ngIf="ContactEditForm.controls.email.errors.pattern">Contact email must be a properly formatted email.</div>
+                        </div>
+                    </span>                    
                 </div>
-                <div>
-                    <label>Phone:</label>
+                <div class="sigl-modal-form-group required">
+                    <label [ngClass]="{'req': c.isEditing}" for="phone">Phone:</label>
                     <span *ngIf="!c.isEditing">{{ c.phone }}</span>
-                    <span *ngIf="c.isEditing" class="editable-wrap"><input type="text" class="form-control editable-input" name="phone" [(ngModel)]="c.phone"></span>
+                    <span *ngIf="c.isEditing" class="editable-wrap">
+                        <input type="text" id="phone" class="form-control editable-input" required name="phone" [(ngModel)]="c.phone" phoneformat>
+                        <div class="alert alert-danger col-md-6" *ngIf="!ContactEditForm.controls.phone?.valid && ContactEditForm.controls.phone?.dirty">Contact phone is required.</div>
+                    </span>                    
                 </div>
                 <div>{{c.ContactOrgName}}<span *ngIf="c.ContactDivName">, {{c.ContactDivName}}</span><span *ngIf="c.ContactSecName">, {{c.ContactSecName}}</span></div>
                 <div *ngIf="c.isEditing"><button type="button" class="sigl-btn btn-small" (click)="showOrgModal()">Change Contact's Organization</button></div>
-            </div> <!-- end data-display -->
-            <div class="data-controls">
-                <button type="button" *ngIf="!c.isEditing" class="sigl-btn btn-small" (click)="EditRowClicked(i)">Edit</button>
-                <button type="button" *ngIf="!c.isEditing" class="sigl-btn btn-orange btn-small" (click)="deleteContact(c.contact_id)">Delete</button>             
-                <button type="button" *ngIf="c.isEditing" class="sigl-btn btn-small" (click)="saveContact(c, i)">Save</button>
-                <button type="button" *ngIf="c.isEditing" class="sigl-btn btn-orange btn-small" (click)="CancelEditRowClicked(i)">Cancel</button>   
+            </div> <!-- end data-display data-controls form-buttons form-inline-->
+
+            <div class="data-controls" *ngIf="!c.isEditing">
+                <button type="button" class="sigl-btn btn-small" (click)="EditRowClicked(i)">Edit</button>
+                <button type="button" class="sigl-btn btn-orange btn-small" (click)="DeleteContact(c.contact_id)">Delete</button>
+            </div>
+            <div class="data-display" *ngIf="c.isEditing">
+                <button type="button" [disabled]="!ContactEditForm.valid" *ngIf="c.isEditing" [ngClass]="{'notAllowed': !ContactEditForm.valid}" class="sigl-btn" (click)="saveContact(c, i)">Save</button>
+                <button type="button" *ngIf="c.isEditing" class="sigl-btn btn-orange" (click)="CancelEditRowClicked(i)">Cancel</button>   
             </div>
         </div>
     </div>
 </form>
-    
+
+<form [formGroup]="newContactForm" class="sigl-edit-form">
+        
+    <div class="subhead">Add New Contact</div>
+    <fieldset [disabled]="isEditing">
+        <div class="sigl-edit-form-group required" [ngClass]="{'has-error':newContactForm.get('name').$invalid && newContactForm.get('name').$dirty}">
+            <label class="req" for="name">
+                Name:
+                <span class="fa fa-question-circle sigl-tooltip" [ngbTooltip]="contactTip.contactName" placement="right"></span>                
+            </label>
+            <input class="form-control" type="text" formControlName="name">
+            <div class="alert alert-danger" *ngIf="!newContactForm.get('name').valid && newContactForm.get('name').dirty">Contact name is required.</div>
+        </div>
+
+        <div class="sigl-edit-form-group required">
+            <label class="req" for="ContactOrgName">Organization:</label>
+            <select class="form-control" id="OrgName" formControlName="ContactOrgName">
+                <option value=""></option>
+                <option *ngFor="let o of orgList | sort: 'organization_name'" [ngValue]="o.organization_id">{{o.organization_name}}</option>
+            </select>            
+            <div class="alert alert-danger" *ngIf="!newContactForm.get('ContactOrgName').valid && newContactForm.get('ContactOrgName').dirty">Contact organization is required.</div>
+            <button type="button" class="sigl-form-add-new" (click)="showOrgModal()">Add New</button>
+        </div> 
+
+        <div class="sigl-edit-form-group">
+            <label>Division:</label>
+            <select class="form-control" id="DivName" formControlName="ContactDivName">
+                <option value=""></option>
+                <option *ngFor="let d of orgDivList | sort: 'division_name'" [ngValue]="d.division_id">{{d.division_name}}</option>
+            </select>  
+            <button type="button" class="sigl-form-add-new" (click)="showOrgModal()">Add New</button>
+        </div>
+        
+        <div class="sigl-edit-form-group">
+            <label>Section:</label>
+            <select class="form-control" id="SecName" formControlName="ContactSecName">
+                <option value=""></option>
+                <option *ngFor="let s of divSecList | sort: 'section_name'" [ngValue]="s.section_id">{{s.section_name}}</option>
+            </select>  
+            <button type="button" class="sigl-form-add-new" (click)="showOrgModal()">Add New</button>
+        </div>
+
+        <!-- Email -->
+        <div class="sigl-edit-form-group required" [ngClass]="{'has-error': newContactForm.get('email').$invalid && newContactForm.get('email').$dirty}">
+            <label class="req" for="email">
+                Email:
+                <span class="fa fa-question-circle sigl-tooltip" [ngbTooltip]="contactTip.email" placement="right"></span> 
+            </label>
+            <input type="email" class="form-control" formControlName="email">
+            <div class="alert alert-danger col-md-6" *ngIf="!newContactForm.get('email').valid && newContactForm.get('email').dirty">
+                <div *ngIf="newContactForm.get('email').errors.required">Contact email is required.</div>
+                <div *ngIf="newContactForm.get('email').errors.pattern">Contact email must be a properly formatted email.</div>
+            </div>
+        </div>
+
+        <!-- Phone restrict="reject" mask-validate="false" ng-value="newContact.phone"  -->
+        <div class="sigl-edit-form-group required" [ngClass]="{'has-error': newContactForm.get('phone').$invalid && newContactForm.get('phone').$dirty}">
+            <label class="req" for="phone">
+                Phone:
+                <span class="fa fa-question-circle sigl-tooltip" [ngbTooltip]="contactTip.phone" placement="right"></span>
+            </label>
+            <input type="text" class="form-control" formControlName="phone" phoneformat>
+        </div>
+
+        <!--submit button-->
+        <div class="sigl-edit-form-group" style="text-align:right;">
+            <button type="button" class="sigl-btn" [disabled]="!newContactForm.valid"  [ngClass]="{'notAllowed': isEditing || !newContactForm.valid}" style="width:80px;margin-right:10px" (click)="AddContact()">Save</button>
+        </div>
+    </fieldset>
+</form>    
+
 <organizationModal [orgDrop]="orgList" [divDrop]="divisionList" [secDrop]="sectionList" [selectedOrg]="newOrg" (modalResponseEvent)="newValuesFromOrgModal($event)" #orgModal></organizationModal>
 <areYouSureModal #areYouSure [message]="messageToShow" (modalResponseEvent)="AreYouSureDialogResponse($event)"></areYouSureModal>

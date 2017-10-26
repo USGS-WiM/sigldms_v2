@@ -7,7 +7,7 @@ export interface IContactresource {
     email: string;
     phone: string;
     organization_system_id?: number;
-    org_id: number;
+    org_id?: number;
     ContactOrgName?: string;
     div_id?: number;
     ContactDivName?: string;

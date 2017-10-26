@@ -154,7 +154,7 @@ export class ProjectpublicationComponent implements OnInit {
 				this._router.navigate([this.nextURL]); // go to where they want to go
 			}
 			else {
-				//delete the datahost
+				//delete the publication
 				//get the index to be deleted by the id
 				let ind: number;
 				this.projectPubs.some((pp, index, _ary) => {

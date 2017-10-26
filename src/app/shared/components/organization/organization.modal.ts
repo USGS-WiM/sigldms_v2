@@ -59,6 +59,9 @@ export class OrganizationModal {
         this.showAddDivInput = false;
         this.showAddSecInput = false;
         this.modalElement = this.organizationModal;        
+        this.chosenOrg = undefined;
+        this.chosenDiv = undefined;
+        this.chosenSec = undefined;
     }
 
     public showOrgModal(): void {
@@ -71,8 +74,10 @@ export class OrganizationModal {
                 document.body.classList.add('modal-open');
             }
             // this.chosenOrg, this.chosenDiv, this.chosenSec will have the id's chosen emit it out
+            
             let allNewDrops = [this.orgDrop, this.divDrop, this.secDrop, this.chosenOrg, this.chosenDiv, this.chosenSec];
             this.modalResponseEvent.emit(allNewDrops);
+             this.chosenOrg = undefined;  this.chosenDiv = undefined;  this.chosenSec = undefined;
             this.CloseResult = `Closed with: ${result}`;
         }, (reason) => {
             this.CloseResult = `Dismissed ${this.getDismissReason(reason)}`
@@ -95,11 +100,13 @@ export class OrganizationModal {
     // org was changed, update divs
     public onOrgChange(e){
         this.orgDivisions = this.divDrop.filter((d:IDivision) => {return d.org_id == e});
+        this.chosenDiv = 0; this.chosenSec = 0;
     }
     
     // org was changed, update divs
     public onDivChange(e){
         this.divSections = this.secDrop.filter((s:ISection) => {return s.div_id == e});
+        this.chosenSec = 0;
     }
     
     // add new organization name was clicked

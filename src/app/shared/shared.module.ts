@@ -27,11 +27,12 @@ import { AreYouSureModal } from "app/shared/components/areYouSure.modal";
 import { DataTableModule } from "angular2-datatable";
 import { validateDates } from "app/shared/directives/validDates.validator";
 import { OrganizationModal } from "app/shared/components/organization/organization.modal";
+import { phoneFormat } from "app/shared/directives/phone.directive";
 
 
 @NgModule({
-  declarations: [ Autosize, httpPrefix,  AtLeast1RequiredModal, AreYouSureModal, OrganizationModal, validateDates ],
-  exports: [Autosize, httpPrefix, AtLeast1RequiredModal, AreYouSureModal, OrganizationModal, validateDates, MultiselectDropdownModule, DataTableModule, NgbModule],
+  declarations: [ Autosize, httpPrefix, phoneFormat,  AtLeast1RequiredModal, AreYouSureModal, OrganizationModal, validateDates ],
+  exports: [Autosize, httpPrefix, phoneFormat, AtLeast1RequiredModal, AreYouSureModal, OrganizationModal, validateDates, MultiselectDropdownModule, DataTableModule, NgbModule],
   imports: [CommonModule, FormsModule, PipesModule, NgbModule.forRoot(), MultiselectDropdownModule, DataTableModule]
   
   //providers: [ ]// AuthGuard, CanDeactivateGuard, LookupsService, AuthService, NgbActiveModal] //DialogService

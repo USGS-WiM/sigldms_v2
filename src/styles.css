@@ -79,6 +79,7 @@ a {
     width: 200px;
     vertical-align: middle;
     font-size: 8pt;
+    font-weight: bold;
 }
 .sigl-edit-form .sigl-edit-form-group span {
     vertical-align: middle;
@@ -146,18 +147,9 @@ a {
 .modal-content .modal-footer {
     padding: 15px;
 }
-.sigl-edit-form .sigl-edit-form-group label {
-    font-weight: bold;
-}
 .sigl-edit-form .sigl-edit-form-group label .sigl-tooltip {
     position: relative;
     top: -2px;
-}
-.sigl-edit-form .sigl-edit-form-group span {
-    vertical-align: middle;
-    width: auto;
-    font-size: 10pt;
-    display: inline-block;
 }
 .data-display label {
     font-weight: bold;
@@ -221,6 +213,14 @@ a {
     max-width: 600px;
 }
 .sigl-modal-form .sigl-modal-form-group label.req:after {
+    content: '*';
+    color: #de5030;
+}
+.sigl-edit-form .sigl-edit-form-group label.req:after {
+    content: '*';
+    color: #de5030;
+}
+.sigl-modal-form-group label.req:after {
     content: '*';
     color: #de5030;
 }
@@ -378,4 +378,7 @@ a {
     padding: 5px 0 0 0;
     border: none;
     text-transform: uppercase;
+}
+.notAllowed {
+    cursor: not-allowed
 }
