@@ -96,6 +96,25 @@ a {
 .sigl-edit-form .sigl-edit-form-group ul li {
     font-size: 10pt;
 }
+.sigl-edit-form .sigl-edit-form-group label .sigl-tooltip {
+    position: relative;
+    top: -2px;
+}
+.sigl-edit-form .sigl-edit-form-group label.req:after {
+    content: '*';
+    color: #de5030;
+}
+.sigl-edit-form .sigl-edit-form-group .sigl-form-add-new {
+    background-color: transparent;
+    color: #55b5ae;
+    float: right;
+    display: block;
+    font-size: 9pt;
+    box-sizing: border-box;
+    padding: 5px 0 0 0;
+    border: none;
+    text-transform: uppercase;
+}
 .sigl-btn.btn-small {
     font-size: 8pt;
     padding: 4px 8px;
@@ -147,10 +166,7 @@ a {
 .modal-content .modal-footer {
     padding: 15px;
 }
-.sigl-edit-form .sigl-edit-form-group label .sigl-tooltip {
-    position: relative;
-    top: -2px;
-}
+
 .data-display label {
     font-weight: bold;
 }
@@ -216,10 +232,7 @@ a {
     content: '*';
     color: #de5030;
 }
-.sigl-edit-form .sigl-edit-form-group label.req:after {
-    content: '*';
-    color: #de5030;
-}
+
 .sigl-modal-form-group label.req:after {
     content: '*';
     color: #de5030;
@@ -368,17 +381,7 @@ a {
 .sigl-btn.btn-xs.btn-orange {
     border: 1px solid #bd3b1e;
 }
-.sigl-edit-form .sigl-edit-form-group .sigl-form-add-new {
-    background-color: transparent;
-    color: #55b5ae;
-    float: right;
-    display: block;
-    font-size: 9pt;
-    box-sizing: border-box;
-    padding: 5px 0 0 0;
-    border: none;
-    text-transform: uppercase;
-}
+
 .notAllowed {
     cursor: not-allowed
 }
