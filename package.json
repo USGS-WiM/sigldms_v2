@@ -22,7 +22,7 @@
     "@angular/platform-browser": "^4.0.0",
     "@angular/platform-browser-dynamic": "^4.0.0",
     "@angular/router": "^4.0.0",
-    "@ng-bootstrap/ng-bootstrap": "^1.0.0-alpha.25",
+    "@ng-bootstrap/ng-bootstrap": "1.0.0-alpha.25",
     "angular-2-dropdown-multiselect": "^1.2.0",
     "angular2-autosize": "git+https://github.com/chrum/angular2-autosize.git",
     "angular2-bootstrap-switch": "^0.1.10",
